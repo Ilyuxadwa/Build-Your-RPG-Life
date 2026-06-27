@@ -14,12 +14,23 @@ def register_ui(app):
                     ))
 
 def main_ui(app):
-    app.add_element(app.alignment("rcenter", 
-                        ft.Container(bgcolor=app.theme.secondary, width=tools.adapt_dimensions(app, "w", 80), height=tools.adapt_dimensions(app, "h", 20))
-                    ))
-    app.add_element(app.alignment("rcenter", 
-                        ft.Container(bgcolor=app.theme.secondary, width=tools.adapt_dimensions(app, "w", 80), height=tools.adapt_dimensions(app, "h", 20))
-                    ))
+    categories = list(main.tasks.keys())
+    rows = [categories[i : i + 2] for i in range(0, len(categories), 2)]
+    buttons = []
+    for row in rows:
+        if len(row) > 1:
+            buttons.append(app.alignment("rspace_between",
+                            ft.Button(row[0], style=tools.additional_button_style(app, 18), width = tools.adapt_dimensions(app, "w", 40), height = tools.adapt_dimensions(app, "w", 40)),
+                            ft.Button(row[1], style=tools.additional_button_style(app, 18), width = tools.adapt_dimensions(app, "w", 40), height = tools.adapt_dimensions(app, "w", 40)),
+                        tools.adapt_dimensions(app, "w", 100), height = tools.adapt_dimensions(app, "w", 40)))
+        else:
+            buttons.append(app.alignment("rstart", 
+                            ft.Button(row[0], style=tools.additional_button_style(app, 18), width = tools.adapt_dimensions(app, "w", 40), height = tools.adapt_dimensions(app, "w", 40)),
+                        tools.adapt_dimensions(app, "w", 100), height = tools.adapt_dimensions(app, "w", 40)))
+        #app.add_element(app.alignment("cstart", buttons))
+        
+        
+    
 def build():
     app = App()
     app.set_size("1/4")
