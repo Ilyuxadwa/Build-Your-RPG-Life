@@ -2,8 +2,6 @@ import utils
 import healthy_calculations
 from player import Player
 
-#user = Player()
-
 tasks = {"group": {"name": {"option1": {"time_delay", "bonuses"}}} ,"group2": {"name": {"option1": {"time_delay", "bonuses"}}}, "group3": {"name": {"option1": {"time_delay", "bonuses"}}}}
 already_done = {} # {name: time_left}
 

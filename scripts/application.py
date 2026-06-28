@@ -17,11 +17,11 @@ def main_ui(app):
     categories = list(main.tasks.keys())
     rows = [categories[i : i + 2] for i in range(0, len(categories), 2)]
     buttons = []
+    print(rows)
     for row in rows:
         if len(row) > 1:
-            print ("two")
-            app.add_element(app.alignment("rspace_between",
-                            ft.Button(row[1], style=tools.additional_button_style(app, 18, shape = ft.RoundedRectangleBorder(radius=10),
+            buttons.append(app.alignment("rcenter",
+                            ft.Button(row[1], style=tools.additional_button_style(app, 32, shape = ft.RoundedRectangleBorder(radius=10),
                                     side = {
                                         ft.ControlState.DEFAULT: ft.BorderSide(
                                             app.theme.outline_width+2, color=app.theme.outline
@@ -32,8 +32,8 @@ def main_ui(app):
                                         ft.ControlState.PRESSED: ft.BorderSide(
                                             app.theme.outline_width+2, color=app.theme.outline
                                         ),
-                                    }), width = tools.adapt_dimensions(app, "w", 48), height = tools.adapt_dimensions(app, "w", 48)),
-                            ft.Button(row[1], style=tools.additional_button_style(app, 18, shape = ft.RoundedRectangleBorder(radius=10),
+                                    }), width = tools.adapt_dimensions(app, "w", 46), height = tools.adapt_dimensions(app, "w", 46)),
+                            ft.Button(row[1], style=tools.additional_button_style(app, 32, shape = ft.RoundedRectangleBorder(radius=10),
                                     side = {
                                         ft.ControlState.DEFAULT: ft.BorderSide(
                                             app.theme.outline_width+2, color=app.theme.outline
@@ -44,12 +44,11 @@ def main_ui(app):
                                         ft.ControlState.PRESSED: ft.BorderSide(
                                             app.theme.outline_width+2, color=app.theme.outline
                                         ),
-                                    }), width = tools.adapt_dimensions(app, "w", 48), height = tools.adapt_dimensions(app, "w", 48)),
-                        expand = True))
+                                    }), width = tools.adapt_dimensions(app, "w", 46), height = tools.adapt_dimensions(app, "w", 46)),
+                        expand = True, spacing = tools.adapt_dimensions(app, "w", 4)))
         else:
-            print ("one")
-            buttons.append(app.alignment("rstart", 
-                            ft.Button(row[0], style=tools.additional_button_style(app, 18, shape = ft.RoundedRectangleBorder(radius=10),
+            buttons.append(app.alignment("rcenter",
+                            ft.Button(row[0], style=tools.additional_button_style(app, 32, shape = ft.RoundedRectangleBorder(radius=10),
                                     side = {
                                         ft.ControlState.DEFAULT: ft.BorderSide(
                                             app.theme.outline_width+2, color=app.theme.outline
@@ -60,8 +59,9 @@ def main_ui(app):
                                         ft.ControlState.PRESSED: ft.BorderSide(
                                             app.theme.outline_width+2, color=app.theme.outline
                                         ),
-                                    }), width = tools.adapt_dimensions(app, "w", 100), height = tools.adapt_dimensions(app, "w", 48)),
-                        expand = True))
+                                    }), width = tools.adapt_dimensions(app, "w", 92), height = tools.adapt_dimensions(app, "w", 46)),
+                        expand = True, spacing = tools.adapt_dimensions(app, "w", 4)))
+        app.add_element(app.alignment("cstart", *buttons, width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
 
         
     
