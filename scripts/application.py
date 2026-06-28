@@ -19,16 +19,50 @@ def main_ui(app):
     buttons = []
     for row in rows:
         if len(row) > 1:
-            buttons.append(app.alignment("rspace_between",
-                            ft.Button(row[0], style=tools.additional_button_style(app, 18), width = tools.adapt_dimensions(app, "w", 40), height = tools.adapt_dimensions(app, "w", 40)),
-                            ft.Button(row[1], style=tools.additional_button_style(app, 18), width = tools.adapt_dimensions(app, "w", 40), height = tools.adapt_dimensions(app, "w", 40)),
-                        tools.adapt_dimensions(app, "w", 100), height = tools.adapt_dimensions(app, "w", 40)))
+            print ("two")
+            app.add_element(app.alignment("rspace_between",
+                            ft.Button(row[1], style=tools.additional_button_style(app, 18, shape = ft.RoundedRectangleBorder(radius=10),
+                                    side = {
+                                        ft.ControlState.DEFAULT: ft.BorderSide(
+                                            app.theme.outline_width+2, color=app.theme.outline
+                                        ),
+                                        ft.ControlState.HOVERED: ft.BorderSide(
+                                            app.theme.outline_width+2, color=app.theme.outline
+                                        ),
+                                        ft.ControlState.PRESSED: ft.BorderSide(
+                                            app.theme.outline_width+2, color=app.theme.outline
+                                        ),
+                                    }), width = tools.adapt_dimensions(app, "w", 48), height = tools.adapt_dimensions(app, "w", 48)),
+                            ft.Button(row[1], style=tools.additional_button_style(app, 18, shape = ft.RoundedRectangleBorder(radius=10),
+                                    side = {
+                                        ft.ControlState.DEFAULT: ft.BorderSide(
+                                            app.theme.outline_width+2, color=app.theme.outline
+                                        ),
+                                        ft.ControlState.HOVERED: ft.BorderSide(
+                                            app.theme.outline_width+2, color=app.theme.outline
+                                        ),
+                                        ft.ControlState.PRESSED: ft.BorderSide(
+                                            app.theme.outline_width+2, color=app.theme.outline
+                                        ),
+                                    }), width = tools.adapt_dimensions(app, "w", 48), height = tools.adapt_dimensions(app, "w", 48)),
+                        expand = True))
         else:
+            print ("one")
             buttons.append(app.alignment("rstart", 
-                            ft.Button(row[0], style=tools.additional_button_style(app, 18), width = tools.adapt_dimensions(app, "w", 40), height = tools.adapt_dimensions(app, "w", 40)),
-                        tools.adapt_dimensions(app, "w", 100), height = tools.adapt_dimensions(app, "w", 40)))
-        #app.add_element(app.alignment("cstart", buttons))
-        
+                            ft.Button(row[0], style=tools.additional_button_style(app, 18, shape = ft.RoundedRectangleBorder(radius=10),
+                                    side = {
+                                        ft.ControlState.DEFAULT: ft.BorderSide(
+                                            app.theme.outline_width+2, color=app.theme.outline
+                                        ),
+                                        ft.ControlState.HOVERED: ft.BorderSide(
+                                            app.theme.outline_width+2, color=app.theme.outline
+                                        ),
+                                        ft.ControlState.PRESSED: ft.BorderSide(
+                                            app.theme.outline_width+2, color=app.theme.outline
+                                        ),
+                                    }), width = tools.adapt_dimensions(app, "w", 100), height = tools.adapt_dimensions(app, "w", 48)),
+                        expand = True))
+
         
     
 def build():
