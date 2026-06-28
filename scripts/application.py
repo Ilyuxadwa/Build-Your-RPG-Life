@@ -21,7 +21,7 @@ def main_ui(app):
     for row in rows:
         if len(row) > 1:
             buttons.append(app.alignment("rcenter",
-                            ft.Button(row[1], style=tools.additional_button_style(app, 32, shape = ft.RoundedRectangleBorder(radius=10),
+                            ft.Button(row[0], style=tools.additional_button_style(app, 32, shape = ft.RoundedRectangleBorder(radius=10),
                                     side = {
                                         ft.ControlState.DEFAULT: ft.BorderSide(
                                             app.theme.outline_width+2, color=app.theme.outline
@@ -61,8 +61,7 @@ def main_ui(app):
                                         ),
                                     }), width = tools.adapt_dimensions(app, "w", 92), height = tools.adapt_dimensions(app, "w", 46)),
                         expand = True, spacing = tools.adapt_dimensions(app, "w", 4)))
-        app.add_element(app.alignment("cstart", *buttons, width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
-
+    app.add_element(app.alignment("cstart", *buttons, width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
         
     
 def build():
