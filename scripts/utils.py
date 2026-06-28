@@ -1,9 +1,9 @@
 import os
 def parse_data():
     parsed = {}
-    groups = os.listdir("tasks/")
+    groups = os.listdir("actions/tasks/")
     for group in groups:
-        files = os.listdir("tasks/"+group)
+        files = os.listdir("actions/tasks/"+group)
         print(group)
         for thing in files:
             if thing.endswith(".json"):
