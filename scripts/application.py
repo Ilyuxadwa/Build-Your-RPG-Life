@@ -5,10 +5,13 @@ import info
 import main
 import utils
 
-def register_ui(app):
-    app.add_element(app.alignment("rcenter", 
-                        ft.Container(bgcolor=app.theme.secondary, width=tools.adapt_dimensions(app, "w", 80), height=tools.adapt_dimensions(app, "h", 20))
-                    ))
+def register_page_1_ui(app):
+    nickname = tools.entry(app, 14, label="Nickname", hint_text="How can we call you?")
+    date_picker = ft.DatePicker()
+    app.add_element(app.alignment("cstart",
+                        app.alignment("rcenter", ft.Text("Hi! To begin using this app\nwe need to meet you!", style = tools.primary_text_style(app, 24), text_align = ft.TextAlign.CENTER)),
+                        app.alignment("rcenter", nickname),
+                        app.alignment("rcenter", ft.ElevatedButton("Select your birthday", icon=))))
     app.add_element(app.alignment("rcenter", 
                         ft.Container(bgcolor=app.theme.secondary, width=tools.adapt_dimensions(app, "w", 80), height=tools.adapt_dimensions(app, "h", 20))
                     ))
@@ -69,6 +72,6 @@ def build():
     app.set_size("1/4")
     app.set_version(info.VERSION)
     app.add_page("main_page", main_ui)
-    app.add_page("register_page", register_ui)
+    app.add_page("register_1", register_page_1_ui)
     app.set_async_next(main.start)
     app.run(info.APP_NAME)

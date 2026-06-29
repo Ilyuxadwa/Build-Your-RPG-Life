@@ -6,7 +6,14 @@ tasks = {"group": {"name": {"option1": {"time_delay", "bonuses"}}} ,"group2": {"
 already_done = {} # {name: time_left}
 
 async def start(app):
-    pass
+    registered = await app.load("registered")
+    if registered:
+        pass
+    else:
+        await app.save("registerd", False)
+        app.navigate("register_1")
+
 
 def load_tasks():
-    utils.parse_data()
+    global tasks
+    tasks = utils.parse_tasks()

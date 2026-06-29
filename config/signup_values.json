@@ -1,0 +1,73 @@
+{
+    "page_1": {
+        "message": "Hi! To start using this app\n We need to meet with you! How can we call you?",
+        "Nickname": {
+            "description": "Create your nickname",
+            "type": "entry",
+            "limit": 30
+        },
+
+        "Birthday": {
+            "description": "Select your birthday",
+            "type": "date"
+        },
+
+        "Role": {
+            "description": "Who are you now?",
+            "type": "dropdown",
+            "options": ["Schoolboy", "Student", "Worker", "None"]
+        },
+
+        "Status": {
+            "description": "What is your current status?",
+            "type": "dropdown",
+            "options": ["Alone", "With partner", "Married"]
+        }
+    },
+
+    "page_2": {
+        "message": "Nice! Now we need to get information for\nsetting up individual goals...",
+        "Height": {
+            "description": "Your height (in cm)",
+            "type": "slider",
+            "mix": 100,
+            "max": 220,
+            "step": 1
+        },
+
+        "Weight": {
+            "description": "Your weight (in kg), to nearest tenth (52.6kg)",
+            "type": "number_entry",
+            "suffix": "kg"
+        },
+
+        "Gender": {
+            "description": "Select your gender",
+            "type": "radio",
+            "options": ["male", "female"]
+        }
+    },
+
+    "page_3": {
+        "message": "The last, but not least...\n We also need to know what you like!",
+        "Activeness": {
+            "description": "How can you evaluate your activeness during last month?",
+            "type": "slider",
+            "mix": 0,
+            "max": 100,
+            "step": 1
+        },
+
+        "Preferences": {
+            "description": "Your weight (in kg), to nearest tenth (52.6kg)",
+            "type": "number_entry",
+            "suffix": "kg"
+        },
+
+        "Gender": {
+            "description": "Select your gender",
+            "type": "radio",
+            "options": ["male", "female"]
+        }
+    }
+}

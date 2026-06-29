@@ -1,10 +1,10 @@
 import os
-def parse_data():
+
+def parse_tasks():
     parsed = {}
     groups = os.listdir("actions/tasks/")
     for group in groups:
         files = os.listdir("actions/tasks/"+group)
-        print(group)
         for thing in files:
             if thing.endswith(".json"):
                 get_task(thing)
@@ -14,5 +14,11 @@ def parse_data():
 
 def get_task():
     pass
+
 def get_group():
+    pass
+
+
+
+def get_icon(icon: str):
     pass

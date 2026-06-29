@@ -1,10 +1,6 @@
 def bmi(weight: float, height: int, age: int, gender: str) -> dict:
-    if weight <= 0 or height <= 0 or age <= 0:
-        raise ValueError("Все числовые параметры должны быть больше нуля.")
-        
     gender = gender.lower().strip()
-    if gender not in ['male', 'female']:
-        raise ValueError("Пол должен быть 'male' (мужской) или 'female' (женский).")
+
     height_meters = height / 100.0
     raw_bmi = weight / (height_meters ** 2)
     

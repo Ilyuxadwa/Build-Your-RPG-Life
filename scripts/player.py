@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from user import User
-from challanges import DailyChallange, WeeklyChallange, CustomChallange
+from goals import DailyGoal, WeeklyGoal, CustomGoal
 from achievements import Achievement
 
 @dataclass
@@ -8,9 +8,9 @@ class Player:
 
     user: User
     
-    daily_challanges: list[DailyChallange]
-    weekly_challanges: list[WeeklyChallange]
-    custom_goals: list[CustomChallange]
+    daily_challanges: list[DailyGoal]
+    weekly_challanges: list[WeeklyGoal]
+    custom_goals: list[CustomGoal]
 
     # Stats
     experience = 0 # Gain/lose by actions
@@ -26,4 +26,7 @@ class Player:
     stress = 0 # Gain/lose by actions
     
     achievements: list[Achievement]
+
+    def get_age(self):
+        return self.user.get_age()
 
