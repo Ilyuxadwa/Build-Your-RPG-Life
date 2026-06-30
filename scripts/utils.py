@@ -17,8 +17,4 @@ def get_task():
 
 def get_group():
     pass
-
-
-
-def get_icon(icon: str):
-    pass
+    

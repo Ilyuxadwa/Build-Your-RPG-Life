@@ -7,14 +7,38 @@ import utils
 
 def register_page_1_ui(app):
     nickname = tools.entry(app, 14, label="Nickname", hint_text="How can we call you?")
+    next_step = ft.ElevatedButton("Continue", width = tools.adapt_dimensions(app, "w", 20), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
     date_picker = ft.DatePicker()
-    app.add_element(app.alignment("cstart",
+    app.add_element(app.alignment("cspace_between",
                         app.alignment("rcenter", ft.Text("Hi! To begin using this app\nwe need to meet you!", style = tools.primary_text_style(app, 24), text_align = ft.TextAlign.CENTER)),
                         app.alignment("rcenter", nickname),
-                        app.alignment("rcenter", ft.ElevatedButton("Select your birthday", icon=))))
-    app.add_element(app.alignment("rcenter", 
-                        ft.Container(bgcolor=app.theme.secondary, width=tools.adapt_dimensions(app, "w", 80), height=tools.adapt_dimensions(app, "h", 20))
-                    ))
+                        app.alignment("rcenter", ft.ElevatedButton("Select your birthday", style = tools.main_button_style(app, 14))),
+                        app.alignment("rcenter", next_step),
+                        app.alignment("rspace_between", ft.IconButton(icon = ft.Icons.ARROW_BACK, style = tools.additional_button_style(app, 10))),
+                        height = tools.adapt_dimensions(app, "h", 70), width = tools.adapt_dimensions(app, "w", 100)))
+    def check():
+        pass
+
+    def next_page():
+        app.navigate("register_2")
+
+def register_page_2_ui(app):
+    height = tools.slider(app, min=100, max=200, label = "Your height (in cm)")
+    next_step = ft.ElevatedButton("Continue", width = tools.adapt_dimensions(app, "w", 20), style = tools.additional_button_style(app, 14), disabled=True)
+    date_picker = ft.DatePicker()
+    app.add_element(app.alignment("cspace_between",
+                        app.alignment("rcenter", ft.Text("Nice! Now we need to get information for\nsetting up individual goals...", style = tools.primary_text_style(app, 24), text_align = ft.TextAlign.CENTER)),
+                        app.alignment("rcenter", height),
+                        app.alignment("rcenter", ft.ElevatedButton("Select your birthday", style = tools.main_button_style(app, 14))),
+                        app.alignment("rcenter", next_step),
+                        app.alignment("rspace_between", ft.IconButton(icon = ft.Icons.ARROW_BACK, style = tools.additional_button_style(app, 10))),
+                        height = tools.adapt_dimensions(app, "h", 70), width = tools.adapt_dimensions(app, "w", 100)))
+    def check():
+        pass
+    
+    def next_page():
+        app.navigate("register_3")
+
 
 def main_ui(app):
     categories = list(main.tasks.keys())
@@ -73,5 +97,6 @@ def build():
     app.set_version(info.VERSION)
     app.add_page("main_page", main_ui)
     app.add_page("register_1", register_page_1_ui)
+    app.add_page("register_2", register_page_2_ui)
     app.set_async_next(main.start)
     app.run(info.APP_NAME)
