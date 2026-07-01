@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, date
 
 def parse_tasks():
     parsed = {}
@@ -17,4 +18,10 @@ def get_task():
 
 def get_group():
     pass
+
+def get_latest():
+    return date(date.today().year-12, date.today().month, date.today().day)
+
+def get_earliest():
+    return date(date.today().year-100, date.today().month, date.today().day)
     
