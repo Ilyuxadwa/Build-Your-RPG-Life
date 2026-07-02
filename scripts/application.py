@@ -34,17 +34,77 @@ def register_page_1_ui(app):
         app.navigate("register_2")
 
 def register_page_2_ui(app):
-    height = tools.slider(app, min=100, max=200, label = "Your height (in cm)")
-    next_step = ft.ElevatedButton("Continue", width = tools.adapt_dimensions(app, "w", 20), style = tools.additional_button_style(app, 14), disabled=True)
+    height_label = ft.Text("Your height (in cm)", style = tools.primary_text_style(app, 16))
+    height_value = ft.Text("100 cm", style = tools.secondary_text_style(app, 16), width = tools.adapt_dimensions(app, "w", 10), text_align = ft.TextAlign.END)
+    height = tools.slider(app, min=100, max=200, divisions = 100, value = 100, label = "Height", on_change=lambda: check())
+    weight = tools.entry(
+        app, 14,
+        label="Your weight (in kg)",
+        hint_text="50.0",
+        suffix="kg",
+        input_filter=ft.InputFilter(
+            allow=True,
+            regex_string=r"^[0-9.]*$",
+            replacement_string="",
+        ),
+        keyboard_type=ft.KeyboardType.NUMBER,
+        on_change=lambda: on_weight_change(),
+    )
+
+    weight_message = ft.Text("", style = tools.secondary_text_style(app, 12))
+    gender = tools.radio_group(app, tools.radio(app, 12, label="Male", value="male", width=tools.adapt_dimensions(app, "w", 10)), tools.radio(app, 12, label="Female", value="female", width=tools.adapt_dimensions(app, "w", 10)), on_change=lambda: check())
+    gender_message = ft.Text("", style = tools.secondary_text_style(app, 12))
+    next_step = ft.ElevatedButton("Continue", width = tools.adapt_dimensions(app, "w", 20), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
     app.add_element(app.alignment("cspace_between",
                         app.alignment("rcenter", ft.Text("Nice! Now we need to get information for\nsetting up individual goals...", style = tools.primary_text_style(app, 24), text_align = ft.TextAlign.CENTER)),
-                        app.alignment("rcenter", height),
-                        app.alignment("rcenter", ft.ElevatedButton("Select your birthday", style = tools.main_button_style(app, 14))),
+                        app.alignment("rcenter", height_label),
+                        app.alignment("rcenter", height_value, height),
+                        app.alignment("rcenter", app.alignment("ccenter", weight, weight_message)),
+                        app.alignment("rcenter", app.alignment("ccenter", gender, gender_message)),
                         app.alignment("rcenter", next_step),
                         app.alignment("rspace_between", ft.IconButton(icon = ft.Icons.ARROW_BACK, style = tools.additional_button_style(app, 10))),
                         height = tools.adapt_dimensions(app, "h", 70), width = tools.adapt_dimensions(app, "w", 100)))
+
+    WEIGHT_MIN = 20.0
+    WEIGHT_MAX = 300.0
+
+    def on_weight_change():
+        val = weight.value
+
+        if val.count(".") > 1:
+            first_dot = val.find(".")
+            val = val[:first_dot + 1] + val[first_dot + 1:].replace(".", "")
+
+        if "." in val:
+            whole, _, frac = val.partition(".")
+            val = whole + "." + frac[:1]
+
+        if val != weight.value:
+            weight.value = val
+            weight.update()
+
+        check()
+
     def check():
-        pass
+        height_value.value = f"{int(height.value)} cm"
+        weight_message.value = ""
+        gender_message.value = ""
+        weight_val = weight.value.strip() if weight.value else ""
+
+        if not weight_val or weight_val == ".":
+            weight_message.value = "Please enter a valid weight"
+        else:
+            try:
+                num = float(weight_val)
+                if not (WEIGHT_MIN <= num <= WEIGHT_MAX):
+                    weight_message.value = f"Enter a weight between {WEIGHT_MIN:.0f} and {WEIGHT_MAX:.0f} kg"
+                elif not gender.value:
+                    gender_message.value = "Please select a gender"
+                else:
+                    next_step.disabled = False
+                    next_step.style = tools.main_button_style(app, 14)
+            except ValueError:
+                weight_message.value = "Please enter a valid weight"
     
     def next_page():
         app.navigate("register_3")
