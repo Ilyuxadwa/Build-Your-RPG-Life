@@ -4,6 +4,7 @@ import flet as ft
 import info
 import main
 import utils
+import register_manager
 
 def register_page_1_ui(app):
     nickname = tools.entry(app, 14, label="Nickname", hint_text="How can we call you?", on_change=lambda: check())
@@ -13,6 +14,10 @@ def register_page_1_ui(app):
     date_message = ft.Text(f"Please select your birthday", style = tools.secondary_text_style(app, 12))
 
     next_step = ft.ElevatedButton("Continue", width = tools.adapt_dimensions(app, "w", 20), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
+
+    if register_manager.get_first_part()[0] != "" and register_manager.get_first_part()[1] != None:
+        nickname.value = register_manager.get_first_part()[0]
+        date_picker.value = register_manager.get_first_part()[1]
 
     app.add_element(app.alignment("cspace_between",
                         app.alignment("rcenter", ft.Text("Hi! To begin using this app\nwe need to meet you!", style = tools.primary_text_style(app, 24), text_align = ft.TextAlign.CENTER)),
@@ -31,6 +36,7 @@ def register_page_1_ui(app):
     
 
     def next_page():
+        register_manager.set_first_part(nickname.value, date_picker.value)
         app.navigate("register_2")
 
 def register_page_2_ui(app):
@@ -55,6 +61,13 @@ def register_page_2_ui(app):
     gender = tools.radio_group(app, tools.radio(app, 12, label="Male", value="male", width=tools.adapt_dimensions(app, "w", 10)), tools.radio(app, 12, label="Female", value="female", width=tools.adapt_dimensions(app, "w", 10)), on_change=lambda: check())
     gender_message = ft.Text("", style = tools.secondary_text_style(app, 12))
     next_step = ft.ElevatedButton("Continue", width = tools.adapt_dimensions(app, "w", 20), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
+    
+    if register_manager.get_second_part()[0] != 0 and register_manager.get_second_part()[1] != 0.0 and register_manager.get_second_part()[2] != "":
+        height.value = register_manager.get_second_part()[0]
+        weight.value = register_manager.get_second_part()[1]
+        gender.value = register_manager.get_second_part()[2]
+        height_value.value = f"{int(height.value)} cm"
+
     app.add_element(app.alignment("cspace_between",
                         app.alignment("rcenter", ft.Text("Nice! Now we need to get information for\nsetting up individual goals...", style = tools.primary_text_style(app, 24), text_align = ft.TextAlign.CENTER)),
                         app.alignment("rcenter", height_label),
@@ -62,7 +75,7 @@ def register_page_2_ui(app):
                         app.alignment("rcenter", app.alignment("ccenter", weight, weight_message)),
                         app.alignment("rcenter", app.alignment("ccenter", gender, gender_message)),
                         app.alignment("rcenter", next_step),
-                        app.alignment("rspace_between", ft.IconButton(icon = ft.Icons.ARROW_BACK, style = tools.additional_button_style(app, 10))),
+                        app.alignment("rspace_between", ft.IconButton(icon = ft.Icons.ARROW_BACK, style = tools.additional_button_style(app, 10), on_click=lambda: app.navigate("register_1"))),
                         height = tools.adapt_dimensions(app, "h", 70), width = tools.adapt_dimensions(app, "w", 100)))
 
     WEIGHT_MIN = 20.0
@@ -107,7 +120,9 @@ def register_page_2_ui(app):
                 weight_message.value = "Please enter a valid weight"
     
     def next_page():
+        register_manager.set_second_part(height.value, weight.value, gender.value)
         app.navigate("register_3")
+
 
 
 def main_ui(app):
