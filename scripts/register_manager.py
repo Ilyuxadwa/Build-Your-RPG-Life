@@ -1,7 +1,7 @@
 from datetime import date
 
 name = ""
-birthday = date()
+birthday = date(1999, 12, 31)
 
 height = 0
 weight = 0.0

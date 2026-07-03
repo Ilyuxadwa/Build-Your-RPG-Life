@@ -1,0 +1,13 @@
+{
+    "name": {
+        "multiliers": {
+
+        },
+        
+        "additional_options": [
+            "name": {
+                "multiplier1": 0.2
+            }
+        ]
+    }
+}

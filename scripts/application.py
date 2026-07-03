@@ -123,6 +123,40 @@ def register_page_2_ui(app):
         register_manager.set_second_part(height.value, weight.value, gender.value)
         app.navigate("register_3")
 
+def register_page_3_ui(app):
+    activity_label = ft.Text("How can you evaluate your activeness during last month?", style = tools.primary_text_style(app, 16))
+    activity_value = ft.Text("50%", style = tools.secondary_text_style(app, 16), width = tools.adapt_dimensions(app, "w", 10), text_align = ft.TextAlign.END)
+    activity = tools.slider(app, min=0, max=100, divisions = 100, value = 50, label = "Activity", on_change=lambda: check())
+
+    preferences=[]
+    chosen_preferences = []
+    preferences_label = ft.Text("Your preferences", style = tools.primary_text_style(app, 16))
+    preferences_list = ft.Container(bgcolor = app.theme.additional_color, border_radius = 10, width = tools.adapt_dimensions(app, "w", 60), height = tools.adapt_dimensions(app, "h", 20), padding = 10, content = ft.Column([ft.Text("No preferences added yet", style = tools.secondary_text_style(app, 12))], spacing = 10))
+    next_step = ft.ElevatedButton("Finish", width = tools.adapt_dimensions(app, "w", 60), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
+    
+    app.add_element(app.alignment("cspace_between",
+                        app.alignment("rcenter", ft.Text("The last, but not least...\n We also need to know more about your skills, preferences and so on...!", style = tools.primary_text_style(app, 24), text_align = ft.TextAlign.CENTER)),
+                        app.alignment("rcenter", activity_label),
+                        app.alignment("rcenter", activity_value, activity),
+                        app.alignment("rcenter", preferences_label),
+                        app.alignment("rcenter", preferences_list),
+                        app.alignment("rcenter", next_step),
+                        app.alignment("rspace_between", ft.IconButton(icon = ft.Icons.ARROW_BACK, style = tools.additional_button_style(app, 10), on_click=lambda: app.navigate("register_1"))),
+                        height = tools.adapt_dimensions(app, "h", 70), width = tools.adapt_dimensions(app, "w", 100)))
+
+    def preferences_click(name):
+        if name in chosen_preferences:
+            chosen_preferences.remove(name)
+        else:
+            chosen_preferences.append(name)
+
+    def check():
+        activity_value.value = f"{int(activity.value)}%"
+    
+    def next_page():
+        pass
+        #register_manager.set_thirds_part(height.value, weight.value, gender.value)
+
 
 
 def main_ui(app):
@@ -183,5 +217,6 @@ def build():
     app.add_page("main_page", main_ui)
     app.add_page("register_1", register_page_1_ui)
     app.add_page("register_2", register_page_2_ui)
+    app.add_page("register_3", register_page_3_ui)
     app.set_async_next(main.start)
     app.run(info.APP_NAME)
