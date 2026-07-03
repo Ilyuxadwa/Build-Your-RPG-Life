@@ -128,10 +128,73 @@ def register_page_3_ui(app):
     activity_value = ft.Text("50%", style = tools.secondary_text_style(app, 16), width = tools.adapt_dimensions(app, "w", 10), text_align = ft.TextAlign.END)
     activity = tools.slider(app, min=0, max=100, divisions = 100, value = 50, label = "Activity", on_change=lambda: check())
 
-    preferences=[]
+
+    preferences=utils.get_available_preferences()
     chosen_preferences = []
-    preferences_label = ft.Text("Your preferences", style = tools.primary_text_style(app, 16))
-    preferences_list = ft.Container(bgcolor = app.theme.additional_color, border_radius = 10, width = tools.adapt_dimensions(app, "w", 60), height = tools.adapt_dimensions(app, "h", 20), padding = 10, content = ft.Column([ft.Text("No preferences added yet", style = tools.secondary_text_style(app, 12))], spacing = 10))
+    preferences_label = ft.Text("Select your preferences", style = tools.primary_text_style(app, 16))
+
+    preferences_row = ft.Row(
+        controls=[
+            ft.ElevatedButton(
+                name, style = tools.additional_button_style(app, 12),
+                on_click=lambda e, name=name: preferences_click(e, name),
+            )
+            for name in preferences.keys()
+        ],
+        wrap=True,
+        spacing=10,
+        run_spacing=10,
+    )
+
+    preferences_column = ft.Column(
+        controls=[preferences_row],
+        scroll=ft.ScrollMode.AUTO,
+        spacing=10,
+    )
+
+    preferences_list = ft.Container(
+        bgcolor=app.theme.additional_color,
+        border_radius=10,
+        width=tools.adapt_dimensions(app, "w", 60),
+        height=tools.adapt_dimensions(app, "h", 20),
+        padding=10,
+        content=preferences_column,
+    )
+
+
+    skills=utils.get_available_skills()
+    chosen_skills = []
+    skills_label = ft.Text("Select your skills", style = tools.primary_text_style(app, 16))
+
+    skills_row = ft.Row(
+        controls=[
+            ft.ElevatedButton(
+                name, style = tools.additional_button_style(app, 12),
+                on_click=lambda e, name=name: skill_click(e, name),
+            )
+            for name in skills.keys()
+        ],
+        wrap=True,
+        spacing=10,
+        run_spacing=10,
+    )
+
+    skills_column = ft.Column(
+        controls=[skills_row],
+        scroll=ft.ScrollMode.AUTO,
+        spacing=10,
+    )
+
+    skills_list = ft.Container(
+        bgcolor=app.theme.additional_color,
+        border_radius=10,
+        width=tools.adapt_dimensions(app, "w", 60),
+        height=tools.adapt_dimensions(app, "h", 20),
+        padding=10,
+        content=skills_column,
+    )
+
+
     next_step = ft.ElevatedButton("Finish", width = tools.adapt_dimensions(app, "w", 60), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
     
     app.add_element(app.alignment("cspace_between",
@@ -140,15 +203,30 @@ def register_page_3_ui(app):
                         app.alignment("rcenter", activity_value, activity),
                         app.alignment("rcenter", preferences_label),
                         app.alignment("rcenter", preferences_list),
+                        app.alignment("rcenter", skills_label),
+                        app.alignment("rcenter", skills_list),
                         app.alignment("rcenter", next_step),
                         app.alignment("rspace_between", ft.IconButton(icon = ft.Icons.ARROW_BACK, style = tools.additional_button_style(app, 10), on_click=lambda: app.navigate("register_1"))),
                         height = tools.adapt_dimensions(app, "h", 70), width = tools.adapt_dimensions(app, "w", 100)))
 
-    def preferences_click(name):
+    def preferences_click(e, name):
         if name in chosen_preferences:
             chosen_preferences.remove(name)
+            e.control.style = tools.additional_button_style(app, 12)
         else:
             chosen_preferences.append(name)
+            e.control.style = tools.main_button_style(app, 16)
+        e.control.update()
+
+
+    def skill_click(e, name):
+        if name in chosen_skills:
+            chosen_skills.remove(name)
+            e.control.style = tools.additional_button_style(app, 12)
+        else:
+            chosen_skills.append(name)
+            e.control.style = tools.main_button_style(app, 16)
+        e.control.update()
 
     def check():
         activity_value.value = f"{int(activity.value)}%"

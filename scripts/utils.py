@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime, date
 
@@ -19,9 +20,24 @@ def get_task():
 def get_group():
     pass
 
+
+
 def get_latest():
     return date(date.today().year-12, date.today().month, date.today().day)
 
 def get_earliest():
     return date(date.today().year-100, date.today().month, date.today().day)
-    
+
+
+
+def get_available_skills():
+    skills = []
+    with open("config/skills.json", "r") as f:
+        skills = json.load(f)
+    return skills
+
+def get_available_preferences():
+    prefs = []
+    with open("config/preferences.json", "r") as f:
+        prefs = json.load(f)
+    return prefs
