@@ -1,0 +1,13 @@
+{
+    "Alone": {
+        "multiplier1": 1.0
+    },
+
+    "With partner": {
+        "multiplier1": 1.0
+    },
+
+    "Married": {
+        "multiplier1": 1.0
+    }
+}

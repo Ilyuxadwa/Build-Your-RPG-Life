@@ -41,3 +41,15 @@ def get_available_preferences():
     with open("config/preferences.json", "r") as f:
         prefs = json.load(f)
     return prefs
+
+def get_roles():
+    roles = {}
+    with open("config/roles.json", "r") as f:
+        roles = json.load(f)
+    return roles
+
+def get_statuses():
+    statuses = {}
+    with open("config/statuses.json", "r") as f:
+        statuses = json.load(f)
+    return statuses

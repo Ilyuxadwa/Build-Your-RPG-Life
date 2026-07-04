@@ -13,16 +13,24 @@ def register_page_1_ui(app):
     date_picker = ft.DatePicker(last_date = utils.get_latest(), first_date = utils.get_earliest(), on_change=lambda: check())
     date_message = ft.Text(f"Please select your birthday", style = tools.secondary_text_style(app, 12))
 
+    role = tools.dropdown(app, 12, label="Role", options=[tools.doption(app, option) for option in utils.get_roles().keys()], on_select=lambda: check())
+    role_message = ft.Text("", style = tools.secondary_text_style(app, 12))
+    status = tools.dropdown(app, 12, label="Status", options=[tools.doption(app, option) for option in utils.get_statuses().keys()], on_select=lambda: check())
+    status_message = ft.Text("", style = tools.secondary_text_style(app, 12))
+
     next_step = ft.ElevatedButton("Continue", width = tools.adapt_dimensions(app, "w", 20), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
 
-    if register_manager.get_first_part()[0] != "" and register_manager.get_first_part()[1] != None:
-        nickname.value = register_manager.get_first_part()[0]
-        date_picker.value = register_manager.get_first_part()[1]
+    nickname.value = register_manager.get_first_part()[0]
+    date_picker.value = register_manager.get_first_part()[1]
+    role.value = register_manager.get_first_part()[2]
+    status.value = register_manager.get_first_part()[3]
 
     app.add_element(app.alignment("cspace_between",
                         app.alignment("rcenter", ft.Text("Hi! To begin using this app\nwe need to meet you!", style = tools.primary_text_style(app, 24), text_align = ft.TextAlign.CENTER)),
                         app.alignment("rcenter", app.alignment("ccenter", nickname, nickname_message)),
                         app.alignment("rcenter", app.alignment("ccenter", ft.ElevatedButton("Select your birthday", style = tools.main_button_style(app, 14), on_click=lambda : app.page.show_dialog(date_picker)), date_message)),
+                        app.alignment("rcenter", app.alignment("ccenter", role, role_message)),
+                        app.alignment("rcenter", app.alignment("ccenter", status, status_message)),
                         app.alignment("rcenter", next_step),
                         height = tools.adapt_dimensions(app, "h", 70), width = tools.adapt_dimensions(app, "w", 100)))
     def check():
@@ -30,13 +38,13 @@ def register_page_1_ui(app):
         nickname_message.value = "" if nickname_valid else "Nickname must be between 3 and 20 characters"
         
         date_message.value = f"Your birthday is: {date_picker.value:%Y-%m-%d}" if date_picker.value else "Please select your birthday"
-        if nickname_valid and date_picker.value:
+        if nickname_valid and date_picker.value and role.value and status.value:
             next_step.disabled = False
             next_step.style = tools.main_button_style(app, 14)
     
 
     def next_page():
-        register_manager.set_first_part(nickname.value, date_picker.value)
+        register_manager.set_first_part(nickname.value, date_picker.value, role.value, status.value)
         app.navigate("register_2")
 
 def register_page_2_ui(app):

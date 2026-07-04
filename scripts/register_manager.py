@@ -1,20 +1,23 @@
-from datetime import date
+import utils
 
 name = ""
-birthday = date(1999, 12, 31)
+birthday = utils.get_latest()
+role = ""
+status = ""
 
 height = 0
 weight = 0.0
 gender = ""
 
-def set_first_part(name_input, birthday_input):
-    global name, birthday
+def set_first_part(name_input, birthday_input, role_input, status_input):
+    global name, birthday, role, status
     name = name_input
     birthday = birthday_input
+    role = role_input
+    status = status_input
 
 def get_first_part():
-    return name, birthday
-
+    return name, birthday, role, status
 
 def set_second_part(height_input, weight_input, gender_input):
     global height, weight, gender
