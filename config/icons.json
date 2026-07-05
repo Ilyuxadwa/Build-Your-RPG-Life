@@ -1,3 +1,7 @@
 {
-    
+    "birthday": "CALENDAR_MONTH_ROUNDED",
+    "continue_1": "ARROW_FORWARD_IOS_ROUNDED",
+    "continue_2": "DOUBLE_ARROW_ROUNDED",
+    "finish": "ROCKET_LAUNCH_ROUNDED",
+    "return": "ARROW_BACK_ROUNDED"
 }

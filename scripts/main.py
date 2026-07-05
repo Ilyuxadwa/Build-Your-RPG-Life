@@ -22,9 +22,10 @@ async def start(app):
         user = User(data["name"], data["birthday"], data["role"], data["status"], data["weight"], data["height"], data["gender"], data["lifestyle_activeness"], data["preferences"], data["skills"])
     else:
         await app.save("registerd", False)
-        app.navigate("register_3")
+        app.navigate("register_1")
 
 async def set_player(app):
+    pass
 
 async def finish_registration(app):
     user_data = register_manager.finish()

@@ -18,7 +18,7 @@ def register_page_1_ui(app):
     status = tools.dropdown(app, 12, label="Status", options=[tools.doption(app, option) for option in utils.get_statuses().keys()], on_select=lambda: check())
     status_message = ft.Text("", style = tools.secondary_text_style(app, 12))
 
-    next_step = ft.ElevatedButton("Continue", width = tools.adapt_dimensions(app, "w", 20), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
+    next_step = ft.ElevatedButton("Continue", icon = utils.icon("continue_1"), width = tools.adapt_dimensions(app, "w", 20), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
 
     nickname.value = register_manager.get_first_part()[0]
     date_picker.value = register_manager.get_first_part()[1]
@@ -28,13 +28,11 @@ def register_page_1_ui(app):
     app.add_element(app.alignment("cspace_between",
                         app.alignment("rcenter", ft.Text("Hi! To begin using this app\nwe need to meet you!", style = tools.primary_text_style(app, 24), text_align = ft.TextAlign.CENTER)),
                         app.alignment("rcenter", app.alignment("ccenter", nickname, nickname_message)),
-                        app.alignment("rcenter", app.alignment("ccenter", ft.ElevatedButton("Select your birthday", style = tools.main_button_style(app, 14), on_click=lambda : app.page.show_dialog(date_picker)), date_message)),
+                        app.alignment("rcenter", app.alignment("ccenter", ft.ElevatedButton("Select your birthday", icon = utils.icon("birthday"), style = tools.main_button_style(app, 14), on_click=lambda : app.page.show_dialog(date_picker)), date_message)),
                         app.alignment("rcenter", app.alignment("ccenter", role, role_message)),
                         app.alignment("rcenter", app.alignment("ccenter", status, status_message)),
                         app.alignment("rcenter", next_step),
                         width = tools.adapt_dimensions(app, "w", 100)))
-    
-    check()
 
     def check():
         nickname_valid = len(nickname.value) > 3 and len(nickname.value) < 20
@@ -49,6 +47,8 @@ def register_page_1_ui(app):
     def next_page():
         register_manager.set_first_part(nickname.value, date_picker.value, role.value, status.value)
         app.navigate("register_2")
+
+    check()
 
 def register_page_2_ui(app):
     height_label = ft.Text("Your height (in cm)", style = tools.primary_text_style(app, 16))
@@ -71,7 +71,7 @@ def register_page_2_ui(app):
     weight_message = ft.Text("", style = tools.secondary_text_style(app, 12))
     gender = tools.radio_group(app, tools.radio(app, 12, label="Male", value="male", width=tools.adapt_dimensions(app, "w", 10)), tools.radio(app, 12, label="Female", value="female", width=tools.adapt_dimensions(app, "w", 10)), on_change=lambda: check())
     gender_message = ft.Text("", style = tools.secondary_text_style(app, 12))
-    next_step = ft.ElevatedButton("Continue", width = tools.adapt_dimensions(app, "w", 20), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
+    next_step = ft.ElevatedButton("Continue", icon = utils.icon("continue_2"), width = tools.adapt_dimensions(app, "w", 20), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
     
     if register_manager.get_second_part()[0] != 0 and register_manager.get_second_part()[1] != 0.0 and register_manager.get_second_part()[2] != "":
         height.value = register_manager.get_second_part()[0]
@@ -86,13 +86,11 @@ def register_page_2_ui(app):
                         app.alignment("rcenter", app.alignment("ccenter", weight, weight_message)),
                         app.alignment("rcenter", app.alignment("ccenter", gender, gender_message)),
                         app.alignment("rcenter", next_step),
-                        app.alignment("rspace_between", ft.IconButton(icon = ft.Icons.ARROW_BACK, style = tools.additional_button_style(app, 10), on_click=lambda: app.navigate("register_1"))),
+                        app.alignment("rspace_between", ft.IconButton(icon = utils.icon("return"), style = tools.additional_button_style(app, 10), on_click=lambda: app.navigate("register_1"))),
                         width = tools.adapt_dimensions(app, "w", 100)))
 
     WEIGHT_MIN = 20.0
     WEIGHT_MAX = 300.0
-
-    check()
 
     def on_weight_change():
         val = weight.value
@@ -135,6 +133,8 @@ def register_page_2_ui(app):
     def next_page():
         register_manager.set_second_part(height.value, weight.value, gender.value)
         app.navigate("register_3")
+
+    check()
 
 def register_page_3_ui(app):
     activity_label = ft.Text("How can you evaluate your activeness during last month?", style = tools.primary_text_style(app, 16))
@@ -210,7 +210,7 @@ def register_page_3_ui(app):
     terms_and_conditions_checkbox = tools.checkbox(app, 12, label="I agree to the terms and conditions", on_change=lambda: check())
     data_agreement_checkbox = tools.checkbox(app, 12, label="I allow to use my data", on_change=lambda: check())
 
-    next_step = ft.ElevatedButton("Finish", width = tools.adapt_dimensions(app, "w", 60), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
+    next_step = ft.ElevatedButton("Finish", icon=utils.icon("finish"), width = tools.adapt_dimensions(app, "w", 60), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
     
     app.add_element(app.alignment("cspace_between",
                         app.alignment("rcenter", ft.Text("The last, but not least...\n We also need to know more about your skills, preferences and so on...!", style = tools.primary_text_style(app, 24), text_align = ft.TextAlign.CENTER)),
@@ -223,10 +223,8 @@ def register_page_3_ui(app):
                         app.alignment("rcenter", terms_and_conditions_checkbox),
                         app.alignment("rcenter", data_agreement_checkbox),
                         app.alignment("rcenter", next_step),
-                        app.alignment("rspace_between", ft.IconButton(icon = ft.Icons.ARROW_BACK, style = tools.additional_button_style(app, 10), on_click=lambda: app.navigate("register_2"))),
+                        app.alignment("rspace_between", ft.IconButton(icon = utils.icon("return"), style = tools.additional_button_style(app, 10), on_click=lambda: app.navigate("register_2"))),
                         width = tools.adapt_dimensions(app, "w", 100)))
-
-    check()
 
     def preferences_click(e, name):
         if name in chosen_preferences:
@@ -258,6 +256,7 @@ def register_page_3_ui(app):
         register_manager.set_thirds_part(chosen_preferences, chosen_skills)
         app.page.run_task(main.finish_registration, app)
 
+    check()
 
 
 def main_ui(app):
