@@ -33,6 +33,9 @@ def register_page_1_ui(app):
                         app.alignment("rcenter", app.alignment("ccenter", status, status_message)),
                         app.alignment("rcenter", next_step),
                         width = tools.adapt_dimensions(app, "w", 100)))
+    
+    check()
+
     def check():
         nickname_valid = len(nickname.value) > 3 and len(nickname.value) < 20
         nickname_message.value = "" if nickname_valid else "Nickname must be between 3 and 20 characters"
@@ -89,6 +92,8 @@ def register_page_2_ui(app):
     WEIGHT_MIN = 20.0
     WEIGHT_MAX = 300.0
 
+    check()
+
     def on_weight_change():
         val = weight.value
 
@@ -133,8 +138,8 @@ def register_page_2_ui(app):
 
 def register_page_3_ui(app):
     activity_label = ft.Text("How can you evaluate your activeness during last month?", style = tools.primary_text_style(app, 16))
-    activity_value = ft.Text("50%", style = tools.secondary_text_style(app, 16), width = tools.adapt_dimensions(app, "w", 10), text_align = ft.TextAlign.END)
-    activity = tools.slider(app, min=0, max=100, divisions = 100, value = 50, label = "Activity", on_change=lambda: check())
+    activity_value = ft.Text("0%", style = tools.secondary_text_style(app, 16), width = tools.adapt_dimensions(app, "w", 10), text_align = ft.TextAlign.END)
+    activity = tools.slider(app, min=0, max=100, divisions = 100, value = 0, label = "Activity", on_change=lambda: check())
 
 
     preferences=utils.get_available_preferences()
@@ -221,6 +226,8 @@ def register_page_3_ui(app):
                         app.alignment("rspace_between", ft.IconButton(icon = ft.Icons.ARROW_BACK, style = tools.additional_button_style(app, 10), on_click=lambda: app.navigate("register_2"))),
                         width = tools.adapt_dimensions(app, "w", 100)))
 
+    check()
+
     def preferences_click(e, name):
         if name in chosen_preferences:
             chosen_preferences.remove(name)
@@ -249,6 +256,7 @@ def register_page_3_ui(app):
     
     def next_page():
         register_manager.set_thirds_part(chosen_preferences, chosen_skills)
+        app.page.run_task(main.finish_registration, app)
 
 
 

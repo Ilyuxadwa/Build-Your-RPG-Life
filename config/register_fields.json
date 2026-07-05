@@ -1,0 +1,14 @@
+{
+    "1.0.0": [
+        "name",
+        "birthday",
+        "role",
+        "status",
+        "height",
+        "weight",
+        "gender",
+        "lifestyle_activeness",
+        "preferences",
+        "skills"
+    ]
+}

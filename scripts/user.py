@@ -5,14 +5,14 @@ from datetime import datetime, date
 class User:
     name: str
     birthday: date
+    role: str
+    status: str
     weight: float
     height: int
     gender: str
-    role: str
     lifestyle_activeness: int
-    status: str
-    preferences: dict
-    skills: dict
+    preferences: list
+    skills: list
 
     def get_age(self):
         today = date.today()
