@@ -32,7 +32,7 @@ def register_page_1_ui(app):
                         app.alignment("rcenter", app.alignment("ccenter", role, role_message)),
                         app.alignment("rcenter", app.alignment("ccenter", status, status_message)),
                         app.alignment("rcenter", next_step),
-                        height = tools.adapt_dimensions(app, "h", 70), width = tools.adapt_dimensions(app, "w", 100)))
+                        width = tools.adapt_dimensions(app, "w", 100)))
     def check():
         nickname_valid = len(nickname.value) > 3 and len(nickname.value) < 20
         nickname_message.value = "" if nickname_valid else "Nickname must be between 3 and 20 characters"
@@ -84,7 +84,7 @@ def register_page_2_ui(app):
                         app.alignment("rcenter", app.alignment("ccenter", gender, gender_message)),
                         app.alignment("rcenter", next_step),
                         app.alignment("rspace_between", ft.IconButton(icon = ft.Icons.ARROW_BACK, style = tools.additional_button_style(app, 10), on_click=lambda: app.navigate("register_1"))),
-                        height = tools.adapt_dimensions(app, "h", 70), width = tools.adapt_dimensions(app, "w", 100)))
+                        width = tools.adapt_dimensions(app, "w", 100)))
 
     WEIGHT_MIN = 20.0
     WEIGHT_MAX = 300.0
@@ -139,7 +139,7 @@ def register_page_3_ui(app):
 
     preferences=utils.get_available_preferences()
     chosen_preferences = []
-    preferences_label = ft.Text("Select your preferences", style = tools.primary_text_style(app, 16))
+    preferences_label = ft.Text("Select your preferences (at least 3)", style = tools.primary_text_style(app, 16))
 
     preferences_row = ft.Row(
         controls=[
@@ -172,7 +172,7 @@ def register_page_3_ui(app):
 
     skills=utils.get_available_skills()
     chosen_skills = []
-    skills_label = ft.Text("Select your skills", style = tools.primary_text_style(app, 16))
+    skills_label = ft.Text("Select your skills (at least 3)", style = tools.primary_text_style(app, 16))
 
     skills_row = ft.Row(
         controls=[
@@ -202,6 +202,8 @@ def register_page_3_ui(app):
         content=skills_column,
     )
 
+    terms_and_conditions_checkbox = tools.checkbox(app, 12, label="I agree to the terms and conditions", on_change=lambda: check())
+    data_agreement_checkbox = tools.checkbox(app, 12, label="I allow to use my data", on_change=lambda: check())
 
     next_step = ft.ElevatedButton("Finish", width = tools.adapt_dimensions(app, "w", 60), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
     
@@ -213,9 +215,11 @@ def register_page_3_ui(app):
                         app.alignment("rcenter", preferences_list),
                         app.alignment("rcenter", skills_label),
                         app.alignment("rcenter", skills_list),
+                        app.alignment("rcenter", terms_and_conditions_checkbox),
+                        app.alignment("rcenter", data_agreement_checkbox),
                         app.alignment("rcenter", next_step),
-                        app.alignment("rspace_between", ft.IconButton(icon = ft.Icons.ARROW_BACK, style = tools.additional_button_style(app, 10), on_click=lambda: app.navigate("register_1"))),
-                        height = tools.adapt_dimensions(app, "h", 70), width = tools.adapt_dimensions(app, "w", 100)))
+                        app.alignment("rspace_between", ft.IconButton(icon = ft.Icons.ARROW_BACK, style = tools.additional_button_style(app, 10), on_click=lambda: app.navigate("register_2"))),
+                        width = tools.adapt_dimensions(app, "w", 100)))
 
     def preferences_click(e, name):
         if name in chosen_preferences:
@@ -238,10 +242,13 @@ def register_page_3_ui(app):
 
     def check():
         activity_value.value = f"{int(activity.value)}%"
+        if not len(chosen_preferences) < 3 and not len(chosen_skills) < 3 and terms_and_conditions_checkbox.value and data_agreement_checkbox.value:
+            next_step.disabled = False
+            next_step.style = tools.main_button_style(app, 14)
+
     
     def next_page():
-        pass
-        #register_manager.set_thirds_part(height.value, weight.value, gender.value)
+        register_manager.set_thirds_part(chosen_preferences, chosen_skills)
 
 
 

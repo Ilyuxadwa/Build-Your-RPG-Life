@@ -9,6 +9,9 @@ height = 0
 weight = 0.0
 gender = ""
 
+preferences = []
+skills = []
+
 def set_first_part(name_input, birthday_input, role_input, status_input):
     global name, birthday, role, status
     name = name_input
@@ -27,3 +30,11 @@ def set_second_part(height_input, weight_input, gender_input):
 
 def get_second_part():
     return height, weight, gender
+
+def set_thirds_part(preferences_input, skills_input):
+    global preferences, skills
+    preferences = preferences_input
+    skills = skills_input
+
+def get_thirds_part():
+    return preferences, skills

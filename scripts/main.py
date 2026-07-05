@@ -11,7 +11,7 @@ async def start(app):
         pass
     else:
         await app.save("registerd", False)
-        app.navigate("register_1")
+        app.navigate("register_3")
 
 
 def load_tasks():
