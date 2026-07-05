@@ -8,13 +8,13 @@ class Player:
 
     user: User
     
-    daily_challanges: list[DailyGoal]
-    weekly_challanges: list[WeeklyGoal]
+    daily_challenges: list[DailyGoal]
+    weekly_challenges: list[WeeklyGoal]
     custom_goals: list[CustomGoal]
 
     # Stats
     experience = 0 # Gain/lose by actions
-    level = 1 # When experiece = required amount -> +1, experience = 0
+    level = 1 # When experience = required amount -> +1, experience = 0
     health = 100 # Calculated by a lot of factors
     creativity = 0 # Gain/lose by actions
     intelligence = 0 # Gain/lose by actions

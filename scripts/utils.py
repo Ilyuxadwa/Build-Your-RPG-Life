@@ -9,9 +9,9 @@ with open("config/icons.json", "r", encoding="utf-8") as f:
 
 def parse_tasks():
     parsed = {}
-    groups = os.listdir("actions/tasks/")
+    groups = os.listdir("content/tasks/")
     for group in groups:
-        files = os.listdir("actions/tasks/"+group)
+        files = os.listdir("content/tasks/"+group)
         for thing in files:
             if thing.endswith(".json"):
                 get_task(thing)
@@ -23,6 +23,10 @@ def get_task():
     pass
 
 def get_group():
+    pass
+
+
+def parse_goals(daily: dict, weekly: dict, custom: dict):
     pass
 
 

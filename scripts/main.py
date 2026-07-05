@@ -8,20 +8,30 @@ import register_manager
 tasks = {"group": {"name": {"option1": {"time_delay", "bonuses"}}} ,"group2": {"name": {"option1": {"time_delay", "bonuses"}}}, "group3": {"name": {"option1": {"time_delay", "bonuses"}}}}
 already_done = {} # {name: time_left}
 
-user = None
 player = None
 
 
 
 async def start(app):
-    global user
+    global player
+
     registered = await app.load("registered")
     require_new_fields = utils.check_registration(await app.load("registered_version"))
+
     if registered and not require_new_fields:
-        data = utils.get_dict(await app.load("reg_data"))
-        user = User(data["name"], data["birthday"], data["role"], data["status"], data["weight"], data["height"], data["gender"], data["lifestyle_activeness"], data["preferences"], data["skills"])
+        user_data = utils.get_dict(await app.load("reg_data"))
+        raw_daily_goals = utils.get_dict(await app.load("daily_goals"))
+        raw_weekly_goals = utils.get_dict(await app.load("weekly_goals"))
+        raw_custom_goals = utils.get_dict(await app.load("custom_goals"))
+        
+        user = User(user_data["name"], user_data["birthday"], user_data["role"], user_data["status"], user_data["weight"], user_data["height"], user_data["gender"], user_data["lifestyle_activeness"], user_data["preferences"], user_data["skills"])
+        
+        goals = utils.parse_goals(raw_daily_goals, raw_weekly_goals, raw_custom_goals)
+
+        player = Player(user, goals[0], goals[1], goals[2], [])
+
     else:
-        await app.save("registerd", False)
+        await app.save("registered", False)
         app.navigate("register_1")
 
 async def set_player(app):
