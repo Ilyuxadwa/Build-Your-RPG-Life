@@ -72,3 +72,29 @@ def water(weight: float, age: int, gender: str) -> dict:
     final_water_ml = int(round(water_ml / 50.0) * 50)
 
     return final_water_ml
+
+def sleep(age: int) -> dict:
+    if age <= 13:
+        min_hours, max_hours = 9.0, 11.0
+        stage = "School Age"
+    elif age <= 17:
+        min_hours, max_hours = 8.0, 10.0
+        stage = "Teen"
+    elif age <= 64:
+        min_hours, max_hours = 7.0, 9.0
+        stage = "Adult"
+    else:
+        min_hours, max_hours = 7.0, 8.0
+        stage = "Older Adult"
+
+    target_hours = round((min_hours + max_hours) / 2, 1)
+    target_minutes = int(round(target_hours * 60 / 15) * 15)
+
+    return {
+        "recommended_range": f"{min_hours} - {max_hours}",
+        "min_hours": min_hours,
+        "max_hours": max_hours,
+        "target_hours": target_hours,
+        "target_minutes": target_minutes,
+        "life_stage": stage
+    }
