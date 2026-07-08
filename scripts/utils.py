@@ -26,10 +26,14 @@ def get_group():
     pass
 
 
-def parse_goals(daily: dict, weekly: dict, custom: dict):
+def parse_goals():
     pass
 
+def save_goals_progress(daily: list, weekly: list, custom: list):
+    pass
 
+def load_goals_progress(daily: dict, weekly: dict, custom: dict):
+    pass
 
 def check_registration(version):
     if version is None:
