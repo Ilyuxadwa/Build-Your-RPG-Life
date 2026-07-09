@@ -29,7 +29,7 @@ async def start(app):
         goals = utils.parse_goals(raw_daily_goals, raw_weekly_goals, raw_custom_goals)
 
         player = Player(user, goals[0], goals[1], goals[2], [])
-
+        
     else:
         await app.save("registered", False)
         app.navigate("register_1")

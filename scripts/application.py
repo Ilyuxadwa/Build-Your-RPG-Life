@@ -18,10 +18,11 @@ def register_page_1_ui(app):
     status = tools.dropdown(app, 12, label="Status", options=[tools.doption(app, option) for option in utils.get_statuses().keys()], on_select=lambda: check())
     status_message = ft.Text("", style = tools.secondary_text_style(app, 12))
 
-    next_step = ft.ElevatedButton("Continue", icon = utils.icon("continue_1"), width = tools.adapt_dimensions(app, "w", 20), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
+    next_step = ft.ElevatedButton("Continue", icon = utils.icon("continue_1"), width = tools.adapt_dimensions(app, "w", 40), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
 
     nickname.value = register_manager.get_first_part()[0]
-    date_picker.value = register_manager.get_first_part()[1]
+    if register_manager.get_first_part()[1]:
+        date_picker.value = register_manager.get_first_part()[1]
     role.value = register_manager.get_first_part()[2]
     status.value = register_manager.get_first_part()[3]
 
@@ -37,8 +38,7 @@ def register_page_1_ui(app):
     def check():
         nickname_valid = len(nickname.value) > 3 and len(nickname.value) < 20
         nickname_message.value = "" if nickname_valid else "Nickname must be between 3 and 20 characters"
-        
-        date_message.value = f"Your birthday is: {date_picker.value:%Y-%m-%d}" if date_picker.value else "Please select your birthday"
+        date_message.value = f"Your birthday is: {date_picker.value.astimezone():%Y-%m-%d}" if date_picker.value else "Please select your birthday"
         if nickname_valid and date_picker.value and role.value and status.value:
             next_step.disabled = False
             next_step.style = tools.main_button_style(app, 14)
@@ -71,7 +71,7 @@ def register_page_2_ui(app):
     weight_message = ft.Text("", style = tools.secondary_text_style(app, 12))
     gender = tools.radio_group(app, tools.radio(app, 12, label="Male", value="male", width=tools.adapt_dimensions(app, "w", 10)), tools.radio(app, 12, label="Female", value="female", width=tools.adapt_dimensions(app, "w", 10)), on_change=lambda: check())
     gender_message = ft.Text("", style = tools.secondary_text_style(app, 12))
-    next_step = ft.ElevatedButton("Continue", icon = utils.icon("continue_2"), width = tools.adapt_dimensions(app, "w", 20), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
+    next_step = ft.ElevatedButton("Continue", icon = utils.icon("continue_2"), width = tools.adapt_dimensions(app, "w", 40), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
     
     if register_manager.get_second_part()[0] != 0 and register_manager.get_second_part()[1] != 0.0 and register_manager.get_second_part()[2] != "":
         height.value = register_manager.get_second_part()[0]
@@ -210,7 +210,7 @@ def register_page_3_ui(app):
     terms_and_conditions_checkbox = tools.checkbox(app, 12, label="I agree to the terms and conditions", on_change=lambda: check())
     data_agreement_checkbox = tools.checkbox(app, 12, label="I allow to use my data", on_change=lambda: check())
 
-    next_step = ft.ElevatedButton("Finish", icon=utils.icon("finish"), width = tools.adapt_dimensions(app, "w", 60), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
+    next_step = ft.ElevatedButton("Finish", icon=utils.icon("finish"), width = tools.adapt_dimensions(app, "w", 40), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
     
     app.add_element(app.alignment("cspace_between",
                         app.alignment("rcenter", ft.Text("The last, but not least...\n We also need to know more about your skills, preferences and so on...!", style = tools.primary_text_style(app, 24), text_align = ft.TextAlign.CENTER)),

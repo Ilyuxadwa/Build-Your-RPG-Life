@@ -1,7 +1,7 @@
-import utils
+from datetime import date
 
 name = ""
-birthday = utils.get_latest()
+birthday = None
 role = ""
 status = ""
 
@@ -12,6 +12,8 @@ gender = ""
 activeness = 0
 preferences = []
 skills = []
+
+register_date = None
 
 def set_first_part(name_input, birthday_input, role_input, status_input):
     global name, birthday, role, status
@@ -53,5 +55,6 @@ def finish():
         "gender": gender,
         "lifestyle_activeness": activeness,
         "preferences": preferences,
-        "skills": skills
+        "skills": skills,
+        "register_date": date.today()
     }
