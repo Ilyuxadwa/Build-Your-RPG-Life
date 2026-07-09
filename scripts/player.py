@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from user import User
 from goals import DailyGoal, WeeklyGoal, CustomGoal
 from achievements import Achievement
+import utils
 
 @dataclass
 class Player:
@@ -27,6 +28,18 @@ class Player:
     
     achievements: list[Achievement]
 
-    def get_age(self):
-        return self.user.get_age()
+    def get_multiplier(self, name):
+        pass
 
+    def add_experience(self, exp):
+        if utils.get_required_exp(self.level+1)<=self.experience+exp:
+            self.level += 1
+            self.experience = self.experience + exp - utils.get_required_exp(self.level)
+        else:
+            self.experience += exp
+
+    def action(self, name, additional_options = []):
+        pass
+
+    def update_health(self):
+        pass

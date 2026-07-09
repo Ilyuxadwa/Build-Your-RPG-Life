@@ -96,3 +96,8 @@ def icon(name: str):
     if icon_value is None:
         raise AttributeError(f"ft.Icons has no attribute '{icon_key}'")
     return icon_value
+
+def get_required_exp(level):
+    with open("config/levels.json", "r") as f:
+        levels = json.load(f)
+    return levels[str(level)]
