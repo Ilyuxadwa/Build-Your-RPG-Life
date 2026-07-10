@@ -1,8 +1,9 @@
 import json
 import os
 from packaging.version import Version
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from flet import Icons
+from goals import ActionGoal, AmountGoal, TimeGoal, InputMode
 
 with open("config/icons.json", "r", encoding="utf-8") as f:
     icon_map = json.load(f)
@@ -26,14 +27,113 @@ def get_group():
     pass
 
 
-def parse_goals():
-    pass
+def parse_goals(role, status):
+    actions = os.listdir("content/goal/action/")
+    amounts = os.listdir("content/goal/amount/")
+    times = os.listdir("content/goal/time/")
+
+    action_goals = []
+    amount_goals = []
+    time_goals = []
+
+    for goal in actions:
+        with open("content/goal/action/" + goal, encoding="utf-8") as f:
+            raw_data = json.load(f)
+
+        if role not in raw_data["available_for"] or status not in raw_data["available_for"]:
+            continue
+
+        action_goals.append(ActionGoal(
+            title=raw_data["title"],
+            description=raw_data["description"],
+            stats=raw_data.get("stats", {}),
+            additional_options=raw_data.get("additional_options", {}),
+            recommended_for=raw_data.get("recommended_for", []),
+            available_periods={
+                "daily": raw_data.get("is_daily", False),
+                "weekly": raw_data.get("is_weekly", False),
+                "custom": raw_data.get("is_custom", False),
+            },
+        ))
+
+    for goal in amounts:
+        with open("content/goal/amount/" + goal, encoding="utf-8") as f:
+            raw_data = json.load(f)
+
+        if role not in raw_data["available_for"] or status not in raw_data["available_for"]:
+            continue
+
+        amount_goals.append(AmountGoal(
+            title=raw_data["title"],
+            description=raw_data["description"],
+            target_amount=raw_data["target"],
+            input_mode=parse_input_mode(raw_data["input_mode"]),
+            preset_options=raw_data.get("input_options", []),
+            stats=raw_data.get("stats", {}),
+            additional_options=raw_data.get("additional_options", {}),
+            recommended_for=raw_data.get("recommended_for", []),
+            available_periods={
+                "daily": raw_data.get("is_daily", False),
+                "weekly": raw_data.get("is_weekly", False),
+                "custom": raw_data.get("is_custom", False),
+            },
+        ))
+
+    for goal in times:
+        with open("content/goal/time/" + goal, encoding="utf-8") as f:
+            raw_data = json.load(f)
+
+        if role not in raw_data["available_for"] or status not in raw_data["available_for"]:
+            continue
+
+        target = raw_data["target"]
+        if target == "free":
+            target_duration = timedelta()
+            user_defined_target = True
+        else:
+            h, m, s = (int(x) for x in target.split(":"))
+            target_duration = timedelta(hours=h, minutes=m, seconds=s)
+            user_defined_target = False
+
+        time_goals.append(TimeGoal(
+            title=raw_data["title"],
+            description=raw_data["description"],
+            target_duration=target_duration,
+            user_defined_target=user_defined_target,
+            input_mode=parse_input_mode(raw_data["input_mode"]),
+            preset_options=raw_data.get("input_options", []),
+            stats=raw_data.get("stats", {}),
+            additional_options=raw_data.get("additional_options", {}),
+            recommended_for=raw_data.get("recommended_for", []),
+            available_periods={
+                "daily": raw_data.get("is_daily", False),
+                "weekly": raw_data.get("is_weekly", False),
+                "custom": raw_data.get("is_custom", False),
+            },
+        ))
+
+    return action_goals, amount_goals, time_goals
+
+def parse_input_mode(raw_value: str) -> InputMode:
+    normalized = raw_value.strip().lower()
+
+    if normalized in ("free", "freeform", "free_form", "manual"):
+        return InputMode.FREE
+    if normalized in ("preset", "presets", "fixed", "options"):
+        return InputMode.PRESET
+    if normalized in ("timer", "stopwatch"):
+        return InputMode.TIMER
+
+    raise ValueError(f"Unknown input_mode value: {raw_value!r}")
+
 
 def save_goals_progress(daily: list, weekly: list, custom: list):
     pass
 
 def load_goals_progress(daily: dict, weekly: dict, custom: dict):
     pass
+
+
 
 def check_registration(version):
     if version is None:

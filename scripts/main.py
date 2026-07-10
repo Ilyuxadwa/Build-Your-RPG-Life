@@ -6,7 +6,11 @@ from user import User
 import register_manager
 
 tasks = {"group": {"name": {"option1": {"time_delay", "bonuses"}}} ,"group2": {"name": {"option1": {"time_delay", "bonuses"}}}, "group3": {"name": {"option1": {"time_delay", "bonuses"}}}}
-already_done = {} # {name: time_left}
+tasks_cooldown = {} # {name: time_left}
+
+action_goals = []
+amount_goals = []
+time_goals = []
 
 player = None
 
@@ -14,6 +18,7 @@ player = None
 
 async def start(app):
     global player
+    global action_goals, amount_goals, time_goals
 
     registered = await app.load("registered")
     require_new_fields = utils.check_registration(await app.load("registered_version"))
@@ -26,7 +31,9 @@ async def start(app):
         
         user = User(user_data["name"], user_data["birthday"], user_data["role"], user_data["status"], user_data["weight"], user_data["height"], user_data["gender"], user_data["lifestyle_activeness"], user_data["preferences"], user_data["skills"])
         
-        goals = utils.parse_goals(raw_daily_goals, raw_weekly_goals, raw_custom_goals)
+        action_goals, amount_goals, time_goals = utils.parse_goals(user.role, user.status)
+
+        goals = utils.load_goals_progress(raw_daily_goals, raw_weekly_goals, raw_custom_goals)
 
         player = Player(user, goals[0], goals[1], goals[2], [])
         

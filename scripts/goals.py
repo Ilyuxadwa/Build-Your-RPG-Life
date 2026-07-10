@@ -20,7 +20,12 @@ class InputMode(Enum):
 @dataclass
 class Goal:
     title: str
+    description: str
     status: GoalStatus = GoalStatus.IN_PROGRESS
+    stats: dict = field(default_factory=dict)
+    additional_options: dict = field(default_factory=dict)
+    recommended_for: list = field(default_factory=list)
+    available_periods: dict = field(default_factory=dict)
 
     def progress(self) -> float:
         raise NotImplementedError
@@ -72,10 +77,16 @@ class TimeGoal(Goal):
     accumulated: timedelta = field(default_factory=timedelta)
     input_mode: InputMode = InputMode.FREE
     preset_options: list[timedelta] = field(default_factory=list)
+    user_defined_target: bool = False   # True when template said "free"
     _timer_start: Optional[datetime] = field(default=None, init=False, repr=False)
 
     def progress(self) -> float:
         return min(self.accumulated / self.target_duration, 1.0) if self.target_duration else 0.0
+
+    def set_target(self, duration: timedelta):
+        if not self.user_defined_target:
+            raise ValueError("This goal's target is fixed by its template, not user-settable")
+        self.target_duration = duration
 
     def log(self, duration: timedelta):
         if self.input_mode == InputMode.PRESET and duration not in self.preset_options:
