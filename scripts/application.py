@@ -42,6 +42,10 @@ def register_page_1_ui(app):
         if nickname_valid and date_picker.value and role.value and status.value:
             next_step.disabled = False
             next_step.style = tools.main_button_style(app, 14)
+
+        else:
+            next_step.disabled = True
+            next_step.style =  tools.additional_button_style(app, 14)
     
 
     def next_page():
@@ -233,7 +237,7 @@ def register_page_3_ui(app):
         else:
             chosen_preferences.append(name)
             e.control.style = tools.main_button_style(app, 16)
-        e.control.update()
+        check()
 
 
     def skill_click(e, name):
@@ -243,13 +247,17 @@ def register_page_3_ui(app):
         else:
             chosen_skills.append(name)
             e.control.style = tools.main_button_style(app, 16)
-        e.control.update()
+        check()
 
     def check():
         activity_value.value = f"{int(activity.value)}%"
-        if not len(chosen_preferences) < 3 and not len(chosen_skills) < 3 and terms_and_conditions_checkbox.value and data_agreement_checkbox.value:
+        if len(chosen_preferences) >= 3 and len(chosen_skills) >= 3 and terms_and_conditions_checkbox.value and data_agreement_checkbox.value:
             next_step.disabled = False
             next_step.style = tools.main_button_style(app, 14)
+        else:
+            next_step.disabled = True
+            next_step.style = tools.additional_button_style(app, 14)
+        print(len(chosen_preferences), len(chosen_skills))
 
     
     def next_page():
