@@ -1,13 +1,163 @@
 {
-    "name": {
-        "multiliers": {
-            "multiplier1": 0.2
+    "Programming": {
+        "affinity": {
+            "creativity": 70,
+            "intelligence": 100,
+            "social": -15,
+            "strength": -20,
+            "mood": 20,
+            "stress": 30,
+            "energy": -35
         },
-        
         "additional_options": {
-            "name": {
-                "multiplier1": 0.2
-            }
+            "Python": {},
+            "Java": {},
+            "C#": {},
+            "Kotlin": {},
+            "JavaScript": {},
+            "Web": {},
+            "Game Development": {},
+            "Cybersecurity": {},
+            "AI": {}
+        }
+    },
+
+    "Drawing": {
+        "affinity": {
+            "creativity": 100,
+            "intelligence": 20,
+            "social": 5,
+            "strength": 0,
+            "mood": 40,
+            "stress": -15,
+            "energy": -15
+        },
+        "additional_options": {
+            "Pixel Art": {},
+            "Digital Art": {},
+            "Vector Art": {},
+            "Traditional": {},
+            "UI/UX": {}
+        }
+    },
+
+    "Writing": {
+        "affinity": {
+            "creativity": 75,
+            "intelligence": 55,
+            "social": 5,
+            "strength": 0,
+            "mood": 15,
+            "stress": 10,
+            "energy": -10
+        }
+    },
+
+    "Public Speaking": {
+        "affinity": {
+            "creativity": 20,
+            "intelligence": 20,
+            "social": 100,
+            "strength": 0,
+            "mood": 25,
+            "stress": 35,
+            "energy": -20
+        }
+    },
+
+    "Cooking": {
+        "affinity": {
+            "creativity": 40,
+            "intelligence": 15,
+            "social": 10,
+            "strength": 10,
+            "mood": 35,
+            "stress": -10,
+            "energy": -15
+        }
+    },
+
+    "Gym": {
+        "affinity": {
+            "creativity": -10,
+            "intelligence": 0,
+            "social": 20,
+            "strength": 100,
+            "mood": 35,
+            "stress": -40,
+            "energy": 20
+        }
+    },
+
+    "Swimming": {
+        "affinity": {
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 10,
+            "strength": 80,
+            "mood": 30,
+            "stress": -35,
+            "energy": 15
+        }
+    },
+
+    "Cycling": {
+        "affinity": {
+            "creativity": 5,
+            "intelligence": 0,
+            "social": 10,
+            "strength": 60,
+            "mood": 25,
+            "stress": -25,
+            "energy": 20
+        }
+    },
+
+    "Running": {
+        "affinity": {
+            "creativity": -5,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 65,
+            "mood": 30,
+            "stress": -30,
+            "energy": 25
+        }
+    },
+
+    "Music": {
+        "affinity": {
+            "creativity": 55,
+            "intelligence": 10,
+            "social": 5,
+            "strength": 0,
+            "mood": 50,
+            "stress": -30,
+            "energy": 10
+        }
+    },
+
+    "Photography": {
+        "affinity": {
+            "creativity": 65,
+            "intelligence": 10,
+            "social": 5,
+            "strength": 0,
+            "mood": 25,
+            "stress": -10,
+            "energy": -5
+        }
+    },
+
+    "Gardening": {
+        "affinity": {
+            "creativity": 20,
+            "intelligence": 10,
+            "social": 0,
+            "strength": 30,
+            "mood": 30,
+            "stress": -35,
+            "energy": -15
         }
     }
 }

@@ -1,13 +1,178 @@
 {
-    "name": {
-        "multiliers": {
-            "multiplier1": 0.2
+    "Books": {
+        "affinity": {
+            "creativity": 30,
+            "intelligence": 70,
+            "social": 0,
+            "strength": 0,
+            "mood": 10,
+            "stress": -10,
+            "energy": -5
         },
-        
         "additional_options": {
-            "name": {
-                "multiplier1": 0.2
-            }
+            "Fantasy": {},
+            "Science": {},
+            "Programming": {},
+            "History": {},
+            "Biography": {},
+            "Psychology": {},
+            "Business": {}
+        }
+    },
+
+    "Movies": {
+        "affinity": {
+            "creativity": 15,
+            "intelligence": 0,
+            "social": 5,
+            "strength": 0,
+            "mood": 40,
+            "stress": -20,
+            "energy": 5
+        },
+        "additional_options": {
+            "Action": {},
+            "Comedy": {},
+            "Drama": {},
+            "Fantasy": {},
+            "Sci-Fi": {},
+            "Documentary": {},
+            "Horror": {},
+            "Animation": {}
+        }
+    },
+
+    "Series": {
+        "affinity": {
+            "creativity": 15,
+            "intelligence": 0,
+            "social": 5,
+            "strength": 0,
+            "mood": 30,
+            "stress": -15,
+            "energy": -10
+        },
+        "additional_options": {
+            "Action": {},
+            "Comedy": {},
+            "Drama": {},
+            "Fantasy": {},
+            "Sci-Fi": {},
+            "Documentary": {}
+        }
+    },
+
+    "Music": {
+        "affinity": {
+            "creativity": 20,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 55,
+            "stress": -35,
+            "energy": 10
+        },
+        "additional_options": {
+            "Pop": {},
+            "Rock": {},
+            "Metal": {},
+            "Classical": {},
+            "Jazz": {},
+            "Lo-Fi": {},
+            "Electronic": {},
+            "Hip-Hop": {}
+        }
+    },
+
+    "Games": {
+        "affinity": {
+            "creativity": 25,
+            "intelligence": 10,
+            "social": 10,
+            "strength": -10,
+            "mood": 35,
+            "stress": -5,
+            "energy": -25
+        },
+        "additional_options": {
+            "Sandbox": {},
+            "Strategy": {},
+            "RPG": {},
+            "Puzzle": {},
+            "Simulation": {},
+            "Shooter": {},
+            "Survival": {},
+            "Horror": {}
+        }
+    },
+
+    "Sports": {
+        "affinity": {
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 25,
+            "strength": 60,
+            "mood": 25,
+            "stress": -30,
+            "energy": 20
+        },
+        "additional_options": {
+            "Football": {},
+            "Basketball": {},
+            "Volleyball": {},
+            "Swimming": {},
+            "Gym": {},
+            "Running": {},
+            "Cycling": {},
+            "Tennis": {}
+        }
+    },
+
+    "Travel": {
+        "affinity": {
+            "creativity": 35,
+            "intelligence": 15,
+            "social": 20,
+            "strength": 10,
+            "mood": 50,
+            "stress": -30,
+            "energy": -20
+        }
+    },
+
+    "Nature": {
+        "affinity": {
+            "creativity": 25,
+            "intelligence": 5,
+            "social": 0,
+            "strength": 5,
+            "mood": 45,
+            "stress": -45,
+            "energy": 10
+        }
+    },
+
+    "Technology": {
+        "affinity": {
+            "creativity": 30,
+            "intelligence": 70,
+            "social": -5,
+            "strength": -5,
+            "mood": 15,
+            "stress": 10,
+            "energy": -10
+        }
+    },
+
+    "Animals": {
+        "affinity": {
+            "creativity": 15,
+            "intelligence": 10,
+            "social": 15,
+            "strength": 0,
+            "mood": 45,
+            "stress": -30,
+            "energy": 0
         }
     }
 }
