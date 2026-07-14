@@ -39,7 +39,7 @@ async def start(app):
         player = Player(user) #goals[0], goals[1], goals[2], [])
         #player.start(...)
 
-        app.navigate("main_page")
+        #app.navigate("main_page")
         
     elif registered and require_new_fields:
         app.navigate("register_1")

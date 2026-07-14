@@ -6,6 +6,10 @@ import main
 import utils
 import register_manager
 
+def loading_ui(app):
+    app.add_element(app.alignment("rcenter", ft.Text("Build your life today!", style = tools.primary_text_style(app, 80)), width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
+    app.add_element(app.alignment("rcenter", ft.Text("We are preparing everything to begin your adventure...", style = tools.secondary_text_style(app, 18)), width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
+
 def register_page_1_ui(app):
     nickname = tools.entry(app, 14, label="Nickname", hint_text="How can we call you?", on_change=lambda: check())
     nickname_message = ft.Text("", style = tools.secondary_text_style(app, 12))
@@ -321,6 +325,7 @@ def build():
     app = App()
     app.set_size("1/4")
     app.set_version(info.VERSION)
+    app.add_page("loading_page", loading_ui)
     app.add_page("main_page", main_ui)
     app.add_page("register_1", register_page_1_ui)
     app.add_page("register_2", register_page_2_ui)
