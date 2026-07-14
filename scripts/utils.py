@@ -28,16 +28,16 @@ def get_group():
 
 
 def parse_goals(role, status):
-    actions = os.listdir("content/goal/action/")
-    amounts = os.listdir("content/goal/amount/")
-    times = os.listdir("content/goal/time/")
+    actions = os.listdir("content/goals/action/")
+    amounts = os.listdir("content/goals/amount/")
+    times = os.listdir("content/goals/time/")
 
     action_goals = []
     amount_goals = []
     time_goals = []
 
     for goal in actions:
-        with open("content/goal/action/" + goal, encoding="utf-8") as f:
+        with open("content/goals/action/" + goal, encoding="utf-8") as f:
             raw_data = json.load(f)
 
         if role not in raw_data["available_for"] or status not in raw_data["available_for"]:
@@ -57,7 +57,7 @@ def parse_goals(role, status):
         ))
 
     for goal in amounts:
-        with open("content/goal/amount/" + goal, encoding="utf-8") as f:
+        with open("content/goals/amount/" + goal, encoding="utf-8") as f:
             raw_data = json.load(f)
 
         if role not in raw_data["available_for"] or status not in raw_data["available_for"]:
@@ -80,7 +80,7 @@ def parse_goals(role, status):
         ))
 
     for goal in times:
-        with open("content/goal/time/" + goal, encoding="utf-8") as f:
+        with open("content/goals/time/" + goal, encoding="utf-8") as f:
             raw_data = json.load(f)
 
         if role not in raw_data["available_for"] or status not in raw_data["available_for"]:

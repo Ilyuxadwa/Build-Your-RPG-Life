@@ -36,7 +36,10 @@ async def start(app):
 
         goals = utils.load_goals_progress(raw_daily_goals, raw_weekly_goals, raw_custom_goals)
 
-        player = Player(user, goals[0], goals[1], goals[2], [])
+        player = Player(user) #goals[0], goals[1], goals[2], [])
+        #player.start(...)
+
+        app.navigate("main_page")
         
     elif registered and require_new_fields:
         app.navigate("register_1")

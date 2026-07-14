@@ -271,7 +271,6 @@ def main_ui(app):
     categories = list(main.tasks.keys())
     rows = [categories[i : i + 2] for i in range(0, len(categories), 2)]
     buttons = []
-    print(rows)
     for row in rows:
         if len(row) > 1:
             buttons.append(app.alignment("rcenter",
