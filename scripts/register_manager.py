@@ -18,7 +18,7 @@ register_date = None
 def set_first_part(name_input, birthday_input, role_input, status_input):
     global name, birthday, role, status
     name = name_input
-    birthday = birthday_input
+    birthday = birthday_input.date().isoformat()
     role = role_input
     status = status_input
 
@@ -56,5 +56,5 @@ def finish():
         "lifestyle_activeness": activeness,
         "preferences": preferences,
         "skills": skills,
-        "register_date": date.today()
+        "register_date": date.today().isoformat()
     }

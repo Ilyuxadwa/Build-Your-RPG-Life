@@ -261,7 +261,7 @@ def register_page_3_ui(app):
 
     
     def next_page():
-        register_manager.set_thirds_part(chosen_preferences, chosen_skills)
+        register_manager.set_thirds_part(activity_value.value, chosen_preferences, chosen_skills)
         app.page.run_task(main.finish_registration, app)
 
     check()

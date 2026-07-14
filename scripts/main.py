@@ -1,3 +1,4 @@
+from datetime import date
 import utils
 import info
 import healthy_calculations
@@ -29,7 +30,7 @@ async def start(app):
         raw_weekly_goals = utils.get_dict(await app.load("weekly_goals"))
         raw_custom_goals = utils.get_dict(await app.load("custom_goals"))
         
-        user = User(user_data["name"], user_data["birthday"], user_data["role"], user_data["status"], user_data["weight"], user_data["height"], user_data["gender"], user_data["lifestyle_activeness"], user_data["preferences"], user_data["skills"])
+        user = User(user_data["name"], date.fromisoformat(user_data["birthday"]), user_data["role"], user_data["status"], user_data["weight"], user_data["height"], user_data["gender"], user_data["lifestyle_activeness"], user_data["preferences"], user_data["skills"])
         
         action_goals, amount_goals, time_goals = utils.parse_goals(user.role, user.status)
 
@@ -49,9 +50,10 @@ async def set_player(app):
 
 async def finish_registration(app):
     user_data = register_manager.finish()
-    app.save("reg_data", utils.save_dict(user_data))
-    app.save("registered", True)
-    app.save("registered_version", info.version)
+    await app.save("reg_data", utils.save_dict(user_data))
+    await app.save("registered", True)
+    await app.save("registered_version", info.VERSION)
+    app.navigate("register_1")
 
 
 def load_tasks():
