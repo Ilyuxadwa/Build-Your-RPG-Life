@@ -19,5 +19,7 @@
     "travelling": "DIRECTIONS_BOAT_ROUNDED",
 
     "add_favorite": "STAR_OUTLINE_ROUNDED",
-    "favorite": "STAR_ROUNDED"
+    "favorite": "STAR_ROUNDED",
+
+    "welcome-1": "WAVING_HAND_ROUNDED"
 }

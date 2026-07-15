@@ -275,6 +275,7 @@ def main_ui(app):
     categories = list(main.tasks.keys())
     rows = [categories[i : i + 2] for i in range(0, len(categories), 2)]
     buttons = []
+    #user_container=
     for row in rows:
         if len(row) > 1:
             buttons.append(app.alignment("rcenter",
@@ -324,7 +325,8 @@ def main_ui(app):
                                         ),
                                     }), width = tools.adapt_dimensions(app, "w", 92), height = tools.adapt_dimensions(app, "w", 46)),
                         expand = True, spacing = tools.adapt_dimensions(app, "w", 4)))
-    app.add_element(app.alignment("cstart", *buttons, width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
+    welcome_icon, welcome_msg = utils.welcome_message(main.player.user)
+    app.add_element(app.alignment("cstart", app.alignment("rstart", ft.Icon(welcome_icon, color=app.theme.primary, size=tools.adapt_dimensions(app, "w", 5)), ft.Text(welcome_msg, style = tools.primary_text_style(app, 40, weight=ft.FontWeight.BOLD))),*buttons, width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
         
     
 def build():

@@ -1,5 +1,6 @@
 import json
 import os
+import random
 from packaging.version import Version
 from datetime import datetime, date, timedelta
 from flet import Icons
@@ -7,6 +8,9 @@ from goals import ActionGoal, AmountGoal, TimeGoal, InputMode
 
 with open("config/icons.json", "r", encoding="utf-8") as f:
     icon_map = json.load(f)
+
+with open("config/welcome_messages.json", "r", encoding="utf-8") as f:
+    welcome_messages = json.load(f)
 
 def parse_tasks():
     parsed = {}
@@ -192,6 +196,14 @@ def icon(name: str):
     if icon_value is None:
         raise AttributeError(f"ft.Icons has no attribute '{icon_key}'")
     return icon_value
+
+def welcome_message(user):
+    if user.birthday == date.today():
+        return icon("welcome-birthday"), f"Happy birthday, {user.name}!"
+    else:
+        msg = random.choice(list(welcome_messages))
+        return icon("welcome-"+welcome_messages.get(msg)), msg.replace("{name}", user.name)
+
 
 def get_required_exp(level):
     with open("config/levels.json", "r") as f:
