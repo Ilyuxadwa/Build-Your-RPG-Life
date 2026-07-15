@@ -278,7 +278,9 @@ def main_ui(app):
     for row in rows:
         if len(row) > 1:
             buttons.append(app.alignment("rcenter",
-                            ft.Button(row[0], style=tools.additional_button_style(app, 32, shape = ft.RoundedRectangleBorder(radius=10),
+                            ft.Button(
+                                content=app.alignment("ccenter", ft.Icon(utils.icon(row[0]), color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 20)), ft.Text(row[0].capitalize(), style = tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD))),
+                                style=tools.additional_button_style(app, 32, shape = ft.RoundedRectangleBorder(radius=10),
                                     side = {
                                         ft.ControlState.DEFAULT: ft.BorderSide(
                                             app.theme.outline_width+2, color=app.theme.outline
@@ -290,7 +292,9 @@ def main_ui(app):
                                             app.theme.outline_width+2, color=app.theme.outline
                                         ),
                                     }), width = tools.adapt_dimensions(app, "w", 46), height = tools.adapt_dimensions(app, "w", 46)),
-                            ft.Button(row[1], style=tools.additional_button_style(app, 32, shape = ft.RoundedRectangleBorder(radius=10),
+                            ft.Button(
+                                content=app.alignment("ccenter", ft.Icon(utils.icon(row[1]), color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 20)), ft.Text(row[1].capitalize(), style = tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD))),
+                                style=tools.additional_button_style(app, 32, shape = ft.RoundedRectangleBorder(radius=10),
                                     side = {
                                         ft.ControlState.DEFAULT: ft.BorderSide(
                                             app.theme.outline_width+2, color=app.theme.outline
@@ -305,7 +309,9 @@ def main_ui(app):
                         expand = True, spacing = tools.adapt_dimensions(app, "w", 4)))
         else:
             buttons.append(app.alignment("rcenter",
-                            ft.Button(row[0], style=tools.additional_button_style(app, 32, shape = ft.RoundedRectangleBorder(radius=10),
+                            ft.Button(
+                                content=app.alignment("ccenter", ft.Icon(utils.icon(row[0]), color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 20)), ft.Text(row[0].capitalize(), style = tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD))), 
+                                style=tools.additional_button_style(app, 32, shape = ft.RoundedRectangleBorder(radius=10),
                                     side = {
                                         ft.ControlState.DEFAULT: ft.BorderSide(
                                             app.theme.outline_width+2, color=app.theme.outline

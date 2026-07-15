@@ -1,7 +1,23 @@
 {
+
     "birthday": "CALENDAR_MONTH_ROUNDED",
     "continue_1": "ARROW_FORWARD_IOS_ROUNDED",
     "continue_2": "DOUBLE_ARROW_ROUNDED",
     "finish": "ROCKET_LAUNCH_ROUNDED",
-    "return": "ARROW_BACK_ROUNDED"
+    "return": "ARROW_BACK_ROUNDED",
+
+    "career": "BUSINESS_CENTER_ROUNDED",
+    "challenges": "EMOJI_FLAGS_ROUNDED",
+    "education": "SCHOOL_ROUNDED",
+    "entertainment": "FESTIVAL_ROUNDED",
+    "finances": "ACCOUNT_BALANCE_ROUNDED",
+    "habits": "INTERESTS_ROUNDED",
+    "health": "HEALTH_AND_SAFETY_ROUNDED",
+    "hobbies": "COLOR_LENS_ROUNDED",
+    "relationships": "GROUPS_ROUNDED",
+    "self-improvement": "PSYCHOLOGY_ROUNDED",
+    "travelling": "DIRECTIONS_BOAT_ROUNDED",
+
+    "add_favorite": "STAR_OUTLINE_ROUNDED",
+    "favorite": "STAR_ROUNDED"
 }

@@ -6,8 +6,8 @@ from player import Player
 from user import User
 import register_manager
 
-tasks = {"group": {"name": {"option1": {"time_delay", "bonuses"}}} ,"group2": {"name": {"option1": {"time_delay", "bonuses"}}}, "group3": {"name": {"option1": {"time_delay", "bonuses"}}}}
-tasks_cooldown = {} # {name: time_left}
+tasks = {}
+tasks_cooldown = {}
 
 action_goals = []
 amount_goals = []
@@ -39,7 +39,7 @@ async def start(app):
         player = Player(user) #goals[0], goals[1], goals[2], [])
         #player.start(...)
 
-        #app.navigate("main_page")
+        app.navigate("main_page")
         
     elif registered and require_new_fields:
         app.navigate("register_1")

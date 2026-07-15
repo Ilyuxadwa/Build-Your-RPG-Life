@@ -13,11 +13,7 @@ def parse_tasks():
     groups = os.listdir("content/tasks/")
     for group in groups:
         files = os.listdir("content/tasks/"+group)
-        for thing in files:
-            if thing.endswith(".json"):
-                get_task(thing)
-            elif not thing.contains("."):
-                get_group()
+        parsed[group] = {}
     return parsed
 
 def get_task():
