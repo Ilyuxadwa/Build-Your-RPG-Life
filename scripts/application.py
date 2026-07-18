@@ -272,6 +272,11 @@ def register_page_3_ui(app):
 
 
 def main_ui(app):
+
+    def stats_element(name, stats):
+        print(name, stats)
+        return app.alignment("rstart", ft.Icon(utils.icon(name+"-stat"), color=app.theme.primary, size=tools.adapt_dimensions(app, "w", 5)), ft.Text(name.capitalize()+":", style = tools.primary_text_style(app, 18)), ft.Text(str(stats), style = tools.primary_text_style(app, 24, weight=ft.FontWeight.BOLD, italic=True)))
+    
     categories = list(main.tasks.keys())
     rows = [categories[i : i + 2] for i in range(0, len(categories), 2)]
     buttons = []
@@ -325,9 +330,35 @@ def main_ui(app):
                                         ),
                                     }), width = tools.adapt_dimensions(app, "w", 92), height = tools.adapt_dimensions(app, "w", 46)),
                         expand = True, spacing = tools.adapt_dimensions(app, "w", 4)))
+    level_stat = None
+    health_stat = None
+    player_card = ft.Container(content = app.alignment("cspace_evenly", 
+                                            #app.alignment("rspace_between", level_stat, health_stat), 
+                                            app.alignment("rspace_between", 
+                                                stats_element("creativity", main.player.creativity), 
+                                                stats_element("intelligence", main.player.intelligence), 
+                                                stats_element("social", main.player.social), 
+                                                stats_element("strength", main.player.strength),
+                                                width = tools.adapt_dimensions(app, "w", 85)),
+                                                
+                                            app.alignment("rspace_between", 
+                                                stats_element("energy", main.player.energy), 
+                                                stats_element("mood", main.player.mood), 
+                                                stats_element("stress", main.player.stress),
+                                                width = tools.adapt_dimensions(app, "w", 85)),
+                                            height = tools.adapt_dimensions(app, "h", 25)), 
+                                        bgcolor=app.theme.additional_color, width = tools.adapt_dimensions(app, "w", 90), height = tools.adapt_dimensions(app, "h", 30))
+    
     welcome_icon, welcome_msg = utils.welcome_message(main.player.user)
-    app.add_element(app.alignment("cstart", app.alignment("rstart", ft.Icon(welcome_icon, color=app.theme.primary, size=tools.adapt_dimensions(app, "w", 5)), ft.Text(welcome_msg, style = tools.primary_text_style(app, 40, weight=ft.FontWeight.BOLD))),*buttons, width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
-        
+    app.add_element(app.alignment("cstart", 
+                                app.alignment("rstart", 
+                                    ft.Icon(welcome_icon, color=app.theme.primary, size=tools.adapt_dimensions(app, "w", 5)), 
+                                    ft.Text(welcome_msg, style = tools.primary_text_style(app, 40, weight=ft.FontWeight.BOLD))), 
+                                player_card,
+                                *buttons,
+                                width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
+
+
     
 def build():
     app = App()
