@@ -152,6 +152,12 @@ def get_latest():
 def get_earliest():
     return date(date.today().year-100, date.today().month, date.today().day)
 
+def get_initial_stats():
+    stats = {}
+    with open("config/initial.json", "r") as f:
+        stats = json.load(f)
+    return stats
+
 def get_roles():
     roles = {}
     with open("config/roles.json", "r") as f:

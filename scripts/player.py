@@ -47,7 +47,7 @@ class Player:
         else:
             self.experience += exp
 
-    def action(self, name, additional_option = ""):
+    def action(self, task, additional_option = ""):
         pass
 
     def update_health(self):

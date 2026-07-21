@@ -36,8 +36,12 @@ async def start(app):
 
         goals = utils.load_goals_progress(raw_daily_goals, raw_weekly_goals, raw_custom_goals)
 
-        player = Player(user) #goals[0], goals[1], goals[2], [])
-        #player.start(...)
+        stats = await app.load("statistics")
+        if not stats:
+            stats = utils.get_initial_stats()
+
+        player = Player(user)
+        player.start(stats)
 
         app.navigate("main_page")
         
