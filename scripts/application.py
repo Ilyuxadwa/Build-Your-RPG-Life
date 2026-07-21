@@ -330,10 +330,26 @@ def main_ui(app):
                                         ),
                                     }), width = tools.adapt_dimensions(app, "w", 92), height = tools.adapt_dimensions(app, "w", 46)),
                         expand = True, spacing = tools.adapt_dimensions(app, "w", 4)))
-    level_stat = None
-    health_stat = None
+    level_stat = app.alignment("rstart",
+        ft.Button(
+            content = ft.Text(
+                str(main.player.level),
+                style = tools.primary_text_style(app, 50)),
+            bgcolor=app.theme.additional_color, 
+            style=ft.ButtonStyle(shape=ft.CircleBorder(),
+            side = ft.BorderSide(5, color=app.theme.ok_button),
+            alignment=ft.Alignment.CENTER)),
+        ft.Column(alignment = ft.MainAxisAlignment.END, horizontal_alignment=ft.CrossAxisAlignment.END,
+            controls = [tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 35), height=tools.adapt_dimensions(app, "h", 6), value = main.player.experience / utils.get_required_exp(main.player.level + 1)),
+            ft.Text(f"{main.player.experience}/{utils.get_required_exp(main.player.level + 1)}", style = tools.primary_text_style(app, 12))]))
+    
+    health_stat = app.alignment("rstart",
+        ft.Icon(utils.icon("health-stat"), color=app.theme.ok_button, size=tools.adapt_dimensions(app, "w", 6)),
+        tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 25), height=tools.adapt_dimensions(app, "h", 5), value = main.player.experience / utils.get_required_exp(main.player.level + 1)),
+        ft.Text(str(main.player.health), style = tools.primary_text_style(app, 28)))
+    
     player_card = ft.Container(content = app.alignment("cspace_evenly", 
-                                            #app.alignment("rspace_between", level_stat, health_stat), 
+                                            app.alignment("rcenter", level_stat, health_stat, spacing = tools.adapt_dimensions(app, "w", 15)), 
                                             app.alignment("rspace_between", 
                                                 stats_element("creativity", main.player.creativity), 
                                                 stats_element("intelligence", main.player.intelligence), 

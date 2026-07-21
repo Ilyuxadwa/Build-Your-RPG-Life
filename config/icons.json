@@ -21,8 +21,8 @@
     "add_favorite": "STAR_OUTLINE_ROUNDED",
     "favorite": "STAR_ROUNDED",
 
-    "level-stat": "",
-    "health-stat": "",
+    "level-stat": "STAR_ROUNDED",
+    "health-stat": "FAVORITE_ROUNDED",
     "creativity-stat": "AUTO_AWESOME_ROUNDED",
     "intelligence-stat": "TIPS_AND_UPDATES_ROUNDED",
     "social-stat": "DIVERSITY_3_ROUNDED",
