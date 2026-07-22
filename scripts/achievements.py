@@ -2,8 +2,9 @@ from dataclasses import dataclass
 
 @dataclass
 class Achievement:
-    id = ""
-    message = ""
-    task = ""
-    number = ""
-    completed = False
+    identifier: str
+    message: str
+    task: str
+    completed: bool
+    number: int
+    reference_task = "path/to/task"
