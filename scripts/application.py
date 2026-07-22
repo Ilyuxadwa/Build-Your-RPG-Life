@@ -6,6 +6,11 @@ import main
 import utils
 import register_manager
 
+achievements_dialog = ft.AlertDialog(content = get_achievements_list())
+
+def get_achievements_list():
+    pass
+
 def loading_ui(app):
     app.add_element(app.alignment("rcenter", ft.Text("Build your life today!", style = tools.primary_text_style(app, 80)), width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
     app.add_element(app.alignment("rcenter", ft.Text("We are preparing everything to begin your adventure...", style = tools.secondary_text_style(app, 18)), width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
@@ -280,7 +285,6 @@ def main_ui(app):
     categories = list(main.tasks.keys())
     rows = [categories[i : i + 2] for i in range(0, len(categories), 2)]
     buttons = []
-    #user_container=
     for row in rows:
         if len(row) > 1:
             buttons.append(app.alignment("rcenter",
@@ -385,5 +389,6 @@ def build():
     app.add_page("register_1", register_page_1_ui)
     app.add_page("register_2", register_page_2_ui)
     app.add_page("register_3", register_page_3_ui)
+    app.add_top_button(utils.icon("achievements"), achievements_dialog, "Achievements", app.theme.cancel_button)
     app.set_async_next(main.start)
     app.run(info.APP_NAME)

@@ -2,4 +2,8 @@ from dataclasses import dataclass
 
 @dataclass
 class Achievement:
-    pass
+    id = ""
+    message = ""
+    task = ""
+    number = ""
+    completed = False
