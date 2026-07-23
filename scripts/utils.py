@@ -31,9 +31,9 @@ def parse_task_file(path):
 
     task_type = data["type"]
     if task_type == "action":
-        return ActionTask(**common, stats=data["stats"])
+        task = ActionTask(**common, stats=data["stats"])
     elif task_type == "amount":
-        return AmountTask(
+        task = AmountTask(
             **common,
             amount_input_mode=data["amount_input_mode"],
             min=data["min"],
@@ -41,7 +41,7 @@ def parse_task_file(path):
             amount_inputs_multipliers=data["amount_inputs_multipliers"],
         )
     elif task_type == "time":
-        return TimeTask(
+        task = TimeTask(
             **common,
             time_input=data["time_input"],
             min=data["min"],
@@ -51,11 +51,7 @@ def parse_task_file(path):
     else:
         raise ValueError(f"Unknown task type: {task_type}")
 
-def get_node(path, tasks):
-    node = tasks
-    for part in path.split("/"):
-        node = node[part]
-    return node
+    return data["id"], task
 
 def parse_tasks(path="content/tasks/"):
     parsed = {}
@@ -64,8 +60,15 @@ def parse_tasks(path="content/tasks/"):
         if os.path.isdir(full_path):
             parsed[name] = parse_tasks(full_path)
         elif name.endswith(".json"):
-            parsed[name[:-5]] = parse_task_file(full_path)
+            task_id, task = parse_task_file(full_path)
+            parsed[task_id] = task
     return parsed
+
+def get_node(path, tasks):
+    node = tasks
+    for part in path.split("/"):
+        node = node[part]
+    return node
 
 def parse_goals(role, status):
     actions = os.listdir("content/goals/action/")

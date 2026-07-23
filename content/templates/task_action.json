@@ -1,4 +1,5 @@
 {
+    "id": "identifier",
     "title": "name",
     "description": "desc",
     "type": "action",
