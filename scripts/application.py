@@ -5,8 +5,9 @@ import info
 import main
 import utils
 import register_manager
+from tasks import Task
 
-achievements_dialog = ft.AlertDialog(content = get_achievements_list())
+achievements_dialog = ft.AlertDialog()
 
 def get_achievements_list():
     pass
@@ -275,65 +276,58 @@ def register_page_3_ui(app):
 
     check()
 
+def tasks_navigation_ui(app):
+    path = main.current_path
+    node = utils.get_node(path, main.tasks) if path else main.tasks
+    categories = list(node.keys())
+    rows = [categories[i : i + 2] for i in range(0, len(categories), 2)]
 
+    def on_tap(key):
+        child = node[key]
+        if isinstance(child, Task):
+            main.current_path = f"{path}/{key}" if path else key
+            app.navigate("task_page")
+        else:
+            main.current_path = f"{path}/{key}" if path else key
+            app.navigate("tasks_navigation_ui")
+
+    def make_button(key, width):
+        return ft.Button(
+            content=app.alignment("ccenter",
+                ft.Icon(utils.icon(key), color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 20)),
+                ft.Text(key.capitalize(), style=tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD))),
+            style=tools.additional_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10),
+                side={
+                    ft.ControlState.DEFAULT: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                    ft.ControlState.HOVERED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                    ft.ControlState.PRESSED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                }),
+            width=tools.adapt_dimensions(app, "w", width),
+            height=tools.adapt_dimensions(app, "w", 46),
+            on_click=lambda e, k=key: on_tap(k),
+        )
+
+    buttons = []
+    for row in rows:
+        if len(row) > 1:
+            buttons.append(app.alignment("rcenter",
+                make_button(row[0], 46), make_button(row[1], 46),
+                expand=True, spacing=tools.adapt_dimensions(app, "w", 4)))
+        else:
+            buttons.append(app.alignment("rcenter",
+                make_button(row[0], 92),
+                expand=True, spacing=tools.adapt_dimensions(app, "w", 4)))
+
+    app.add_element(app.alignment("cstart", *buttons,
+                     width=tools.adapt_dimensions(app, "w", 100),
+                     spacing=tools.adapt_dimensions(app, "w", 4), expand=True))
+    
 def main_ui(app):
 
     def stats_element(name, stats):
         print(name, stats)
         return app.alignment("rstart", ft.Icon(utils.icon(name+"-stat"), color=app.theme.primary, size=tools.adapt_dimensions(app, "w", 5)), ft.Text(name.capitalize()+":", style = tools.primary_text_style(app, 18)), ft.Text(str(stats), style = tools.primary_text_style(app, 24, weight=ft.FontWeight.BOLD, italic=True)))
     
-    categories = list(main.tasks.keys())
-    rows = [categories[i : i + 2] for i in range(0, len(categories), 2)]
-    buttons = []
-    for row in rows:
-        if len(row) > 1:
-            buttons.append(app.alignment("rcenter",
-                            ft.Button(
-                                content=app.alignment("ccenter", ft.Icon(utils.icon(row[0]), color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 20)), ft.Text(row[0].capitalize(), style = tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD))),
-                                style=tools.additional_button_style(app, 32, shape = ft.RoundedRectangleBorder(radius=10),
-                                    side = {
-                                        ft.ControlState.DEFAULT: ft.BorderSide(
-                                            app.theme.outline_width+2, color=app.theme.outline
-                                        ),
-                                        ft.ControlState.HOVERED: ft.BorderSide(
-                                            app.theme.outline_width+2, color=app.theme.outline
-                                        ),
-                                        ft.ControlState.PRESSED: ft.BorderSide(
-                                            app.theme.outline_width+2, color=app.theme.outline
-                                        ),
-                                    }), width = tools.adapt_dimensions(app, "w", 46), height = tools.adapt_dimensions(app, "w", 46)),
-                            ft.Button(
-                                content=app.alignment("ccenter", ft.Icon(utils.icon(row[1]), color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 20)), ft.Text(row[1].capitalize(), style = tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD))),
-                                style=tools.additional_button_style(app, 32, shape = ft.RoundedRectangleBorder(radius=10),
-                                    side = {
-                                        ft.ControlState.DEFAULT: ft.BorderSide(
-                                            app.theme.outline_width+2, color=app.theme.outline
-                                        ),
-                                        ft.ControlState.HOVERED: ft.BorderSide(
-                                            app.theme.outline_width+2, color=app.theme.outline
-                                        ),
-                                        ft.ControlState.PRESSED: ft.BorderSide(
-                                            app.theme.outline_width+2, color=app.theme.outline
-                                        ),
-                                    }), width = tools.adapt_dimensions(app, "w", 46), height = tools.adapt_dimensions(app, "w", 46)),
-                        expand = True, spacing = tools.adapt_dimensions(app, "w", 4)))
-        else:
-            buttons.append(app.alignment("rcenter",
-                            ft.Button(
-                                content=app.alignment("ccenter", ft.Icon(utils.icon(row[0]), color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 20)), ft.Text(row[0].capitalize(), style = tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD))), 
-                                style=tools.additional_button_style(app, 32, shape = ft.RoundedRectangleBorder(radius=10),
-                                    side = {
-                                        ft.ControlState.DEFAULT: ft.BorderSide(
-                                            app.theme.outline_width+2, color=app.theme.outline
-                                        ),
-                                        ft.ControlState.HOVERED: ft.BorderSide(
-                                            app.theme.outline_width+2, color=app.theme.outline
-                                        ),
-                                        ft.ControlState.PRESSED: ft.BorderSide(
-                                            app.theme.outline_width+2, color=app.theme.outline
-                                        ),
-                                    }), width = tools.adapt_dimensions(app, "w", 92), height = tools.adapt_dimensions(app, "w", 46)),
-                        expand = True, spacing = tools.adapt_dimensions(app, "w", 4)))
     level_stat = app.alignment("rstart",
         ft.Button(
             content = ft.Text(
@@ -375,7 +369,20 @@ def main_ui(app):
                                     ft.Icon(welcome_icon, color=app.theme.primary, size=tools.adapt_dimensions(app, "w", 5)), 
                                     ft.Text(welcome_msg, style = tools.primary_text_style(app, 40, weight=ft.FontWeight.BOLD))), 
                                 player_card,
-                                *buttons,
+                                ft.Button(
+                                    content=app.alignment("ccenter",
+                                        ft.Icon(utils.icon("tasks"), color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 20)),
+                                        ft.Text("Proceed to tasks", style=tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD))),
+                                    style=tools.additional_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10),
+                                        side={
+                                            ft.ControlState.DEFAULT: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                                            ft.ControlState.HOVERED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                                            ft.ControlState.PRESSED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                                        }),
+                                    width=tools.adapt_dimensions(app, "w", 92),
+                                    height=tools.adapt_dimensions(app, "w", 46),
+                                    on_click = lambda: app.navigate("tasks_navigation_page"),
+                                ),
                                 width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
 
 
@@ -386,6 +393,7 @@ def build():
     app.set_version(info.VERSION)
     app.add_page("loading_page", loading_ui)
     app.add_page("main_page", main_ui)
+    app.add_page("tasks_navigation_page", tasks_navigation_ui)
     app.add_page("register_1", register_page_1_ui)
     app.add_page("register_2", register_page_2_ui)
     app.add_page("register_3", register_page_3_ui)

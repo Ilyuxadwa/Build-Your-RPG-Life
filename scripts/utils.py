@@ -57,17 +57,15 @@ def get_node(path, tasks):
         node = node[part]
     return node
 
-
-def parse_tasks():
+def parse_tasks(path="content/tasks/"):
     parsed = {}
-    for name in os.listdir("content/tasks/"):
-        full_path = os.path.join("content/tasks/", name)
+    for name in os.listdir(path):
+        full_path = os.path.join(path, name)
         if os.path.isdir(full_path):
             parsed[name] = parse_tasks(full_path)
         elif name.endswith(".json"):
             parsed[name[:-5]] = parse_task_file(full_path)
     return parsed
-
 
 def parse_goals(role, status):
     actions = os.listdir("content/goals/action/")

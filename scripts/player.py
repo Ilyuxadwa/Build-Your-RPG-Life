@@ -67,7 +67,7 @@ class Player:
         self.energy = saved_values["energy"]
         self.stress = saved_values["stress"]
 
-        self.calculate_multipliers()
+        #self.calculate_multipliers()
 
     def calculate_multipliers():
         pass

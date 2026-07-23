@@ -6,6 +6,8 @@ from player import Player
 from user import User
 import register_manager
 
+current_path = ""
+
 tasks = {}
 tasks_cooldown = {}
 
