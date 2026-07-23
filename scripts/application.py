@@ -289,12 +289,13 @@ def tasks_navigation_ui(app):
             app.navigate("task_page")
         else:
             main.current_path = f"{path}/{key}" if path else key
-            app.navigate("tasks_navigation_ui")
+            app.navigate("tasks_navigation_page")
 
     def make_button(key, width):
+        icon_key = f"{key}-task" if isinstance(node[key], Task) else key
         return ft.Button(
             content=app.alignment("ccenter",
-                ft.Icon(utils.icon(key), color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 20)),
+                ft.Icon(utils.icon(icon_key), color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 20)),
                 ft.Text(key.capitalize(), style=tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD))),
             style=tools.additional_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10),
                 side={
