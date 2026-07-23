@@ -36,7 +36,8 @@ async def start(app):
         
         action_goals, amount_goals, time_goals = utils.parse_goals(user.role, user.status)
 
-        goals = utils.load_goals_progress(raw_daily_goals, raw_weekly_goals, raw_custom_goals)
+        goals_progress = utils.load_goals_progress(raw_daily_goals, raw_weekly_goals, raw_custom_goals)
+        active_goals = utils.load_active_goals()
 
         stats = await app.load("statistics")
         if not stats:

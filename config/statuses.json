@@ -1,13 +1,31 @@
 {
     "Alone": {
-        "multiplier1": 1.0
+        "creativity": 0,
+        "intelligence": 0,
+        "social": 0,
+        "strength": 0,
+        "mood": 0,
+        "stress": 0,
+        "energy": 0
     },
 
     "With partner": {
-        "multiplier1": 1.0
+        "creativity": 0,
+        "intelligence": 0,
+        "social": 0,
+        "strength": 0,
+        "mood": 0,
+        "stress": 0,
+        "energy": 0
     },
 
     "Married": {
-        "multiplier1": 1.0
+        "creativity": 0,
+        "intelligence": 0,
+        "social": 0,
+        "strength": 0,
+        "mood": 0,
+        "stress": 0,
+        "energy": 0
     }
 }

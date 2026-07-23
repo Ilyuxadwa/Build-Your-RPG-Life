@@ -67,7 +67,10 @@ class Player:
         self.energy = saved_values["energy"]
         self.stress = saved_values["stress"]
 
-        #self.calculate_multipliers()
+        self.calculate_multipliers()
 
-    def calculate_multipliers():
-        pass
+    def calculate_multipliers(self):
+        by_prefs, by_skills, by_roles, by_statuses = utils.get_affinities(self.user.status, self.user.role, self.user.preferences, self.user.skills)
+
+        for multiplier in self.multipliers.keys():
+            self.multipliers[multiplier] = 1 + (((by_prefs[multiplier] + by_skills[multiplier]) * 0.01) * ((by_roles[multiplier] + by_statuses[multiplier]) * 0.1))

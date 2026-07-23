@@ -222,6 +222,100 @@ def get_available_preferences():
         prefs = json.load(f)
     return prefs
 
+def get_affinities(status, role, prefs, skills):
+
+    global_prefs = get_available_preferences()
+    global_skills = get_available_skills()
+    global_statuses = get_statuses()
+    global_roles = get_roles()
+
+    affinity_prefs_creativity = 0
+    affinity_prefs_intelligence = 0
+    affinity_prefs_social = 0
+    affinity_prefs_strength = 0
+    affinity_prefs_mood = 0
+    affinity_prefs_energy = 0
+    affinity_prefs_stress = 0
+
+    affinity_skills_creativity = 0
+    affinity_skills_intelligence = 0
+    affinity_skills_social = 0
+    affinity_skills_strength = 0
+    affinity_skills_mood = 0
+    affinity_skills_energy = 0
+    affinity_skills_stress = 0
+
+    multiplier_roles_creativity = global_roles[role]["creativity"]
+    multiplier_roles_intelligence = global_roles[role]["intelligence"]
+    multiplier_roles_social = global_roles[role]["social"]
+    multiplier_roles_strength = global_roles[role]["strength"]
+    multiplier_roles_mood = global_roles[role]["mood"]
+    multiplier_roles_energy = global_roles[role]["energy"]
+    multiplier_roles_stress = global_roles[role]["stress"]
+
+    multiplier_statuses_creativity = global_statuses[status]["creativity"]
+    multiplier_statuses_intelligence = global_statuses[status]["intelligence"]
+    multiplier_statuses_social = global_statuses[status]["social"]
+    multiplier_statuses_strength = global_statuses[status]["strength"]
+    multiplier_statuses_mood = global_statuses[status]["mood"]
+    multiplier_statuses_energy = global_statuses[status]["energy"]
+    multiplier_statuses_stress = global_statuses[status]["stress"]    
+
+    for pref in prefs:
+        affinity_prefs_creativity += global_prefs[pref]["affinity"]["creativity"]
+        affinity_prefs_intelligence += global_prefs[pref]["affinity"]["intelligence"]
+        affinity_prefs_social += global_prefs[pref]["affinity"]["social"]
+        affinity_prefs_strength += global_prefs[pref]["affinity"]["strength"]
+        affinity_prefs_mood += global_prefs[pref]["affinity"]["mood"]
+        affinity_prefs_energy += global_prefs[pref]["affinity"]["energy"]
+        affinity_prefs_stress += global_prefs[pref]["affinity"]["stress"]
+
+    for skill in skills:
+        affinity_skills_creativity += global_skills[skill]["affinity"]["creativity"]
+        affinity_skills_intelligence += global_skills[skill]["affinity"]["intelligence"]
+        affinity_skills_social += global_skills[skill]["affinity"]["social"]
+        affinity_skills_strength += global_skills[skill]["affinity"]["strength"]
+        affinity_skills_mood += global_skills[skill]["affinity"]["mood"]
+        affinity_skills_energy += global_skills[skill]["affinity"]["energy"]
+        affinity_skills_stress += global_skills[skill]["affinity"]["stress"]    
+
+    return {
+        "creativity": affinity_prefs_creativity,
+        "intelligence": affinity_prefs_intelligence,
+        "social": affinity_prefs_social,
+        "strength": affinity_prefs_strength,
+        "mood": affinity_prefs_mood,
+        "energy": affinity_prefs_energy,
+        "stress": affinity_prefs_stress
+    }, {
+        "creativity": affinity_skills_creativity,
+        "intelligence": affinity_skills_intelligence,
+        "social": affinity_skills_social,
+        "strength": affinity_skills_strength,
+        "mood": affinity_skills_mood,
+        "energy": affinity_skills_energy,
+        "stress": affinity_skills_stress
+    }, {
+        "creativity": multiplier_roles_creativity,
+        "intelligence": multiplier_roles_intelligence,
+        "social": multiplier_roles_social,
+        "strength": multiplier_roles_strength,
+        "mood": multiplier_roles_mood,
+        "energy": multiplier_roles_energy,
+        "stress": multiplier_roles_stress
+    }, {
+        "creativity": multiplier_statuses_creativity,
+        "intelligence": multiplier_statuses_intelligence,
+        "social": multiplier_statuses_social,
+        "strength": multiplier_statuses_strength,
+        "mood": multiplier_statuses_mood,
+        "energy": multiplier_statuses_energy,
+        "stress": multiplier_statuses_stress
+    }
+
+
+
+
 
 
 

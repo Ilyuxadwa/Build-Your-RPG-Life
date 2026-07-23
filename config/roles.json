@@ -1,21 +1,45 @@
 {
     "Schoolchild":
     {
-        "multiplier": 1.0
+        "creativity": 0,
+        "intelligence": 0,
+        "social": 0,
+        "strength": 0,
+        "mood": 0,
+        "stress": 0,
+        "energy": 0
     },
 
     "Student":
     {
-        "multiplier": 1.0
+        "creativity": 0,
+        "intelligence": 0,
+        "social": 0,
+        "strength": 0,
+        "mood": 0,
+        "stress": 0,
+        "energy": 0
     },
 
     "Worker":
     {
-        "multiplier": 1.0
+        "creativity": 0,
+        "intelligence": 0,
+        "social": 0,
+        "strength": 0,
+        "mood": 0,
+        "stress": 0,
+        "energy": 0
     },
 
     "Unemployed":
     {
-        "multiplier": 1.0
+        "creativity": 0,
+        "intelligence": 0,
+        "social": 0,
+        "strength": 0,
+        "mood": 0,
+        "stress": 0,
+        "energy": 0
     }
 }
