@@ -41,13 +41,6 @@ class Player:
                     "stress": 1
                 }
 
-    def add_experience(self, exp):
-        if utils.get_required_exp(self.level+1)<=self.experience+exp:
-            self.level += 1
-            self.experience = self.experience + exp - utils.get_required_exp(self.level)
-        else:
-            self.experience += exp
-
     def action_task(self, task, additional_option = []):
         final_stats = {
             "experience": 0,
@@ -74,6 +67,33 @@ class Player:
         self.complete_new_stats(final_stats)
         return final_stats
 
+    def amount_task(self, task, amount, additional_option = []):
+            final_stats = {
+                "experience": 0,
+                "creativity": 0,
+                "intelligence": 0,
+                "social": 0,
+                "strength": 0,
+                "mood": 0,
+                "energy": 0,
+                "stress": 0
+            }
+    
+            if isinstance(task, AmountTask):
+                if task.amount_input_mode == "free":
+                    for stat in final_stats.keys():
+                        final_stats[stat] += task.amount_inputs_multipliers.keys()[0][stat] * (amount/int(task.amount_inputs_multipliers.keys()[0]))
+
+                    for option in additional_option or []:
+                        for stat in final_stats.keys():
+                            final_stats[stat] += option.get(stat, 0) * (amount/int(task.amount_inputs_multipliers.keys()[0]))
+
+                    for multiplier in self.multipliers.keys():
+                        final_stats[multiplier] *= self.multipliers[multiplier]
+                        
+            self.complete_new_stats(final_stats)
+            return final_stats
+
     def complete_new_stats(self, stats):
         self.add_experience(stats["experience"])
         self.creativity += stats["creativity"]
@@ -83,6 +103,13 @@ class Player:
         self.mood += stats["mood"]
         self.energy += stats["energy"]
         self.stress += stats["stress"]
+
+    def add_experience(self, exp):
+        if utils.get_required_exp(self.level+1)<=self.experience+exp:
+            self.level += 1
+            self.experience = self.experience + exp - utils.get_required_exp(self.level)
+        else:
+            self.experience += exp        
 
     def update_health(self):
         pass
