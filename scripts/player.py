@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from user import User
 from goals import DailyGoal, WeeklyGoal, CustomGoal
+from tasks import Task, ActionTask, AmountTask, TimeTask
 from achievements import Achievement
 import utils
 
@@ -26,8 +27,8 @@ class Player:
     social = 0 # Gain/lose by actions
     strength = 0 # Gain/lose by actions
 
-    mood = 50 # Gain/lose by actions
     energy = 50 # Gain/lose by actions
+    mood = 50 # Gain/lose by actions
     stress = 0 # Gain/lose by actions
 
     multipliers={
@@ -47,8 +48,41 @@ class Player:
         else:
             self.experience += exp
 
-    def action(self, task, additional_option = []):
-        pass
+    def action_task(self, task, additional_option = []):
+        final_stats = {
+            "experience": 0,
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 0,
+            "energy": 0,
+            "stress": 0
+        }
+
+        if isinstance(task, ActionTask):
+            for stat in task.stats.keys():
+                final_stats[stat] += task.stats[stat]
+
+            for option in additional_option or []:
+                for stat in task.stats.keys():
+                    final_stats[stat] += option.get(stat, 0)
+
+            for multiplier in self.multipliers.keys():
+                final_stats[multiplier] *= self.multipliers[multiplier]
+
+        self.complete_new_stats(final_stats)
+        return final_stats
+
+    def complete_new_stats(self, stats):
+        self.add_experience(stats["experience"])
+        self.creativity += stats["creativity"]
+        self.intelligence += stats["intelligence"]
+        self.social += stats["social"]
+        self.strength += stats["strength"]
+        self.mood += stats["mood"]
+        self.energy += stats["energy"]
+        self.stress += stats["stress"]
 
     def update_health(self):
         pass
