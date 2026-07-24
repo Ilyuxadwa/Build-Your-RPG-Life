@@ -5,7 +5,7 @@ import info
 import main
 import utils
 import register_manager
-from tasks import Task
+from tasks import Task, ActionTask, AmountTask, TimeTask
 
 achievements_dialog = ft.AlertDialog()
 
@@ -276,6 +276,108 @@ def register_page_3_ui(app):
 
     check()
 
+def task_page(app):
+
+    selected_options = []
+    option_buttons = {}
+
+    def make_button(key):
+        return ft.Button(
+            content=ft.Text(key.capitalize(), style=tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD)),
+            style=tools.additional_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10),
+                side={
+                    ft.ControlState.DEFAULT: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                    ft.ControlState.HOVERED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                    ft.ControlState.PRESSED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                }),
+            width=tools.adapt_dimensions(app, "w", 30),
+            height=tools.adapt_dimensions(app, "w", 30),
+            on_click=lambda e, k=key: on_option_tap(k),
+        )
+
+    def on_option_tap(key):
+        if task.additional_options_select == "multiple":
+            if key in selected_options:
+                selected_options.remove(key)
+                option_buttons[key].style = tools.additional_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10),
+                    side={
+                        ft.ControlState.DEFAULT: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                        ft.ControlState.HOVERED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                        ft.ControlState.PRESSED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                    })
+            else:
+                selected_options.append(key)
+                option_buttons[key].style = tools.main_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10),
+                    side={
+                        ft.ControlState.DEFAULT: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                        ft.ControlState.HOVERED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                        ft.ControlState.PRESSED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                    })
+        else:
+            for prev_key in selected_options:
+                option_buttons[prev_key].style = tools.additional_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10),
+                    side={
+                        ft.ControlState.DEFAULT: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                        ft.ControlState.HOVERED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                        ft.ControlState.PRESSED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                    })
+            selected_options.clear()
+            selected_options.append(key)
+            option_buttons[key].style = tools.main_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10),
+                side={
+                    ft.ControlState.DEFAULT: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                    ft.ControlState.HOVERED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                    ft.ControlState.PRESSED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                })
+    
+    task = utils.get_node(main.current_path, main.tasks)
+    if isinstance(task, ActionTask):
+        cat = 1
+    elif isinstance(task, AmountTask):
+        cat = 2
+        input_mode = task.amount_input_mode
+    elif isinstance(task, TimeTask):
+        cat = 3
+        input_mode = task.time_input_mode
+    else:
+        return ValueError("Invalid task")
+
+    additional_options_selector = []
+    if task.additional_options:
+        opt = list(task.additional_options.keys())
+        rows = [opt[i : i + 3] for i in range(0, len(opt), 3)]
+        for row in rows:
+            row_buttons = []
+            for key in row:
+                btn = make_button(key)
+                option_buttons[key] = btn
+                row_buttons.append(btn)
+            additional_options_selector.append(app.alignment("rcenter",
+                *row_buttons,
+                spacing=tools.adapt_dimensions(app, "w", 4)))       
+
+    if cat == 1:
+        task_comletement = app.alignment("rcenter", 
+                                        ft.Button(content = "Complete", 
+                                        style = tools.ok_button_style(app, 28),
+                                        width = tools.adapt_dimensions(app, "w", 60),
+                                        height = tools.adapt_dimensions(app, "h", 10),
+                                        on_click = lambda: main.player.action(task, selected_options)), width = tools.adapt_dimensions(app, "w", 100), height = tools.adapt_dimensions(app, "h", 15))
+
+    print(cat)
+    app.add_element(app.alignment("rstart", ft.IconButton(ft.Icons.ARROW_BACK_ROUNDED, width = tools.adapt_dimensions(app, "h", 10), height = tools.adapt_dimensions(app, "h", 10), style=tools.main_button_style(app, 8), padding=5, on_click=lambda: app.navigate("tasks_navigation_page"))))
+    app.add_element(app.alignment("rcenter", ft.Text(task.title, style = tools.primary_text_style(app, 48))))
+    app.add_element(app.alignment("rcenter", ft.Container(
+                                    content = ft.Text(task.description, style = tools.secondary_text_style(app, 22)),
+                                    bgcolor = app.theme.entry,
+                                    padding = tools.adapt_dimensions(app, "w", 5),
+                                    width = tools.adapt_dimensions(app, "w", 90),
+                                    height = tools.adapt_dimensions(app, "h", 20))))
+    app.add_element(app.alignment("cstart", *additional_options_selector,
+                         width=tools.adapt_dimensions(app, "w", 100),
+                         spacing=tools.adapt_dimensions(app, "w", 4), expand=True))
+    app.add_element(task_comletement)
+
 def tasks_navigation_ui(app):
     path = main.current_path
     node = utils.get_node(path, main.tasks) if path else main.tasks
@@ -293,10 +395,17 @@ def tasks_navigation_ui(app):
 
     def make_button(key, width):
         icon_key = f"{key}-task" if isinstance(node[key], Task) else key
+        try:
+            icon = utils.icon(icon_key)
+            content = app.alignment("ccenter",
+                ft.Icon(icon, color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 20)),
+                ft.Text(key.capitalize(), style=tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD)))
+        except Exception:
+            content = app.alignment("ccenter",
+                ft.Text(key.capitalize(), style=tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD)))
+
         return ft.Button(
-            content=app.alignment("ccenter",
-                ft.Icon(utils.icon(icon_key), color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 20)),
-                ft.Text(key.capitalize(), style=tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD))),
+            content=content,
             style=tools.additional_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10),
                 side={
                     ft.ControlState.DEFAULT: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
@@ -395,6 +504,7 @@ def build():
     app.add_page("loading_page", loading_ui)
     app.add_page("main_page", main_ui)
     app.add_page("tasks_navigation_page", tasks_navigation_ui)
+    app.add_page("task_page", task_page)
     app.add_page("register_1", register_page_1_ui)
     app.add_page("register_2", register_page_2_ui)
     app.add_page("register_3", register_page_3_ui)
