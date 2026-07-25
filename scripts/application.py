@@ -359,12 +359,16 @@ def task_page(app):
     if cat == 1:
         task_comletement = app.alignment("rcenter", 
                                         ft.Button(content = "Complete", 
-                                        style = tools.ok_button_style(app, 28),
+                                        style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10),
+                                        side={
+                                            ft.ControlState.DEFAULT: ft.BorderSide(0, color=app.theme.outline),
+                                            ft.ControlState.HOVERED: ft.BorderSide(0, color=app.theme.outline),
+                                            ft.ControlState.PRESSED: ft.BorderSide(0, color=app.theme.outline),
+                                        }),
                                         width = tools.adapt_dimensions(app, "w", 60),
                                         height = tools.adapt_dimensions(app, "h", 10),
                                         on_click = lambda: main.player.action(task, selected_options)), width = tools.adapt_dimensions(app, "w", 100), height = tools.adapt_dimensions(app, "h", 15))
 
-    print(cat)
     app.add_element(app.alignment("rstart", ft.IconButton(ft.Icons.ARROW_BACK_ROUNDED, width = tools.adapt_dimensions(app, "h", 10), height = tools.adapt_dimensions(app, "h", 10), style=tools.main_button_style(app, 8), padding=5, on_click=lambda: app.navigate("tasks_navigation_page"))))
     app.add_element(app.alignment("rcenter", ft.Text(task.title, style = tools.primary_text_style(app, 48))))
     app.add_element(app.alignment("rcenter", ft.Container(
@@ -435,7 +439,6 @@ def tasks_navigation_ui(app):
 def main_ui(app):
 
     def stats_element(name, stats):
-        print(name, stats)
         return app.alignment("rstart", ft.Icon(utils.icon(name+"-stat"), color=app.theme.primary, size=tools.adapt_dimensions(app, "w", 5)), ft.Text(name.capitalize()+":", style = tools.primary_text_style(app, 18)), ft.Text(str(stats), style = tools.primary_text_style(app, 24, weight=ft.FontWeight.BOLD, italic=True)))
     
     level_stat = app.alignment("rstart",
