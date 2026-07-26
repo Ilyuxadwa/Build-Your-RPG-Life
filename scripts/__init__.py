@@ -1,5 +1,5 @@
 import application
 import main
 
-main.load_tasks()
+main.start_parser()
 application.build()

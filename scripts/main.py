@@ -15,6 +15,8 @@ action_goals = []
 amount_goals = []
 time_goals = []
 
+achievements = {}
+
 player = None
 
 
@@ -37,7 +39,7 @@ async def start(app):
         raw_achievements = await app.load("available_achievements")
         
         user = User(user_data["name"], date.fromisoformat(user_data["birthday"]), user_data["role"], user_data["status"], user_data["weight"], user_data["height"], user_data["gender"], user_data["lifestyle_activeness"], user_data["preferences"], user_data["skills"])
-        
+
         action_goals, amount_goals, time_goals = utils.parse_goals(user.role, user.status)
 
         goals_progress = utils.load_goals_progress(raw_daily_goals, raw_weekly_goals, raw_custom_goals)
@@ -70,6 +72,8 @@ async def finish_registration(app):
     app.navigate("register_1")
 
 
-def load_tasks():
+def start_parser():
     global tasks
+    global achievements
     tasks = utils.parse_tasks()
+    achievements = utils.parse_achievements()

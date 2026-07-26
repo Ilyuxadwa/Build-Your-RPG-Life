@@ -6,12 +6,17 @@ from datetime import datetime, date, timedelta
 from flet import Icons
 from goals import ActionGoal, AmountGoal, TimeGoal, InputMode
 from tasks import ActionTask, AmountTask, TimeTask
+from achievements import Achievement
+
+
 
 with open("config/icons.json", "r", encoding="utf-8") as f:
     icon_map = json.load(f)
 
 with open("config/welcome_messages.json", "r", encoding="utf-8") as f:
     welcome_messages = json.load(f)
+
+
 
 def parse_task_file(path):
     with open(path, "r", encoding="utf-8") as f:
@@ -69,6 +74,30 @@ def get_node(path, tasks):
     for part in path.split("/"):
         node = node[part]
     return node
+
+
+def parse_achievement_file(path):
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    achievement = Achievement(
+        message=data["message"],
+        task=data["task"],
+        number=data["number"],
+        ref_task=data["ref_task"],
+    )
+
+    return data["id"], achievement
+
+def parse_achievements(path="content/achievements/"):
+    parsed = {}
+    for name in os.listdir(path):
+        if name.endswith(".json"):
+            full_path = os.path.join(path, name)
+            achievement_id, achievement = parse_achievement_file(full_path)
+            parsed[achievement_id] = achievement
+    return parsed
+
 
 def parse_goals(role, status):
     actions = os.listdir("content/goals/action/")
