@@ -7,11 +7,6 @@ import utils
 import register_manager
 from tasks import Task, ActionTask, AmountTask, TimeTask
 
-achievements_dialog = ft.AlertDialog()
-
-def get_achievements_list():
-    pass
-
 def loading_ui(app):
     app.add_element(app.alignment("rcenter", ft.Text("Build your life today!", style = tools.primary_text_style(app, 80)), width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
     app.add_element(app.alignment("rcenter", ft.Text("We are preparing everything to begin your adventure...", style = tools.secondary_text_style(app, 18)), width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
@@ -502,8 +497,10 @@ def main_ui(app):
     
 def build():
     app = App()
+
     app.set_size("1/4")
     app.set_version(info.VERSION)
+
     app.add_page("loading_page", loading_ui)
     app.add_page("main_page", main_ui)
     app.add_page("tasks_navigation_page", tasks_navigation_ui)
@@ -511,6 +508,24 @@ def build():
     app.add_page("register_1", register_page_1_ui)
     app.add_page("register_2", register_page_2_ui)
     app.add_page("register_3", register_page_3_ui)
+
+
+    def get_achievements_list():
+            list = []
+            for achievement in main.achievements.values():
+                list.append(ft.Container(bgcolor = app.theme.additional_color, width = tools.adapt_dimensions(app, "w", 70), height=tools.adapt_dimensions(app, "w", 30), padding = tools.adapt_dimensions(app, "w", 5),
+                                        content = ft.Column(alignment = ft.MainAxisAlignment.START, horizontal_alignment = ft.CrossAxisAlignment.START, controls = [
+                                            ft.Text(achievement.message, style = tools.primary_text_style(app, 28)),
+                                            ft.Text(achievement.task, style = tools.secondary_text_style(app, 22)),
+                                            tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 50), height=tools.adapt_dimensions(app, "h", 6), value = 0)
+                                        ], expand = True)))
+            return list
+
+    ach_list = get_achievements_list()
+    achievements_dialog = ft.AlertDialog(content = app.alignment("cstart", *ach_list), title = "Achievements")
+
+
     app.add_top_button(utils.icon("achievements"), achievements_dialog, "Achievements", app.theme.cancel_button)
+
     app.set_async_next(main.start)
     app.run(info.APP_NAME)

@@ -84,7 +84,7 @@ def parse_achievement_file(path):
         message=data["message"],
         task=data["task"],
         number=data["number"],
-        ref_task=data["ref_task"],
+        reference_task=data["ref_task"],
     )
 
     return data["id"], achievement
