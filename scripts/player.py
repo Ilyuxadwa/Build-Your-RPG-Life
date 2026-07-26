@@ -88,9 +88,16 @@ class Player:
                         for stat in final_stats.keys():
                             final_stats[stat] += option.get(stat, 0) * (amount/int(task.amount_inputs_multipliers.keys()[0]))
 
-                    for multiplier in self.multipliers.keys():
-                        final_stats[multiplier] *= self.multipliers[multiplier]
-                        
+                elif task.amount_input_mode == "preset":
+                    for stat in final_stats.keys():
+                        final_stats[stat] += task.amount_inputs_multipliers.keys()[amount][stat]
+
+                    for option in additional_option or []:
+                        for stat in final_stats.keys():
+                            final_stats[stat] += option.get(stat, 0)
+
+                for multiplier in self.multipliers.keys():
+                    final_stats[multiplier] *= self.multipliers[multiplier]
             self.complete_new_stats(final_stats)
             return final_stats
 
