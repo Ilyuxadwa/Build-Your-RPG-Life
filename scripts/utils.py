@@ -51,7 +51,7 @@ def parse_task_file(path):
             time_input=data["time_input"],
             min=data["min"],
             max=data["max"],
-            amount_inputs_multipliers=data["amount_inputs_multipliers"],
+            time_inputs_multipliers=data["time_inputs_multipliers"],
         )
     else:
         raise ValueError(f"Unknown task type: {task_type}")
@@ -207,23 +207,6 @@ def load_goals_progress(daily: dict, weekly: dict, custom: dict):
 
 
 
-def check_registration(version):
-    if version is None:
-        return True
-    version = Version(version)
-    with open("config/register_fields.json", "r") as f:
-        data = json.load(f)
-    for ver in data.keys():
-        if version < Version(ver):
-            return True
-    return False
-
-def get_latest():
-    return date(date.today().year-12, date.today().month, date.today().day)
-
-def get_earliest():
-    return date(date.today().year-100, date.today().month, date.today().day)
-
 def get_initial_stats():
     stats = {}
     with open("config/initial.json", "r") as f:
@@ -376,6 +359,28 @@ def welcome_message(user):
         msg = random.choice(list(welcome_messages))
         return icon("welcome-"+welcome_messages.get(msg)), msg.replace("{name}", user.name)
 
+
+
+def check_registration(version):
+    if version is None:
+        return True
+    version = Version(version)
+    with open("config/register_fields.json", "r") as f:
+        data = json.load(f)
+    for ver in data.keys():
+        if version < Version(ver):
+            return True
+    return False
+
+def get_latest():
+    return date(date.today().year-12, date.today().month, date.today().day)
+
+def get_earliest():
+    return date(date.today().year-100, date.today().month, date.today().day)
+
+def to_seconds(time_str):
+    h, m, s = map(int, time_str.split(":"))
+    return h * 3600 + m * 60 + s
 
 def get_required_exp(level):
     with open("config/levels.json", "r") as f:

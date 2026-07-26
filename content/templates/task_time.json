@@ -12,7 +12,7 @@
     "time_input": "preset, free (only min-max set)",
     "min": "00:05:00",
     "max": "01:00:00",
-    "amount_inputs_multipliers":
+    "time_inputs_multipliers":
     {
         "00:10:00": { //if free input - every 10 will add this multipliers, if preset - set multipliers for each
             "experience": 10,

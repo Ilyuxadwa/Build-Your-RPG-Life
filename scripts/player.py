@@ -68,38 +68,78 @@ class Player:
         return final_stats
 
     def amount_task(self, task, amount, additional_option = []):
-            final_stats = {
-                "experience": 0,
-                "creativity": 0,
-                "intelligence": 0,
-                "social": 0,
-                "strength": 0,
-                "mood": 0,
-                "energy": 0,
-                "stress": 0
-            }
+        final_stats = {
+            "experience": 0,
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 0,
+            "energy": 0,
+            "stress": 0
+        }
     
-            if isinstance(task, AmountTask):
-                if task.amount_input_mode == "free":
+        if isinstance(task, AmountTask):
+            if task.amount_input_mode == "free":
+                for stat in final_stats.keys():
+                    final_stats[stat] += task.amount_inputs_multipliers.keys()[0][stat] * (amount/int(task.amount_inputs_multipliers.keys()[0]))
+
+                for option in additional_option or []:
                     for stat in final_stats.keys():
-                        final_stats[stat] += task.amount_inputs_multipliers.keys()[0][stat] * (amount/int(task.amount_inputs_multipliers.keys()[0]))
+                        final_stats[stat] += option.get(stat, 0) * (amount/int(task.amount_inputs_multipliers.keys()[0]))
 
-                    for option in additional_option or []:
-                        for stat in final_stats.keys():
-                            final_stats[stat] += option.get(stat, 0) * (amount/int(task.amount_inputs_multipliers.keys()[0]))
+            elif task.amount_input_mode == "preset":
+                for stat in final_stats.keys():
+                    final_stats[stat] += task.amount_inputs_multipliers.keys()[amount][stat]
 
-                elif task.amount_input_mode == "preset":
+                for option in additional_option or []:
                     for stat in final_stats.keys():
-                        final_stats[stat] += task.amount_inputs_multipliers.keys()[amount][stat]
+                        final_stats[stat] += option.get(stat, 0)
 
-                    for option in additional_option or []:
-                        for stat in final_stats.keys():
-                            final_stats[stat] += option.get(stat, 0)
+            for multiplier in self.multipliers.keys():
+                final_stats[multiplier] *= self.multipliers[multiplier]
 
-                for multiplier in self.multipliers.keys():
-                    final_stats[multiplier] *= self.multipliers[multiplier]
-            self.complete_new_stats(final_stats)
-            return final_stats
+        self.complete_new_stats(final_stats)
+
+        return final_stats
+
+    def time_task(self, task, time, additional_option = []):
+        final_stats = {
+            "experience": 0,
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 0,
+            "energy": 0,
+            "stress": 0
+        }
+
+        if isinstance(task, TimeTask):
+            if task.amount_input_mode == "free":
+                time = utils.to_seconds(time)
+                required = utils.to_seconds(task.amount_inputs_multipliers.keys()[0])
+                for stat in final_stats.keys():      
+                    final_stats[stat] += task.amount_inputs_multipliers.keys()[0][stat] * (time/required)
+
+                for option in additional_option or []:
+                    for stat in final_stats.keys():
+                        final_stats[stat] += option.get(stat, 0) * (time/required)
+
+            elif task.amount_input_mode == "preset":
+                for stat in final_stats.keys():
+                    final_stats[stat] += task.amount_inputs_multipliers.keys()[time][stat]
+
+                for option in additional_option or []:
+                    for stat in final_stats.keys():
+                        final_stats[stat] += option.get(stat, 0)
+
+            for multiplier in self.multipliers.keys():
+                final_stats[multiplier] *= self.multipliers[multiplier]
+
+        self.complete_new_stats(final_stats)
+        
+        return final_stats
 
     def complete_new_stats(self, stats):
         self.add_experience(stats["experience"])

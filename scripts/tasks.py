@@ -28,4 +28,4 @@ class TimeTask(Task):
     time_input: str
     min: str
     max: str
-    amount_inputs_multipliers: dict
+    time_inputs_multipliers: dict
