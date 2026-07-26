@@ -1,0 +1,68 @@
+{
+    "id": "Preset amount",
+    "title": "Actually not free",
+    "description": "Anything paid",
+    "type": "amount",
+    "cooldown_type": "fixed",
+    "cooldown": "3d",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "additional_options_type": "optional",
+    "additional_options_select": "single",
+    "amount_input_mode": "preset",
+    "min": 1,
+    "max": 10,
+    "amount_inputs_multipliers":
+    {
+        "1": {
+            "experience": 10,
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 0,
+            "energy": -2,
+            "stress": 0
+        },
+        "2": {
+            "experience": 10,
+            "creativity": 10,
+            "intelligence": 10,
+            "social": 5,
+            "strength": 8,
+            "mood": 4,
+            "energy": 2,
+            "stress": 1
+        },
+        "5": {
+            "experience": 10,
+            "creativity": -5,
+            "intelligence": 2,
+            "social": 2,
+            "strength": 1,
+            "mood": 3,
+            "energy": -2,
+            "stress": 4
+        }
+    },
+    "additional_options": {
+        "Fist option": {
+            "experience": 10,
+            "creativity": 10,
+            "intelligence": 10,
+            "social": 10,
+            "strength": 10,
+            "mood": 0,
+            "energy": -5,
+            "stress": -10 },
+        "Another option": {
+            "experience": 10,
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 0,
+            "energy": 0,
+            "stress": 0 }
+    }
+}

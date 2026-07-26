@@ -14,7 +14,7 @@
     "max": "01:00:00",
     "time_inputs_multipliers":
     {
-        "00:10:00": { //if free input - every 10 will add this multipliers, if preset - set multipliers for each
+        "00:10:00": { //if free input - every 10 will add this multipliers (only one available option), if preset - set multipliers for each (at least two to inf. options available)
             "experience": 10,
             "creativity": 0,
             "intelligence": 0,

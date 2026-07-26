@@ -1,0 +1,48 @@
+{
+    "id": "Time free",
+    "title": "Here free time",
+    "description": "Do whatever you want",
+    "type": "time",
+    "cooldown_type": "time",
+    "cooldown": "00:00:00",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "additional_options_type": "required",
+    "additional_options_select": "single",
+    "time_input": "free",
+    "min": "00:05:00",
+    "max": "01:00:00",
+    "time_inputs_multipliers":
+    {
+        "00:10:00": {
+            "experience": 10,
+            "creativity": 2,
+            "intelligence": 3,
+            "social": 4,
+            "strength": 2,
+            "mood": 1,
+            "energy": -2,
+            "stress": 0
+        }
+    },
+    "additional_options": {
+        "Fist option": {
+            "experience": 10,
+            "creativity": 10,
+            "intelligence": 10,
+            "social": 10,
+            "strength": 10,
+            "mood": 0,
+            "energy": -5,
+            "stress": -10 },
+        "Another option": {
+            "experience": 10,
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 0,
+            "energy": 0,
+            "stress": 0 }
+    }
+}

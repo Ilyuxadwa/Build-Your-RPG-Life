@@ -522,7 +522,7 @@ def build():
             return list
 
     ach_list = get_achievements_list()
-    achievements_dialog = ft.AlertDialog(content = app.alignment("cstart", *ach_list), title = "Achievements")
+    achievements_dialog = ft.AlertDialog(content = app.alignment("cstart", *ach_list), title = "Achievements", bgcolor = app.theme.background)
 
 
     app.add_top_button(utils.icon("achievements"), achievements_dialog, "Achievements", app.theme.cancel_button)
