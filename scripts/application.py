@@ -324,7 +324,17 @@ def task_page(app):
                     ft.ControlState.HOVERED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
                     ft.ControlState.PRESSED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
                 })
-    
+
+    def increase(entry, type, max):
+        if type == "amount" and int(entry.value)<max:
+            entry.value = int(entry.value) + 1
+        elif type == "time":
+            pass
+    def decrease(entry, type, min):
+        if type == "amount" and int(entry.value)>min:
+            entry.value = int(entry.value) - 1
+            
+
     task = utils.get_node(main.current_path, main.tasks)
     if isinstance(task, ActionTask):
         cat = 1
@@ -361,21 +371,44 @@ def task_page(app):
                                             ft.ControlState.PRESSED: ft.BorderSide(0, color=app.theme.outline),
                                         }),
                                         width = tools.adapt_dimensions(app, "w", 60),
-                                        height = tools.adapt_dimensions(app, "h", 10),
-                                        on_click = lambda: main.player.action(task, selected_options)), width = tools.adapt_dimensions(app, "w", 100), height = tools.adapt_dimensions(app, "h", 15))
+                                        height = tools.adapt_dimensions(app, "w", 8),
+                                        on_click = lambda: main.player.action(task, selected_options)), width = tools.adapt_dimensions(app, "w", 100))
 
-    app.add_element(app.alignment("rstart", ft.IconButton(ft.Icons.ARROW_BACK_ROUNDED, width = tools.adapt_dimensions(app, "h", 10), height = tools.adapt_dimensions(app, "h", 10), style=tools.main_button_style(app, 8), padding=5, on_click=lambda: app.navigate("tasks_navigation_page"))))
-    app.add_element(app.alignment("rcenter", ft.Text(task.title, style = tools.primary_text_style(app, 48))))
-    app.add_element(app.alignment("rcenter", ft.Container(
-                                    content = ft.Text(task.description, style = tools.secondary_text_style(app, 22)),
-                                    bgcolor = app.theme.entry,
-                                    padding = tools.adapt_dimensions(app, "w", 5),
-                                    width = tools.adapt_dimensions(app, "w", 90),
-                                    height = tools.adapt_dimensions(app, "h", 20))))
-    app.add_element(app.alignment("cstart", *additional_options_selector,
+    elif cat == 2:
+        if input_mode == "free":
+            entry = tools.entry(app, 24, value = task.min, keyboard_type = ft.KeyboardType.NUMBER, width = tools.adapt_dimensions(app, "w", 20), height = tools.adapt_dimensions(app, "w", 8))
+            task_comletement = app.alignment("cstart", app.alignment("rcenter",
+                                    ft.IconButton(icon = utils.icon("controls_decrease"), style = tools.cancel_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: decrease(entry, "amount", task.min)),
+                                    entry,
+                                    ft.IconButton(icon = utils.icon("controls_increase"), style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: increase(entry, "amount", task.max)),
+                                expand = True),
+                                    app.alignment("rcenter", 
+                                        ft.Button(content = "Complete", 
+                                        style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10),
+                                        side={
+                                            ft.ControlState.DEFAULT: ft.BorderSide(0, color=app.theme.outline),
+                                            ft.ControlState.HOVERED: ft.BorderSide(0, color=app.theme.outline),
+                                            ft.ControlState.PRESSED: ft.BorderSide(0, color=app.theme.outline),
+                                        }),
+                                        width = tools.adapt_dimensions(app, "w", 60),
+                                        height = tools.adapt_dimensions(app, "w", 8),
+                                        on_click = lambda: main.player.action(task, selected_options)), width = tools.adapt_dimensions(app, "w", 100)))
+
+
+    app.add_element(app.alignment("cstart",
+                    app.alignment("rstart", ft.IconButton(ft.Icons.ARROW_BACK_ROUNDED, width = tools.adapt_dimensions(app, "h", 10), height = tools.adapt_dimensions(app, "h", 10), style=tools.main_button_style(app, 8), padding=5, on_click=lambda: app.navigate("tasks_navigation_page"))),
+                    app.alignment("rcenter", ft.Text(task.title, style = tools.primary_text_style(app, 48))),
+                    app.alignment("rcenter", ft.Container(
+                        content = ft.Text(task.description, style = tools.secondary_text_style(app, 22)),
+                        bgcolor = app.theme.entry,
+                        padding = tools.adapt_dimensions(app, "w", 5),
+                        width = tools.adapt_dimensions(app, "w", 90),
+                        height = tools.adapt_dimensions(app, "h", 20))),
+                    app.alignment("cstart", *additional_options_selector,
                          width=tools.adapt_dimensions(app, "w", 100),
-                         spacing=tools.adapt_dimensions(app, "w", 4), expand=True))
-    app.add_element(task_comletement)
+                         spacing=tools.adapt_dimensions(app, "w", 4), expand=True),
+                    task_comletement,
+                    ))
 
 def tasks_navigation_ui(app):
     path = main.current_path

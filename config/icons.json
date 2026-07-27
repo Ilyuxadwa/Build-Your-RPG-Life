@@ -6,6 +6,8 @@
     "continue_2": "DOUBLE_ARROW_ROUNDED",
     "finish": "ROCKET_LAUNCH_ROUNDED",
     "return": "ARROW_BACK_ROUNDED",
+    "controls_decrease": "REMOVE_ROUNDED",
+    "controls_increase": "ADD_ROUNDED",
 
     "career": "BUSINESS_CENTER_ROUNDED",
     "challenges": "EMOJI_FLAGS_ROUNDED",
