@@ -290,6 +290,20 @@ def task_page(app):
             on_click=lambda e, k=key: on_option_tap(k),
         )
 
+    def make_input(key):
+            return ft.Button(
+                key.capitalize(),
+                style=tools.ok_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10),
+                    side={
+                        ft.ControlState.DEFAULT: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                        ft.ControlState.HOVERED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                        ft.ControlState.PRESSED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
+                    }),
+                width=tools.adapt_dimensions(app, "w", 20),
+                height=tools.adapt_dimensions(app, "w", 20),
+                on_click=lambda: complete(key),
+            )
+
     def on_option_tap(key):
         if task.additional_options_select == "multiple":
             if key in selected_options:
@@ -359,7 +373,10 @@ def task_page(app):
                 row_buttons.append(btn)
             additional_options_selector.append(app.alignment("rcenter",
                 *row_buttons,
-                spacing=tools.adapt_dimensions(app, "w", 4)))       
+                spacing=tools.adapt_dimensions(app, "w", 4)))     
+
+    def complete(option = ""):
+        pass
 
     if cat == 1:
         task_comletement = app.alignment("rcenter", 
@@ -372,7 +389,7 @@ def task_page(app):
                                         }),
                                         width = tools.adapt_dimensions(app, "w", 60),
                                         height = tools.adapt_dimensions(app, "w", 8),
-                                        on_click = lambda: main.player.action(task, selected_options)), width = tools.adapt_dimensions(app, "w", 100))
+                                        on_click = complete), width = tools.adapt_dimensions(app, "w", 100))
 
     elif cat == 2:
         if input_mode == "free":
@@ -392,8 +409,26 @@ def task_page(app):
                                         }),
                                         width = tools.adapt_dimensions(app, "w", 60),
                                         height = tools.adapt_dimensions(app, "w", 8),
-                                        on_click = lambda: main.player.action(task, selected_options)), width = tools.adapt_dimensions(app, "w", 100)))
+                                        on_click = complete), width = tools.adapt_dimensions(app, "w", 100)))
 
+        if input_mode == "preset":
+            print("this one")
+            Input_options = []
+            Inputs = list(task.amount_inputs_multipliers.keys())
+            rows = [Inputs[i : i + 3] for i in range(0, len(Inputs), 3)]
+            for row in rows:
+                row_buttons = []
+                for key in row:
+                    btn = make_input(key)
+                    option_buttons[key] = btn
+                    row_buttons.append(btn)
+                Input_options.append(app.alignment("rcenter",
+                    *row_buttons,
+                    spacing=tools.adapt_dimensions(app, "w", 4)))
+            task_comletement = app.alignment("cstart", *Input_options,
+                width=tools.adapt_dimensions(app, "w", 100),
+                spacing=tools.adapt_dimensions(app, "w", 4), expand=True)
+            
 
     app.add_element(app.alignment("cstart",
                     app.alignment("rstart", ft.IconButton(ft.Icons.ARROW_BACK_ROUNDED, width = tools.adapt_dimensions(app, "h", 10), height = tools.adapt_dimensions(app, "h", 10), style=tools.main_button_style(app, 8), padding=5, on_click=lambda: app.navigate("tasks_navigation_page"))),
