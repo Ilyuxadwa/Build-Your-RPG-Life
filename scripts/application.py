@@ -290,7 +290,7 @@ def task_page(app):
             on_click=lambda e, k=key: on_option_tap(k),
         )
 
-    def make_input(key):
+    def make_input(key, unit):
             return ft.Button(
                 key.capitalize(),
                 style=tools.ok_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10),
@@ -393,7 +393,7 @@ def task_page(app):
 
     elif cat == 2:
         if input_mode == "free":
-            entry = tools.entry(app, 24, value = task.min, keyboard_type = ft.KeyboardType.NUMBER, width = tools.adapt_dimensions(app, "w", 20), height = tools.adapt_dimensions(app, "w", 8))
+            entry = tools.entry(app, 24, value = task.min, keyboard_type = ft.KeyboardType.NUMBER, width = tools.adapt_dimensions(app, "w", 20), height = tools.adapt_dimensions(app, "w", 8), suffix = task.units.split("/")[1])
             task_comletement = app.alignment("cstart", app.alignment("rcenter",
                                     ft.IconButton(icon = utils.icon("controls_decrease"), style = tools.cancel_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: decrease(entry, "amount", task.min)),
                                     entry,
@@ -412,14 +412,17 @@ def task_page(app):
                                         on_click = complete), width = tools.adapt_dimensions(app, "w", 100)))
 
         if input_mode == "preset":
-            print("this one")
             Input_options = []
             Inputs = list(task.amount_inputs_multipliers.keys())
             rows = [Inputs[i : i + 3] for i in range(0, len(Inputs), 3)]
             for row in rows:
                 row_buttons = []
                 for key in row:
-                    btn = make_input(key)
+                    if key == 1:
+                        unit = task.units.split("/")[0]
+                    else:
+                        unit = task.units.split("/")[1]
+                    btn = make_input(key, unit)
                     option_buttons[key] = btn
                     row_buttons.append(btn)
                 Input_options.append(app.alignment("rcenter",

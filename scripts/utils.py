@@ -40,6 +40,7 @@ def parse_task_file(path):
     elif task_type == "amount":
         task = AmountTask(
             **common,
+            units=data["units"],
             amount_input_mode=data["amount_input_mode"],
             min=data["min"],
             max=data["max"],

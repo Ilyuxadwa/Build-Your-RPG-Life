@@ -18,6 +18,7 @@ class ActionTask(Task):
 
 @dataclass
 class AmountTask(Task):
+    units: str
     amount_input_mode: str
     min: int
     max: int

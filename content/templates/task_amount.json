@@ -3,6 +3,7 @@
     "title": "name",
     "description": "desc",
     "type": "amount",
+    "units": "Page/Pages",
     "cooldown_type": "time/fixed",
     "cooldown": "00:00:00 format for time or 3d for once per 3day (fixed)",
     "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],

@@ -3,6 +3,7 @@
     "title": "Actually free",
     "description": "Anything cheap",
     "type": "amount",
+    "units": "Page/Pages",
     "cooldown_type": "fixed",
     "cooldown": "3d",
     "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
