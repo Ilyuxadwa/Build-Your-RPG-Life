@@ -276,6 +276,13 @@ def task_page(app):
     selected_options = []
     option_buttons = {}
 
+    def page_back():
+        parts = main.current_path.split("/")
+        parent = "/".join(parts[:-1])
+
+        main.current_path = parent
+        app.navigate("tasks_navigation_page")
+
     def make_button(key):
         return ft.Button(
             content=ft.Text(key.capitalize(), style=tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD)),
@@ -434,12 +441,14 @@ def task_page(app):
             
 
     app.add_element(app.alignment("cstart",
-                    app.alignment("rstart", ft.IconButton(ft.Icons.ARROW_BACK_ROUNDED, width = tools.adapt_dimensions(app, "h", 10), height = tools.adapt_dimensions(app, "h", 10), style=tools.main_button_style(app, 8), padding=5, on_click=lambda: app.navigate("tasks_navigation_page"))),
+                    app.alignment("rstart", ft.IconButton(ft.Icons.ARROW_BACK_ROUNDED, width = tools.adapt_dimensions(app, "h", 10), height = tools.adapt_dimensions(app, "h", 10), style=tools.main_button_style(app, 8), padding=5, on_click = page_back)),
                     app.alignment("rcenter", ft.Text(task.title, style = tools.primary_text_style(app, 48))),
                     app.alignment("rcenter", ft.Container(
                         content = ft.Text(task.description, style = tools.secondary_text_style(app, 22)),
                         bgcolor = app.theme.entry,
                         padding = tools.adapt_dimensions(app, "w", 5),
+                        border_radius = 10,
+                        border = ft.Border.all(5, app.theme.outline),
                         width = tools.adapt_dimensions(app, "w", 90),
                         height = tools.adapt_dimensions(app, "h", 20))),
                     app.alignment("cstart", *additional_options_selector,
@@ -453,6 +462,18 @@ def tasks_navigation_ui(app):
     node = utils.get_node(path, main.tasks) if path else main.tasks
     categories = list(node.keys())
     rows = [categories[i : i + 2] for i in range(0, len(categories), 2)]
+
+    def page_back():
+        parts = main.current_path.split("/")
+        parent = "/".join(parts[:-1])
+
+        if path == "":
+            main.current_path = ""
+            app.navigate("main_page")
+
+        else:
+            main.current_path = parent
+            app.navigate("tasks_navigation_page")
 
     def on_tap(key):
         child = node[key]
@@ -498,7 +519,9 @@ def tasks_navigation_ui(app):
                 make_button(row[0], 92),
                 expand=True, spacing=tools.adapt_dimensions(app, "w", 4)))
 
-    app.add_element(app.alignment("cstart", *buttons,
+    app.add_element(app.alignment("cstart", 
+                        app.alignment("rstart", ft.IconButton(ft.Icons.ARROW_BACK_ROUNDED, width = tools.adapt_dimensions(app, "h", 10), height = tools.adapt_dimensions(app, "h", 10), style=tools.main_button_style(app, 8), padding=5, on_click = page_back)),
+                        *buttons,
                      width=tools.adapt_dimensions(app, "w", 100),
                      spacing=tools.adapt_dimensions(app, "w", 4), expand=True))
     
@@ -506,7 +529,11 @@ def main_ui(app):
 
     def stats_element(name, stats):
         return app.alignment("rstart", ft.Icon(utils.icon(name+"-stat"), color=app.theme.primary, size=tools.adapt_dimensions(app, "w", 5)), ft.Text(name.capitalize()+":", style = tools.primary_text_style(app, 18)), ft.Text(str(stats), style = tools.primary_text_style(app, 24, weight=ft.FontWeight.BOLD, italic=True)))
-    
+
+    def to_tasks():
+        app.navigate("tasks_navigation_page")
+        main.current_path=""
+
     level_stat = app.alignment("rstart",
         ft.Button(
             content = ft.Text(
@@ -560,7 +587,7 @@ def main_ui(app):
                                         }),
                                     width=tools.adapt_dimensions(app, "w", 92),
                                     height=tools.adapt_dimensions(app, "w", 46),
-                                    on_click = lambda: app.navigate("tasks_navigation_page"),
+                                    on_click = to_tasks         
                                 ),
                                 width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
 
