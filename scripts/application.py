@@ -292,7 +292,7 @@ def task_page(app):
 
     def make_input(key, unit):
             return ft.Button(
-                key.capitalize(),
+                f"{key.capitalize()} {unit}",
                 style=tools.ok_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10),
                     side={
                         ft.ControlState.DEFAULT: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
@@ -418,7 +418,7 @@ def task_page(app):
             for row in rows:
                 row_buttons = []
                 for key in row:
-                    if key == 1:
+                    if key == "1":
                         unit = task.units.split("/")[0]
                     else:
                         unit = task.units.split("/")[1]
