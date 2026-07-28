@@ -350,10 +350,13 @@ def task_page(app):
         if type == "amount" and int(entry.value)<max:
             entry.value = int(entry.value) + 1
         elif type == "time":
-            pass
+            entry.value = utils.add_time(entry.value, max)
+
     def decrease(entry, type, min):
         if type == "amount" and int(entry.value)>min:
             entry.value = int(entry.value) - 1
+        elif type == "time":
+                    entry.value = utils.remove_time(entry.value, min)
             
 
     task = utils.get_node(main.current_path, main.tasks)
@@ -364,7 +367,7 @@ def task_page(app):
         input_mode = task.amount_input_mode
     elif isinstance(task, TimeTask):
         cat = 3
-        input_mode = task.time_input_mode
+        input_mode = task.time_input
     else:
         return ValueError("Invalid task")
 
@@ -438,6 +441,43 @@ def task_page(app):
             task_comletement = app.alignment("cstart", *Input_options,
                 width=tools.adapt_dimensions(app, "w", 100),
                 spacing=tools.adapt_dimensions(app, "w", 4), expand=True)
+
+    if cat == 3:
+        if input_mode == "free":
+            entry = tools.entry(app, 24, value = task.min, width = tools.adapt_dimensions(app, "w", 20), height = tools.adapt_dimensions(app, "w", 8))
+            task_comletement = app.alignment("cstart", app.alignment("rcenter",
+                                    ft.IconButton(icon = utils.icon("controls_decrease"), style = tools.cancel_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: decrease(entry, "time", task.min)),
+                                    entry,
+                                    ft.IconButton(icon = utils.icon("controls_increase"), style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: increase(entry, "time", task.max)),
+                                expand = True),
+                                    app.alignment("rcenter", 
+                                        ft.Button(content = "Complete", 
+                                        style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10),
+                                        side={
+                                            ft.ControlState.DEFAULT: ft.BorderSide(0, color=app.theme.outline),
+                                            ft.ControlState.HOVERED: ft.BorderSide(0, color=app.theme.outline),
+                                            ft.ControlState.PRESSED: ft.BorderSide(0, color=app.theme.outline),
+                                        }),
+                                        width = tools.adapt_dimensions(app, "w", 60),
+                                        height = tools.adapt_dimensions(app, "w", 8),
+                                        on_click = complete), width = tools.adapt_dimensions(app, "w", 100)))
+
+        if input_mode == "preset":
+            Input_options = []
+            Inputs = list(task.time_inputs_multipliers.keys())
+            rows = [Inputs[i : i + 3] for i in range(0, len(Inputs), 3)]
+            for row in rows:
+                row_buttons = []
+                for key in row:
+                    btn = make_input(key, "")
+                    option_buttons[key] = btn
+                    row_buttons.append(btn)
+                Input_options.append(app.alignment("rcenter",
+                    *row_buttons,
+                    spacing=tools.adapt_dimensions(app, "w", 4)))
+            task_comletement = app.alignment("cstart", *Input_options,
+                width=tools.adapt_dimensions(app, "w", 100),
+                spacing=tools.adapt_dimensions(app, "w", 4), expand=True)        
             
 
     app.add_element(app.alignment("cstart",

@@ -383,6 +383,23 @@ def to_seconds(time_str):
     h, m, s = map(int, time_str.split(":"))
     return h * 3600 + m * 60 + s
 
+def add_time(current_time, max):
+    t = datetime.strptime(current_time, "%H:%M:%S") + timedelta(seconds=10)
+    maximum = datetime.strptime(max, "%H:%M:%S")
+    if t > maximum:
+        result = current_time
+    else:
+        result = t.strftime("%H:%M:%S")
+    return result
+
+def remove_time(current_time, min):
+    t = datetime.strptime(current_time, "%H:%M:%S") - timedelta(seconds=10)
+    minimum = datetime.strptime(min, "%H:%M:%S")
+    if t < minimum:
+        result = current_time
+    else:
+        result = t.strftime("%H:%M:%S")
+    return result
 def get_required_exp(level):
     with open("config/levels.json", "r") as f:
         levels = json.load(f)
