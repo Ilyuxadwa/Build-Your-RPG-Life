@@ -271,6 +271,34 @@ def register_page_3_ui(app):
 
     check()
 
+def completement_page(app):
+    completed = main.last_completed
+    results = []
+    results.append(ft.Text("Task completed", style = tools.primary_text_style(app, 38)))
+    for result in completed.keys():
+        if completed[result]>0:
+            results.append(ft.Text(f"{result}: +{completed[result]}", color = app.theme.ok_button, size = 28))
+        elif completed[result]<0:
+            results.append(ft.Text(f"{result}: {completed[result]}", color = app.theme.cancel_button, size = 28))
+    results.append(ft.Button(content = "Done", 
+                                            style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10),
+                                            side={
+                                                ft.ControlState.DEFAULT: ft.BorderSide(0, color=app.theme.outline),
+                                                ft.ControlState.HOVERED: ft.BorderSide(0, color=app.theme.outline),
+                                                ft.ControlState.PRESSED: ft.BorderSide(0, color=app.theme.outline),
+                                            }),
+                                            width = tools.adapt_dimensions(app, "w", 60),
+                                            height = tools.adapt_dimensions(app, "w", 8),
+                                            on_click = lambda: app.navigate("main_page")))
+    
+    app.add_element(app.alignment("rcenter", ft.Container(
+        content = app.alignment("cstart", *results),
+        bgcolor = app.theme.entry,
+        padding = tools.adapt_dimensions(app, "w", 5),
+        border_radius = 10,
+        width = tools.adapt_dimensions(app, "w", 90),
+        height = tools.adapt_dimensions(app, "h", 90))))
+
 def task_page(app):
 
     selected_options = []
@@ -399,7 +427,12 @@ def task_page(app):
             else:
                 result = main.player.time_task(task, entry.value, selected_options)
 
-        print(result)
+        if not result:
+            pass
+        else:
+            main.last_completed = result
+            app.navigate("completement_page")
+
 
     if cat == 1:
         task_comletement = app.alignment("rcenter", 
@@ -584,8 +617,8 @@ def main_ui(app):
         return app.alignment("rstart", ft.Icon(utils.icon(name+"-stat"), color=app.theme.primary, size=tools.adapt_dimensions(app, "w", 5)), ft.Text(name.capitalize()+":", style = tools.primary_text_style(app, 18)), ft.Text(str(stats), style = tools.primary_text_style(app, 24, weight=ft.FontWeight.BOLD, italic=True)))
 
     def to_tasks():
-        app.navigate("tasks_navigation_page")
         main.current_path=""
+        app.navigate("tasks_navigation_page")
 
     level_stat = app.alignment("rstart",
         ft.Button(
@@ -656,6 +689,7 @@ def build():
     app.add_page("main_page", main_ui)
     app.add_page("tasks_navigation_page", tasks_navigation_ui)
     app.add_page("task_page", task_page)
+    app.add_page("completement_page", completement_page)
     app.add_page("register_1", register_page_1_ui)
     app.add_page("register_2", register_page_2_ui)
     app.add_page("register_3", register_page_3_ui)

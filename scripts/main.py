@@ -7,6 +7,7 @@ from user import User
 import register_manager
 
 current_path = ""
+last_completed = {}
 
 tasks = {}
 tasks_cooldown = {}
