@@ -431,6 +431,7 @@ def task_page(app):
             pass
         else:
             main.last_completed = result
+            app.page.run_task(main.save_all, app)
             app.navigate("completement_page")
 
 

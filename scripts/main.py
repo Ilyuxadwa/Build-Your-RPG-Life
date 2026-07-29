@@ -22,6 +22,12 @@ player = None
 
 
 
+def start_parser():
+    global tasks
+    global achievements
+    tasks = utils.parse_tasks()
+    achievements = utils.parse_achievements()
+
 async def start(app):
     global player
     global action_goals, amount_goals, time_goals
@@ -46,7 +52,7 @@ async def start(app):
         goals_progress = utils.load_goals_progress(raw_daily_goals, raw_weekly_goals, raw_custom_goals)
         #active_goals = utils.load_active_goals()
 
-        stats = await app.load("statistics")
+        stats = utils.get_dict(await app.load("statistics"))
         if not stats:
             stats = utils.get_initial_stats()
 
@@ -62,9 +68,6 @@ async def start(app):
         await app.save("registered", False)
         app.navigate("register_1")
 
-async def set_player(app):
-    pass
-
 async def finish_registration(app):
     user_data = register_manager.finish()
     await app.save("reg_data", utils.save_dict(user_data))
@@ -72,9 +75,19 @@ async def finish_registration(app):
     await app.save("registered_version", info.VERSION)
     app.navigate("register_1")
 
-
-def start_parser():
-    global tasks
-    global achievements
-    tasks = utils.parse_tasks()
-    achievements = utils.parse_achievements()
+async def save_all(app):
+    global player
+    await app.save("statistics", utils.save_dict(
+        {
+            "exp": player.experience,
+            "level": player.level,
+            "health": player.health,
+            "creativity": player.creativity,
+            "intelligence": player.intelligence,
+            "social": player.social,
+            "strength": player.strength,
+            "mood": player.mood,
+            "energy": player.energy,
+            "stress": player.stress
+        }
+    ))
