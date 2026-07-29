@@ -386,7 +386,20 @@ def task_page(app):
                 spacing=tools.adapt_dimensions(app, "w", 4)))     
 
     def complete(option = ""):
-        pass
+        if cat == 1:
+            result = main.player.action_task(task, selected_options)
+        elif cat == 2:
+            if input_mode == "preset":
+                result = main.player.amount_task(task, option, selected_options)
+            else:
+                result = main.player.amount_task(task, int(entry.value), selected_options)
+        elif cat == 3:
+            if input_mode == "preset":
+                result = main.player.time_task(task, option, selected_options)
+            else:
+                result = main.player.time_task(task, entry.value, selected_options)
+
+        print(result)
 
     if cat == 1:
         task_comletement = app.alignment("rcenter", 

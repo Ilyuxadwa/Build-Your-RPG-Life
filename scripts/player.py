@@ -59,7 +59,7 @@ class Player:
 
             for option in additional_option or []:
                 for stat in task.stats.keys():
-                    final_stats[stat] += option.get(stat, 0)
+                    final_stats[stat] += task.additional_options[option][stat]
 
             for multiplier in self.multipliers.keys():
                 final_stats[multiplier] *= self.multipliers[multiplier]
@@ -81,20 +81,21 @@ class Player:
     
         if isinstance(task, AmountTask):
             if task.amount_input_mode == "free":
+                key = list(task.amount_inputs_multipliers.keys())[0]
                 for stat in final_stats.keys():
-                    final_stats[stat] += task.amount_inputs_multipliers.keys()[0][stat] * (amount/int(task.amount_inputs_multipliers.keys()[0]))
+                    final_stats[stat] += task.amount_inputs_multipliers[key][stat] * (amount/int(key))
 
                 for option in additional_option or []:
                     for stat in final_stats.keys():
-                        final_stats[stat] += option.get(stat, 0) * (amount/int(task.amount_inputs_multipliers.keys()[0]))
+                        final_stats[stat] += task.additional_options[option][stat] * (amount/int(key))
 
             elif task.amount_input_mode == "preset":
                 for stat in final_stats.keys():
-                    final_stats[stat] += task.amount_inputs_multipliers.keys()[amount][stat]
+                    final_stats[stat] += task.amount_inputs_multipliers[amount][stat]
 
                 for option in additional_option or []:
                     for stat in final_stats.keys():
-                        final_stats[stat] += option.get(stat, 0)
+                        final_stats[stat] += task.additional_options[option][stat]
 
             for multiplier in self.multipliers.keys():
                 final_stats[multiplier] *= self.multipliers[multiplier]
@@ -103,7 +104,7 @@ class Player:
 
         return final_stats
 
-    def time_task(self, task, time, additional_option = []):
+    def time_task(self, task, time: str, additional_option = []):
         final_stats = {
             "experience": 0,
             "creativity": 0,
@@ -116,23 +117,23 @@ class Player:
         }
 
         if isinstance(task, TimeTask):
-            if task.amount_input_mode == "free":
+            if task.time_input == "free":
                 time = utils.to_seconds(time)
-                required = utils.to_seconds(task.amount_inputs_multipliers.keys()[0])
-                for stat in final_stats.keys():      
-                    final_stats[stat] += task.amount_inputs_multipliers.keys()[0][stat] * (time/required)
-
-                for option in additional_option or []:
-                    for stat in final_stats.keys():
-                        final_stats[stat] += option.get(stat, 0) * (time/required)
-
-            elif task.amount_input_mode == "preset":
+                required = utils.to_seconds(list(task.time_inputs_multipliers.keys())[0])
                 for stat in final_stats.keys():
-                    final_stats[stat] += task.amount_inputs_multipliers.keys()[time][stat]
+                    final_stats[stat] += task.time_inputs_multipliers[list(task.time_inputs_multipliers.keys())[0]][stat] * (time/required)
 
                 for option in additional_option or []:
                     for stat in final_stats.keys():
-                        final_stats[stat] += option.get(stat, 0)
+                        final_stats[stat] += task.additional_options[option][stat] * (time/required)
+
+            elif task.time_input == "preset":
+                for stat in final_stats.keys():
+                    final_stats[stat] += task.time_inputs_multipliers[time][stat]
+
+                for option in additional_option or []:
+                    for stat in final_stats.keys():
+                        final_stats[stat] += task.additional_options[option][stat]
 
             for multiplier in self.multipliers.keys():
                 final_stats[multiplier] *= self.multipliers[multiplier]

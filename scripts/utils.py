@@ -379,7 +379,7 @@ def get_latest():
 def get_earliest():
     return date(date.today().year-100, date.today().month, date.today().day)
 
-def to_seconds(time_str):
+def to_seconds(time_str: str):
     h, m, s = map(int, time_str.split(":"))
     return h * 3600 + m * 60 + s
 
