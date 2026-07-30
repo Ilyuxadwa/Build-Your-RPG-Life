@@ -274,13 +274,12 @@ def register_page_3_ui(app):
 def completement_page(app):
     completed = main.last_completed
     results = []
-    results.append(ft.Text("Task completed", style = tools.primary_text_style(app, 38)))
     for result in completed.keys():
         if completed[result]>0:
-            results.append(ft.Text(f"{result}: +{completed[result]}", color = app.theme.ok_button, size = 28))
+            results.append(ft.Text(f"{result}: +{completed[result]}", color = app.theme.ok_button, size = 18))
         elif completed[result]<0:
-            results.append(ft.Text(f"{result}: {completed[result]}", color = app.theme.cancel_button, size = 28))
-    results.append(ft.Button(content = "Done", 
+            results.append(ft.Text(f"{result}: {completed[result]}", color = app.theme.cancel_button, size = 18))
+    end_btn = ft.Button(content = "Done", 
                                             style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10),
                                             side={
                                                 ft.ControlState.DEFAULT: ft.BorderSide(0, color=app.theme.outline),
@@ -289,15 +288,11 @@ def completement_page(app):
                                             }),
                                             width = tools.adapt_dimensions(app, "w", 60),
                                             height = tools.adapt_dimensions(app, "w", 8),
-                                            on_click = lambda: app.navigate("main_page")))
+                                            on_click = lambda: app.navigate("main_page"))
     
-    app.add_element(app.alignment("rcenter", ft.Container(
-        content = app.alignment("cstart", *results),
-        bgcolor = app.theme.entry,
-        padding = tools.adapt_dimensions(app, "w", 5),
-        border_radius = 10,
-        width = tools.adapt_dimensions(app, "w", 90),
-        height = tools.adapt_dimensions(app, "h", 90))))
+    app.add_element(app.alignment("rcenter", ft.Text("Task completed", style = tools.primary_text_style(app, 32)), width = tools.adapt_dimensions(app, "w", 100)))
+    app.add_element(app.alignment("cstart", *results, width = tools.adapt_dimensions(app, "w", 100)))
+    app.add_element(app.alignment("rcenter", end_btn, width = tools.adapt_dimensions(app, "w", 100)))
 
 def task_page(app):
 
@@ -431,7 +426,7 @@ def task_page(app):
             pass
         else:
             main.last_completed = result
-            app.page.run_task(main.save_all, app)
+            app.page.run_task(main.save_stats, app)
             app.navigate("completement_page")
 
 
@@ -615,7 +610,7 @@ def tasks_navigation_ui(app):
 def main_ui(app):
 
     def stats_element(name, stats):
-        return app.alignment("rstart", ft.Icon(utils.icon(name+"-stat"), color=app.theme.primary, size=tools.adapt_dimensions(app, "w", 5)), ft.Text(name.capitalize()+":", style = tools.primary_text_style(app, 18)), ft.Text(str(stats), style = tools.primary_text_style(app, 24, weight=ft.FontWeight.BOLD, italic=True)))
+        return app.alignment("rstart", ft.Icon(utils.icon(name+"-stat"), color=app.theme.primary, size=tools.adapt_dimensions(app, "w", 5)), ft.Text(name.capitalize()+":", style = tools.primary_text_style(app, 18)), ft.Text(str(round(stats)), style = tools.primary_text_style(app, 24, weight=ft.FontWeight.BOLD, italic=True)))
 
     def to_tasks():
         main.current_path=""
@@ -632,12 +627,12 @@ def main_ui(app):
             alignment=ft.Alignment.CENTER)),
         ft.Column(alignment = ft.MainAxisAlignment.END, horizontal_alignment=ft.CrossAxisAlignment.END,
             controls = [tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 35), height=tools.adapt_dimensions(app, "h", 6), value = main.player.experience / utils.get_required_exp(main.player.level + 1)),
-            ft.Text(f"{main.player.experience}/{utils.get_required_exp(main.player.level + 1)}", style = tools.primary_text_style(app, 12))]))
+            ft.Text(f"{round(main.player.experience)}/{utils.get_required_exp(main.player.level + 1)}", style = tools.primary_text_style(app, 12))]))
     
     health_stat = app.alignment("rstart",
         ft.Icon(utils.icon("health-stat"), color=app.theme.ok_button, size=tools.adapt_dimensions(app, "w", 6)),
         tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 25), height=tools.adapt_dimensions(app, "h", 5), value = main.player.experience / utils.get_required_exp(main.player.level + 1)),
-        ft.Text(str(main.player.health), style = tools.primary_text_style(app, 28)))
+        ft.Text(str(round(main.player.health)), style = tools.primary_text_style(app, 28)))
     
     player_card = ft.Container(content = app.alignment("cspace_evenly", 
                                             app.alignment("rcenter", level_stat, health_stat, spacing = tools.adapt_dimensions(app, "w", 15)), 
@@ -654,7 +649,7 @@ def main_ui(app):
                                                 stats_element("stress", main.player.stress),
                                                 width = tools.adapt_dimensions(app, "w", 85)),
                                             height = tools.adapt_dimensions(app, "h", 25)), 
-                                        bgcolor=app.theme.additional_color, width = tools.adapt_dimensions(app, "w", 90), height = tools.adapt_dimensions(app, "h", 30))
+                                        bgcolor=app.theme.additional_color, border_radius = 10, width = tools.adapt_dimensions(app, "w", 90), height = tools.adapt_dimensions(app, "h", 40))
     
     welcome_icon, welcome_msg = utils.welcome_message(main.player.user)
     app.add_element(app.alignment("cstart", 

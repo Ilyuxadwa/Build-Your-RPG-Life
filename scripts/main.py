@@ -75,7 +75,7 @@ async def finish_registration(app):
     await app.save("registered_version", info.VERSION)
     app.navigate("register_1")
 
-async def save_all(app):
+async def save_stats(app):
     global player
     await app.save("statistics", utils.save_dict(
         {
