@@ -681,6 +681,9 @@ def build():
     app.set_size("1/4")
     app.set_version(info.VERSION)
 
+    app.add_saved_keys("reg_data", "registered", "registered_version", "statistics", "daily_goals", "weekly_goals", "custom_goals", "active_goals", "gained_achievements")
+    app.allow_delete_saved()
+
     app.add_page("loading_page", loading_ui)
     app.add_page("main_page", main_ui)
     app.add_page("tasks_navigation_page", tasks_navigation_ui)
@@ -706,7 +709,13 @@ def build():
     achievements_dialog = ft.AlertDialog(content = app.alignment("cstart", *ach_list), title = "Achievements", bgcolor = app.theme.background)
 
 
-    app.add_top_button(utils.icon("achievements"), achievements_dialog, "Achievements", app.theme.cancel_button)
+    app.add_top_button(
+        icon = utils.icon("achievements"), 
+        dialog_window = achievements_dialog, 
+        tooltip = "Achievements", 
+        icon_color=lambda theme: theme.cancel_button,
+        pages=["main_page"]  
+    )
 
     app.set_async_next(main.start)
     app.run(info.APP_NAME)
