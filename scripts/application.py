@@ -6,6 +6,33 @@ import main
 import utils
 import register_manager
 from tasks import Task, ActionTask, AmountTask, TimeTask
+from achievements import Achievement
+
+def achievements_dialog(app):
+    def reached_card(achievement: Achievement):
+        return ft.Container(content = app.alignment("cstart", 
+                                ft.Text(achievement.message, style = tools.primary_text_style(app, 24)),
+                                ft.Text(achievement.task.replace("{number}", str(achievement.number)), style = tools.primary_text_style(app, 18)),
+                            ), bgcolor = app.theme.entry, border_radius = 10, padding = 10, width = tools.adapt_dimensions(app, "w", 50))
+
+    def unreached_card(achievement: Achievement):
+            return ft.Container(content = app.alignment("cstart", 
+                                    ft.Text(achievement.message, style = tools.secondary_text_style(app, 24)),
+                                    ft.Text(achievement.task.replace("{number}", str(achievement.number)), style = tools.secondary_text_style(app, 18)),
+                                ), bgcolor = app.theme.additional_color, border_radius = 10, padding = 10, width = tools.adapt_dimensions(app, "w", 50))
+
+    achievements = main.achievements
+    gained_achievements = main.player.achievements
+
+    list_of_achievements = []
+    for achievement in achievements.keys():
+        if gained_achievements and achievement in gained_achievements:
+            list_of_achievements.insert(0, reached_card(achievements[achievement]))
+        else:
+            pass
+            list_of_achievements.append(unreached_card(achievements[achievement]))
+
+    return ft.AlertDialog(content = app.alignment("cstart", *list_of_achievements, spacing = tools.adapt_dimensions(app, "w", 4), expand = True), actions = [ft.ElevatedButton("Okay", style = tools.ok_button_style(app, 14), on_click=lambda e: app.page.pop_dialog())], actions_alignment = ft.MainAxisAlignment.END, modal = True)
 
 def loading_ui(app):
     app.add_element(app.alignment("rcenter", ft.Text("Build your life today!", style = tools.primary_text_style(app, 80)), width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
@@ -704,10 +731,6 @@ def build():
                                             tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 50), height=tools.adapt_dimensions(app, "h", 6), value = 0)
                                         ], expand = True)))
             return list
-
-    ach_list = get_achievements_list()
-    achievements_dialog = ft.AlertDialog(content = app.alignment("cstart", *ach_list), title = "Achievements", bgcolor = app.theme.background)
-
 
     app.add_top_button(
         icon = utils.icon("achievements"), 

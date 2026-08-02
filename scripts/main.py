@@ -27,6 +27,7 @@ def start_parser():
     global achievements
     tasks = utils.parse_tasks()
     achievements = utils.parse_achievements()
+    print(achievements)
 
 async def start(app):
     global player
@@ -43,7 +44,7 @@ async def start(app):
         raw_custom_goals = utils.get_dict(await app.load("custom_goals"))
         raw_active_goals = await app.load("active_goals")
 
-        raw_achievements = await app.load("gained_achievements")
+        gained_achievements = await app.load("gained_achievements")
         
         user = User(user_data["name"], date.fromisoformat(user_data["birthday"]), user_data["role"], user_data["status"], user_data["weight"], user_data["height"], user_data["gender"], user_data["lifestyle_activeness"], user_data["preferences"], user_data["skills"])
 
@@ -56,7 +57,7 @@ async def start(app):
         if not stats:
             stats = utils.get_initial_stats()
 
-        player = Player(user)
+        player = Player(user, gained_achievements)
         player.start(stats)
 
         app.navigate("main_page")

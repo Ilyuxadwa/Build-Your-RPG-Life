@@ -6,4 +6,3 @@ class Achievement:
     task: str
     number: int
     reference_task: str
-    completed: bool = False

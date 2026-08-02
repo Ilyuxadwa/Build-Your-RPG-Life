@@ -14,7 +14,7 @@ class Player:
     #weekly_challenges: list[WeeklyGoal]
     #custom_goals: list[CustomGoal]
 
-    #achievements: list[Achievement]
+    achievements: list[str]
 
     # Stats
     experience = 0 # Gain/lose by actions
