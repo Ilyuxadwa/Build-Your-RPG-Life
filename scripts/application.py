@@ -32,7 +32,7 @@ def achievements_dialog(app):
             pass
             list_of_achievements.append(unreached_card(achievements[achievement]))
 
-    return ft.AlertDialog(content = app.alignment("cstart", *list_of_achievements, spacing = tools.adapt_dimensions(app, "w", 4), expand = True), actions = [ft.ElevatedButton("Okay", style = tools.ok_button_style(app, 14), on_click=lambda e: app.page.pop_dialog())], actions_alignment = ft.MainAxisAlignment.END, modal = True)
+    return ft.AlertDialog(content = app.alignment("cstart", *list_of_achievements, spacing = tools.adapt_dimensions(app, "w", 4), expand = True), bgcolor = app.theme.background, actions = [ft.ElevatedButton("Okay", style = tools.ok_button_style(app, 14), on_click=lambda e: app.page.pop_dialog())], actions_alignment = ft.MainAxisAlignment.END, modal = True)
 
 def loading_ui(app):
     app.add_element(app.alignment("rcenter", ft.Text("Build your life today!", style = tools.primary_text_style(app, 80)), width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
@@ -289,8 +289,6 @@ def register_page_3_ui(app):
         else:
             next_step.disabled = True
             next_step.style = tools.additional_button_style(app, 14)
-        print(len(chosen_preferences), len(chosen_skills))
-
     
     def next_page():
         register_manager.set_thirds_part(activity_value.value, chosen_preferences, chosen_skills)

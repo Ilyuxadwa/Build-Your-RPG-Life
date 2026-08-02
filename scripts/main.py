@@ -27,7 +27,6 @@ def start_parser():
     global achievements
     tasks = utils.parse_tasks()
     achievements = utils.parse_achievements()
-    print(achievements)
 
 async def start(app):
     global player
