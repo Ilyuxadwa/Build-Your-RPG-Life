@@ -73,7 +73,7 @@ async def finish_registration(app):
     await app.save("reg_data", utils.save_dict(user_data))
     await app.save("registered", True)
     await app.save("registered_version", info.VERSION)
-    app.navigate("register_1")
+    await start(app)
 
 async def save_stats(app):
     global player
