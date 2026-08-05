@@ -3,10 +3,14 @@ import flet as ft
 
 import info
 import main
+from goals import ActionGoal, AmountGoal, TimeGoal, DailyGoal, WeeklyGoal, CustomGoal, Goal
 import utils
 import register_manager
 from tasks import Task, ActionTask, AmountTask, TimeTask
 from achievements import Achievement
+
+from datetime import datetime, timedelta, date, time
+import copy
 
 def achievements_dialog(app):
     def reached_card(achievement: Achievement):
@@ -295,6 +299,153 @@ def register_page_3_ui(app):
         app.page.run_task(main.finish_registration, app)
 
     check()
+
+def goals_config_page(app):
+    action_goals, amount_goals, time_goals = main.action_goals, main.amount_goals, main.time_goals
+    all_goals = action_goals + amount_goals + time_goals
+
+    selected_goal = {"goal": None}
+    selected_period = {"period": None}
+    target_input = {"value": None}
+    custom_finish = {"value": None}
+
+    period_buttons = {}
+    goal_controls = []
+    active_controls = []
+
+    def rebuild_goal_controls():
+        goal_controls.clear()
+
+        goal = selected_goal["goal"]
+        if goal is None:
+            app.page.update()
+            return
+
+        period_buttons.clear()
+        row = []
+        if goal.available_periods.get("daily"):
+            row.append(make_period_button("daily", "Daily"))
+        if goal.available_periods.get("weekly"):
+            row.append(make_period_button("weekly", "Weekly"))
+        if goal.available_periods.get("custom"):
+            row.append(make_period_button("custom", "Custom"))
+        goal_controls.append(app.alignment("rstart", *row, width=tools.adapt_dimensions(app, "w", 100)))
+
+        if selected_period["period"] == "custom":
+            date_picker = ft.DatePicker(on_change=on_custom_date_change)
+            app.page.overlay.append(date_picker)
+            open_btn = ft.ElevatedButton("Pick finish date", on_click=lambda e: app.page.open(date_picker))
+            goal_controls.append(open_btn)
+
+        if isinstance(goal, AmountGoal):
+            field = ft.TextField(label=f"Target amount ({goal.unit})",
+                                  value=str(goal.target_amount), on_change=on_target_change)
+            goal_controls.append(field)
+        elif isinstance(goal, TimeGoal) and goal.user_defined_target:
+            field = ft.TextField(label="Target time (minutes)", value="", on_change=on_target_change)
+            goal_controls.append(field)
+
+        goal_controls.append(ft.ElevatedButton("Add goal", on_click=lambda e: add_goal()))
+        app.page.update()
+
+    def make_period_button(period, label):
+        btn = ft.ElevatedButton(
+            label,
+            on_click=lambda e: select_period(period),
+            style=ft.ButtonStyle(bgcolor=ft.Colors.BLUE_200) if selected_period["period"] == period else None,
+        )
+        period_buttons[period] = btn
+        return btn
+
+    def select_period(period):
+        selected_period["period"] = period
+        for name, btn in period_buttons.items():
+            btn.style = ft.ButtonStyle(bgcolor=ft.Colors.BLUE_200) if name == period else None
+        rebuild_goal_controls()
+
+    def on_custom_date_change(e):
+        picked = e.control.value.astimezone()  # fixes the DatePicker UTC offset bug
+        custom_finish["value"] = datetime.combine(picked.date(), time.max)
+
+    def on_target_change(e):
+        try:
+            target_input["value"] = float(e.control.value)
+        except ValueError:
+            target_input["value"] = None
+
+    def select_goal(title):
+        goal = None
+        for g in all_goals:
+            if g.title == title:
+                goal = g
+                break
+
+        selected_goal["goal"] = goal
+        selected_period["period"] = None
+        target_input["value"] = None
+        custom_finish["value"] = None
+        rebuild_goal_controls()
+
+    def add_goal():
+        goal = selected_goal["goal"]
+        period = selected_period["period"]
+        if goal is None or period is None:
+            return
+
+        new_goal = copy.deepcopy(goal)  # pool template must not be shared across selections
+
+        if isinstance(new_goal, AmountGoal) and target_input["value"] is not None:
+            new_goal.target_amount = target_input["value"]
+        elif isinstance(new_goal, TimeGoal) and new_goal.user_defined_target and target_input["value"] is not None:
+            new_goal.target_duration = timedelta(minutes=target_input["value"])
+
+        if period == "daily":
+            main.player.daily_goals.append(DailyGoal(goal=new_goal))
+        elif period == "weekly":
+            main.player.weekly_goals.append(WeeklyGoal(goal=new_goal))
+        elif period == "custom":
+            if custom_finish["value"] is None:
+                return
+            main.player.custom_goals.append(CustomGoal(
+                goal=new_goal, assigned_time=datetime.now(), finish_time=custom_finish["value"]))
+
+        selected_goal["goal"] = None
+        selected_period["period"] = None
+        goal_controls.clear()
+        rebuild_active_controls()
+        app.page.update()
+
+    def delete_goal(period_goal, goal_list):
+        goal_list.remove(period_goal)
+        rebuild_active_controls()
+        app.page.update()
+
+    def rebuild_active_controls():
+        active_controls.clear()
+        for pg in main.player.daily_goals + main.player.weekly_goals + main.player.custom_goals:
+            if isinstance(pg, DailyGoal):
+                lst = main.player.daily_goals
+            elif isinstance(pg, WeeklyGoal):
+                lst = main.player.weekly_goals
+            else:
+                lst = main.player.custom_goals
+
+            active_controls.append(app.alignment("cstart",
+                ft.Text(pg.goal.title),
+                ft.ElevatedButton("Delete", on_click=lambda e, pg=pg, lst=lst: delete_goal(pg, lst)),
+                width=tools.adapt_dimensions(app, "w", 100)))
+
+    rebuild_active_controls()
+
+    dropdown = tools.dropdown(app, 14, label="Select a goal",
+                                options=[tools.doption(app, g.title) for g in all_goals],
+                                on_select=lambda e: select_goal(e.control.value))
+
+    app.add_element(app.alignment("cstart",
+                                dropdown,
+                                *goal_controls,
+                                *active_controls,
+                                width=tools.adapt_dimensions(app, "w", 100)))
 
 def completement_page(app):
     completed = main.last_completed
@@ -719,6 +870,20 @@ def main_ui(app):
                                     on_click = to_tasks         
                                 ),
                                 *active_goals(app),
+                                ft.Button(
+                                    content=app.alignment("ccenter",
+                                        ft.Icon(utils.icon("goals"), color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 15)),
+                                        ft.Text("Goals configuration", style=tools.secondary_text_style(app, 40, weight=ft.FontWeight.BOLD))),
+                                    style=tools.main_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10),
+                                        side={
+                                            ft.ControlState.DEFAULT: ft.BorderSide(app.theme.outline_width+2, color=app.theme.entry),
+                                            ft.ControlState.HOVERED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.entry),
+                                            ft.ControlState.PRESSED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.entry),
+                                        }),
+                                    width=tools.adapt_dimensions(app, "w", 92),
+                                    height=tools.adapt_dimensions(app, "w", 25),
+                                    on_click = lambda: app.navigate("goals_configuration_page")       
+                                ),                                
                                 width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
 
 
@@ -737,21 +902,10 @@ def build():
     app.add_page("tasks_navigation_page", tasks_navigation_ui)
     app.add_page("task_page", task_page)
     app.add_page("completement_page", completement_page)
+    app.add_page("goals_configuration_page", goals_config_page)
     app.add_page("register_1", register_page_1_ui)
     app.add_page("register_2", register_page_2_ui)
     app.add_page("register_3", register_page_3_ui)
-
-
-    def get_achievements_list():
-            list = []
-            for achievement in main.achievements.values():
-                list.append(ft.Container(bgcolor = app.theme.additional_color, width = tools.adapt_dimensions(app, "w", 70), height=tools.adapt_dimensions(app, "w", 30), padding = tools.adapt_dimensions(app, "w", 5),
-                                        content = ft.Column(alignment = ft.MainAxisAlignment.START, horizontal_alignment = ft.CrossAxisAlignment.START, controls = [
-                                            ft.Text(achievement.message, style = tools.primary_text_style(app, 28)),
-                                            ft.Text(achievement.task, style = tools.secondary_text_style(app, 22)),
-                                            tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 50), height=tools.adapt_dimensions(app, "h", 6), value = 0)
-                                        ], expand = True)))
-            return list
 
     app.add_top_button(
         icon = utils.icon("achievements"), 
