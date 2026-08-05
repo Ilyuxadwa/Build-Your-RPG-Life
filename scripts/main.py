@@ -41,7 +41,7 @@ async def start(app):
         raw_daily_goals = utils.get_dict(await app.load("daily_goals"))
         raw_weekly_goals = utils.get_dict(await app.load("weekly_goals"))
         raw_custom_goals = utils.get_dict(await app.load("custom_goals"))
-        raw_active_goals = await app.load("active_goals")
+        raw_active_goals = utils.get_dict(await app.load("active_goals"))
 
         gained_achievements = await app.load("gained_achievements")
         
@@ -49,14 +49,13 @@ async def start(app):
 
         action_goals, amount_goals, time_goals = utils.parse_goals(user.role, user.status)
 
-        goals_progress = utils.load_goals_progress(raw_daily_goals, raw_weekly_goals, raw_custom_goals)
-        #active_goals = utils.load_active_goals()
+        daily_goals, weekly_goals, custom_goals = utils.load_goals_progress(raw_active_goals, raw_daily_goals, raw_weekly_goals, raw_custom_goals, action_goals, amount_goals, time_goals)
 
         stats = utils.get_dict(await app.load("statistics"))
         if not stats:
             stats = utils.get_initial_stats()
 
-        player = Player(user, gained_achievements)
+        player = Player(user, daily_goals, weekly_goals, custom_goals, gained_achievements)
         player.start(stats)
 
         app.navigate("main_page")
@@ -91,3 +90,12 @@ async def save_stats(app):
             "stress": player.stress
         }
     ))
+
+async def save_goals(app):
+    global player
+    d_goals, w_goals, c_goals = utils.save_goals_progress(player.daily_goals, player.weekly_goals, player.custom_goals)
+    active_goals = utils.save_active_goals_progress(player.daily_goals, player.weekly_goals, player.custom_goals)
+    await app.save("daily_goals", utils.save_dict(d_goals))
+    await app.save("weekly_goals", utils.save_dict(w_goals))
+    await app.save("custom_goals", utils.save_dict(c_goals))
+    await app.save("active_goals", utils.save_dict(active_goals))

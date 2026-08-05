@@ -10,9 +10,9 @@ class Player:
 
     user: User
     
-    #daily_challenges: list[DailyGoal]
-    #weekly_challenges: list[WeeklyGoal]
-    #custom_goals: list[CustomGoal]
+    daily_goals: list[DailyGoal]
+    weekly_goals: list[WeeklyGoal]
+    custom_goals: list[CustomGoal]
 
     achievements: list[str]
 
@@ -141,6 +141,19 @@ class Player:
         self.complete_new_stats(final_stats)
         
         return final_stats
+
+    #todo: make it better
+    def complete_goal(self, goal):
+        if isinstance(goal, DailyGoal):
+            goal.complete()
+            self.daily_goals.remove(goal)
+        elif isinstance(goal, WeeklyGoal):
+            goal.complete()
+            self.weekly_goals.remove(goal)
+        elif isinstance(goal, CustomGoal):
+            goal.complete()
+            self.custom_goals.remove(goal)
+        #return state, stats, next_date
 
     def complete_new_stats(self, stats):
         self.add_experience(stats["experience"])

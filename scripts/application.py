@@ -641,6 +641,28 @@ def main_ui(app):
         main.current_path=""
         app.navigate("tasks_navigation_page")
 
+    def active_goals(app):
+        active_goals = main.player.daily_goals + main.player.weekly_goals + main.player.custom_goals
+        if not active_goals:
+            return []
+
+        goals_elements = []
+        for goal in active_goals:
+            goals_elements.append(ft.Container(
+                content=app.alignment("rspace_between",
+                    ft.Text(goal.title, style=tools.primary_text_style(app, 20)),
+                    ft.Text(f"{goal.progress}/{goal.target}", style=tools.primary_text_style(app, 20)),
+                    tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 30), height=tools.adapt_dimensions(app, "h", 4), value=goal.progress / goal.target),
+                ),
+                bgcolor=app.theme.additional_color,
+                border_radius=10,
+                padding=tools.adapt_dimensions(app, "w", 5),
+                width=tools.adapt_dimensions(app, "w", 90),
+                height=tools.adapt_dimensions(app, "h", 10),
+            ))
+
+        return goals_elements
+
     level_stat = app.alignment("rstart",
         ft.Button(
             content = ft.Text(
@@ -684,8 +706,8 @@ def main_ui(app):
                                 player_card,
                                 ft.Button(
                                     content=app.alignment("ccenter",
-                                        ft.Icon(utils.icon("tasks"), color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 20)),
-                                        ft.Text("Proceed to tasks", style=tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD))),
+                                        ft.Icon(utils.icon("tasks"), color=app.theme.secondary, size=tools.adapt_dimensions(app, "w", 15)),
+                                        ft.Text("Proceed to tasks", style=tools.secondary_text_style(app, 40, weight=ft.FontWeight.BOLD))),
                                     style=tools.additional_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10),
                                         side={
                                             ft.ControlState.DEFAULT: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
@@ -693,9 +715,10 @@ def main_ui(app):
                                             ft.ControlState.PRESSED: ft.BorderSide(app.theme.outline_width+2, color=app.theme.outline),
                                         }),
                                     width=tools.adapt_dimensions(app, "w", 92),
-                                    height=tools.adapt_dimensions(app, "w", 46),
+                                    height=tools.adapt_dimensions(app, "w", 25),
                                     on_click = to_tasks         
                                 ),
+                                *active_goals(app),
                                 width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
 
 

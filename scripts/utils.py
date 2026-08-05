@@ -4,7 +4,7 @@ import random
 from packaging.version import Version
 from datetime import datetime, date, timedelta
 from flet import Icons
-from goals import ActionGoal, AmountGoal, TimeGoal, InputMode
+from goals import ActionGoal, AmountGoal, TimeGoal, DailyGoal, WeeklyGoal, CustomGoal, InputMode, GoalStatus
 from tasks import ActionTask, AmountTask, TimeTask
 from achievements import Achievement
 
@@ -199,14 +199,142 @@ def parse_input_mode(raw_value: str) -> InputMode:
 
     raise ValueError(f"Unknown input_mode value: {raw_value!r}")
 
+def goal_progress_entry(goal):
+    if isinstance(goal, ActionGoal):
+        return {"type": "action", "completed": goal.done, "status": goal.status.value}
+    elif isinstance(goal, AmountGoal):
+        return {"type": "amount", "current": goal.current_amount,
+                "completed": goal.is_complete(), "status": goal.status.value}
+    elif isinstance(goal, TimeGoal):
+        return {"type": "time", "current": goal.accumulated.total_seconds(),
+                "completed": goal.is_complete(), "status": goal.status.value}
+
 
 def save_goals_progress(daily: list, weekly: list, custom: list):
-    pass
+    daily_dict = {}
+    for period_goal in daily:
+        daily_dict[period_goal.goal.title] = goal_progress_entry(period_goal.goal)
 
-def load_goals_progress(daily: dict, weekly: dict, custom: dict):
-    pass
+    weekly_dict = {}
+    for period_goal in weekly:
+        weekly_dict[period_goal.goal.title] = goal_progress_entry(period_goal.goal)
+
+    custom_dict = {}
+    for period_goal in custom:
+        custom_dict[period_goal.goal.title] = goal_progress_entry(period_goal.goal)
+
+    return daily_dict, weekly_dict, custom_dict
+
+def save_active_goals_progress(daily: list, weekly: list, custom: list):
+    active_dict = {}
+
+    for period_goal in daily:
+        active_dict[period_goal.goal.title] = {
+            "period": "daily",
+            "assigned_time": period_goal.assigned_time.isoformat(),
+            "finish_time": period_goal.finish_time.isoformat(),
+        }
+
+    for period_goal in weekly:
+        active_dict[period_goal.goal.title] = {
+            "period": "weekly",
+            "assigned_time": period_goal.assigned_time.isoformat(),
+            "finish_time": period_goal.finish_time.isoformat(),
+        }
+
+    for period_goal in custom:
+        active_dict[period_goal.goal.title] = {
+            "period": "custom",
+            "assigned_time": period_goal.assigned_time.isoformat(),
+            "finish_time": period_goal.finish_time.isoformat(),
+        }
+
+    return active_dict
+
+def _find_in_pool(title, action_goals, amount_goals, time_goals):
+    for g in action_goals:
+        if g.title == title:
+            return g
+    for g in amount_goals:
+        if g.title == title:
+            return g
+    for g in time_goals:
+        if g.title == title:
+            return g
+    return None
 
 
+def _apply_progress(goal, progress):
+    if not progress:
+        return
+    if isinstance(goal, ActionGoal):
+        goal.done = progress.get("completed", False)
+    elif isinstance(goal, AmountGoal):
+        goal.current_amount = progress.get("current", 0.0)
+    elif isinstance(goal, TimeGoal):
+        goal.accumulated = timedelta(seconds=progress.get("current", 0))
+    goal.status = GoalStatus(progress.get("status", "in_progress"))
+
+
+def _reset_progress(goal):
+    if isinstance(goal, ActionGoal):
+        goal.done = False
+    elif isinstance(goal, AmountGoal):
+        goal.current_amount = 0.0
+    elif isinstance(goal, TimeGoal):
+        goal.accumulated = timedelta()
+    goal.status = GoalStatus.IN_PROGRESS
+
+
+def load_goals_progress(active: dict, daily: dict, weekly: dict, custom: dict,
+                          action_goals: list[ActionGoal], amount_goals: list[AmountGoal],
+                          time_goals: list[TimeGoal]):
+    daily_goals = []
+    weekly_goals = []
+    custom_goals = []
+
+    for title, info in active.items():
+        goal = _find_in_pool(title, action_goals, amount_goals, time_goals)
+        if goal is None:
+            continue
+
+        period = info["period"]
+
+        if period == "daily":
+            _apply_progress(goal, daily.get(title))
+            finish_time = datetime.fromisoformat(info["finish_time"])
+
+            if datetime.now() > finish_time:
+                _reset_progress(goal)
+                daily_goals.append(DailyGoal(goal=goal))
+            else:
+                wrapped = DailyGoal(goal=goal)
+                wrapped.assigned_time = datetime.fromisoformat(info["assigned_time"])
+                wrapped.finish_time = finish_time
+                daily_goals.append(wrapped)
+
+        elif period == "weekly":
+            _apply_progress(goal, weekly.get(title))
+            finish_time = datetime.fromisoformat(info["finish_time"])
+
+            if datetime.now() > finish_time:
+                _reset_progress(goal)
+                weekly_goals.append(WeeklyGoal(goal=goal))
+            else:
+                wrapped = WeeklyGoal(goal=goal)
+                wrapped.assigned_time = datetime.fromisoformat(info["assigned_time"])
+                wrapped.finish_time = finish_time
+                weekly_goals.append(wrapped)
+
+        elif period == "custom":
+            _apply_progress(goal, custom.get(title))
+            custom_goals.append(CustomGoal(
+                goal=goal,
+                assigned_time=datetime.fromisoformat(info["assigned_time"]),
+                finish_time=datetime.fromisoformat(info["finish_time"]),
+            ))
+
+    return daily_goals, weekly_goals, custom_goals
 
 def get_initial_stats():
     stats = {}
