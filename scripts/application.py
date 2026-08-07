@@ -318,7 +318,7 @@ def goals_config_page(app):
 
     active_column = ft.Column()
     dialog_body = ft.Column()
-    dialog = ft.AlertDialog(title=ft.Text(""), content=dialog_body, actions=[])
+    dialog = ft.AlertDialog(title=ft.Text(""), bgcolor = app.theme.background, content=dialog_body, actions=[])
 
     def rebuild_active_column(push_update=True):
         rows = []
@@ -327,11 +327,11 @@ def goals_config_page(app):
                         [(g, main.player.custom_goals) for g in main.player.custom_goals]:
 
             info = ft.Text(f"{pg.goal.title} — {pg.goal.progress() * 100:.0f}%")
-            delete_btn = ft.ElevatedButton("Delete", on_click=lambda e, pg=pg, lst=lst: delete_goal(pg, lst))
+            delete_btn = ft.ElevatedButton("Delete", style = tools.cancel_button_style(app, 14), on_click=lambda e, pg=pg, lst=lst: delete_goal(pg, lst))
 
             row_controls = [info]
             if not isinstance(pg.goal, ActionGoal):
-                edit_btn = ft.ElevatedButton("Edit", on_click=lambda e, pg=pg, lst=lst: open_edit_dialog(pg, lst))
+                edit_btn = ft.ElevatedButton("Edit", style = tools.additional_button_style(app, 14), on_click=lambda e, pg=pg, lst=lst: open_edit_dialog(pg, lst))
                 row_controls.append(edit_btn)
             row_controls.append(delete_btn)
 
@@ -350,7 +350,7 @@ def goals_config_page(app):
         btn = ft.ElevatedButton(
             label,
             on_click=lambda e: select_period(period),
-            style=ft.ButtonStyle(bgcolor=ft.Colors.BLUE_200) if state["period"] == period else None,
+            style=tools.main_button_style(app, 14) if state["period"] == period else tools.additional_button_style(app, 14),
         )
         period_buttons[period] = btn
         return btn
@@ -363,7 +363,7 @@ def goals_config_page(app):
         btn = ft.ElevatedButton(
             label,
             on_click=lambda e: select_preset(value),
-            style=ft.ButtonStyle(bgcolor=ft.Colors.BLUE_200) if state["target_value"] == value else None,
+            style=tools.main_button_style(app, 14) if state["target_value"] == value else tools.additional_button_style(app, 14),
         )
         preset_buttons[value] = btn
         return btn
@@ -371,7 +371,7 @@ def goals_config_page(app):
     def select_preset(value):
         state["target_value"] = value
         for v, btn in preset_buttons.items():
-            btn.style = ft.ButtonStyle(bgcolor=ft.Colors.BLUE_200) if v == value else None
+            btn.style = tools.main_button_style(app, 14) if v == value else tools.additional_button_style(app, 14)
         dialog_body.update()
 
     def on_custom_date_change(e):
@@ -422,7 +422,7 @@ def goals_config_page(app):
             if period == "custom":
                 date_picker = ft.DatePicker(on_change=on_custom_date_change)
                 app.page.overlay.append(date_picker)
-                controls.append(ft.ElevatedButton("Pick finish date", on_click=lambda e: app.open_dialog(date_picker)))
+                controls.append(ft.ElevatedButton("Pick finish date", style = tools.main_button_style(app, 14), on_click=lambda e: app.open_dialog(date_picker)))
 
             if isinstance(goal, AmountGoal):
                 if goal.input_mode == InputMode.PRESET:
@@ -445,14 +445,14 @@ def goals_config_page(app):
 
         dialog_body.controls = controls
         dialog.actions = [
-            ft.TextButton("Cancel", on_click=lambda e: app.page.pop_dialog()),
-            ft.ElevatedButton("Save", on_click=lambda e: confirm_dialog()),
+            ft.ElevatedButton("Cancel", style = tools.cancel_button_style(app, 14), on_click=lambda e: app.page.pop_dialog()),
+            ft.ElevatedButton("Save", style = tools.ok_button_style(app, 14), on_click=lambda e: confirm_dialog()),
         ]
         dialog.title = ft.Text("Create goal" if state["mode"] == "create" else "Edit goal")
         try:
             dialog.update()
         except Exception:
-            pass  # dialog not yet on page, nothing to update
+            pass
 
     def open_create_dialog(e=None):
         state["mode"] = "create"
@@ -493,7 +493,7 @@ def goals_config_page(app):
         if goal is None or period is None:
             return
 
-        new_goal = copy.deepcopy(goal)  # pool template must not be shared across selections
+        new_goal = copy.deepcopy(goal)
 
         if isinstance(new_goal, AmountGoal) and state["target_value"] is not None:
             new_goal.target_amount = state["target_value"]
@@ -521,11 +521,10 @@ def goals_config_page(app):
         if isinstance(state["period_goal"], CustomGoal) and state["custom_finish"] is not None:
             state["period_goal"].finish_time = state["custom_finish"]
 
-    rebuild_active_column(push_update=False)   # first build, page doesn't have this control yet
-
+    rebuild_active_column(push_update=False)
     app.add_element(app.alignment("cstart",
                                 active_column,
-                                ft.ElevatedButton("Create goal", on_click=open_create_dialog),
+                                ft.ElevatedButton("Create goal", style = tools.ok_button_style(app, 14), on_click=open_create_dialog),
                                 width=tools.adapt_dimensions(app, "w", 100)))
 
 def completement_page(app):
