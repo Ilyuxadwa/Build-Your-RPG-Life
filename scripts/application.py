@@ -3,7 +3,7 @@ import flet as ft
 
 import info
 import main
-from goals import ActionGoal, AmountGoal, TimeGoal, DailyGoal, WeeklyGoal, CustomGoal, Goal
+from goals import ActionGoal, AmountGoal, TimeGoal, DailyGoal, WeeklyGoal, CustomGoal, InputMode
 import utils
 import register_manager
 from tasks import Task, ActionTask, AmountTask, TimeTask
@@ -302,149 +302,230 @@ def register_page_3_ui(app):
 
 def goals_config_page(app):
     action_goals, amount_goals, time_goals = main.action_goals, main.amount_goals, main.time_goals
-    all_goals = action_goals + amount_goals + time_goals
+    all_pool_goals = action_goals + amount_goals + time_goals
 
-    selected_goal = {"goal": None}
-    selected_period = {"period": None}
-    target_input = {"value": None}
-    custom_finish = {"value": None}
-
+    state = {
+        "mode": None,          # "create" or "edit"
+        "template_goal": None, # pool Goal (create) or active Goal being edited (edit)
+        "period_goal": None,   # the DailyGoal/WeeklyGoal/CustomGoal wrapper, edit mode only
+        "period_list": None,   # main.player.daily_goals / weekly_goals / custom_goals, edit mode only
+        "period": None,
+        "target_value": None,
+        "custom_finish": None,
+    }
     period_buttons = {}
-    goal_controls = []
-    active_controls = []
+    preset_buttons = {}
 
-    def rebuild_goal_controls():
-        goal_controls.clear()
+    active_column = ft.Column()
+    dialog_body = ft.Column()
+    dialog = ft.AlertDialog(title=ft.Text(""), content=dialog_body, actions=[])
 
-        goal = selected_goal["goal"]
-        if goal is None:
-            app.page.update()
-            return
+    def rebuild_active_column(push_update=True):
+        rows = []
+        for pg, lst in [(g, main.player.daily_goals) for g in main.player.daily_goals] + \
+                        [(g, main.player.weekly_goals) for g in main.player.weekly_goals] + \
+                        [(g, main.player.custom_goals) for g in main.player.custom_goals]:
 
-        period_buttons.clear()
-        row = []
-        if goal.available_periods.get("daily"):
-            row.append(make_period_button("daily", "Daily"))
-        if goal.available_periods.get("weekly"):
-            row.append(make_period_button("weekly", "Weekly"))
-        if goal.available_periods.get("custom"):
-            row.append(make_period_button("custom", "Custom"))
-        goal_controls.append(app.alignment("rstart", *row, width=tools.adapt_dimensions(app, "w", 100)))
+            info = ft.Text(f"{pg.goal.title} — {pg.goal.progress() * 100:.0f}%")
+            delete_btn = ft.ElevatedButton("Delete", on_click=lambda e, pg=pg, lst=lst: delete_goal(pg, lst))
 
-        if selected_period["period"] == "custom":
-            date_picker = ft.DatePicker(on_change=on_custom_date_change)
-            app.page.overlay.append(date_picker)
-            open_btn = ft.ElevatedButton("Pick finish date", on_click=lambda e: app.page.open(date_picker))
-            goal_controls.append(open_btn)
+            row_controls = [info]
+            if not isinstance(pg.goal, ActionGoal):
+                edit_btn = ft.ElevatedButton("Edit", on_click=lambda e, pg=pg, lst=lst: open_edit_dialog(pg, lst))
+                row_controls.append(edit_btn)
+            row_controls.append(delete_btn)
 
-        if isinstance(goal, AmountGoal):
-            field = ft.TextField(label=f"Target amount ({goal.unit})",
-                                  value=str(goal.target_amount), on_change=on_target_change)
-            goal_controls.append(field)
-        elif isinstance(goal, TimeGoal) and goal.user_defined_target:
-            field = ft.TextField(label="Target time (minutes)", value="", on_change=on_target_change)
-            goal_controls.append(field)
+            rows.append(app.alignment("cstart", *row_controls,
+                                       width=tools.adapt_dimensions(app, "w", 100)))
 
-        goal_controls.append(ft.ElevatedButton("Add goal", on_click=lambda e: add_goal()))
-        app.page.update()
+        active_column.controls = rows
+        if push_update:
+            active_column.update()
+
+    def delete_goal(pg, lst):
+        lst.remove(pg)
+        rebuild_active_column()
 
     def make_period_button(period, label):
         btn = ft.ElevatedButton(
             label,
             on_click=lambda e: select_period(period),
-            style=ft.ButtonStyle(bgcolor=ft.Colors.BLUE_200) if selected_period["period"] == period else None,
+            style=ft.ButtonStyle(bgcolor=ft.Colors.BLUE_200) if state["period"] == period else None,
         )
         period_buttons[period] = btn
         return btn
 
     def select_period(period):
-        selected_period["period"] = period
-        for name, btn in period_buttons.items():
-            btn.style = ft.ButtonStyle(bgcolor=ft.Colors.BLUE_200) if name == period else None
-        rebuild_goal_controls()
+        state["period"] = period
+        rebuild_dialog_body()
+
+    def make_preset_button(value, label):
+        btn = ft.ElevatedButton(
+            label,
+            on_click=lambda e: select_preset(value),
+            style=ft.ButtonStyle(bgcolor=ft.Colors.BLUE_200) if state["target_value"] == value else None,
+        )
+        preset_buttons[value] = btn
+        return btn
+
+    def select_preset(value):
+        state["target_value"] = value
+        for v, btn in preset_buttons.items():
+            btn.style = ft.ButtonStyle(bgcolor=ft.Colors.BLUE_200) if v == value else None
+        dialog_body.update()
 
     def on_custom_date_change(e):
-        picked = e.control.value.astimezone()  # fixes the DatePicker UTC offset bug
-        custom_finish["value"] = datetime.combine(picked.date(), time.max)
+        picked = e.control.value.astimezone()
+        state["custom_finish"] = datetime.combine(picked.date(), time.max)
 
     def on_target_change(e):
         try:
-            target_input["value"] = float(e.control.value)
+            state["target_value"] = float(e.control.value)
         except ValueError:
-            target_input["value"] = None
+            state["target_value"] = None
 
-    def select_goal(title):
-        goal = None
-        for g in all_goals:
+    def select_template_goal(title):
+        for g in all_pool_goals:
             if g.title == title:
-                goal = g
+                state["template_goal"] = g
                 break
+        state["period"] = None
+        state["target_value"] = None
+        state["custom_finish"] = None
+        period_buttons.clear()
+        preset_buttons.clear()
+        rebuild_dialog_body()
 
-        selected_goal["goal"] = goal
-        selected_period["period"] = None
-        target_input["value"] = None
-        custom_finish["value"] = None
-        rebuild_goal_controls()
+    def rebuild_dialog_body():
+        controls = []
+        goal = state["template_goal"]
+
+        if state["mode"] == "create":
+            dropdown = tools.dropdown(app, 14, label="Select a goal",
+                                        options=[tools.doption(app, g.title) for g in all_pool_goals],
+                                        on_select=lambda e: select_template_goal(e.control.value))
+            controls.append(dropdown)
+
+        if goal is not None:
+            if state["mode"] == "create":
+                row = []
+                if goal.available_periods.get("daily"):
+                    row.append(make_period_button("daily", "Daily"))
+                if goal.available_periods.get("weekly"):
+                    row.append(make_period_button("weekly", "Weekly"))
+                if goal.available_periods.get("custom"):
+                    row.append(make_period_button("custom", "Custom"))
+                controls.append(app.alignment("rstart", *row, width=tools.adapt_dimensions(app, "w", 100)))
+
+            period = state["period"] if state["mode"] == "create" else type(state["period_goal"]).__name__.replace("Goal", "").lower()
+
+            if period == "custom":
+                date_picker = ft.DatePicker(on_change=on_custom_date_change)
+                app.page.overlay.append(date_picker)
+                controls.append(ft.ElevatedButton("Pick finish date", on_click=lambda e: app.open_dialog(date_picker)))
+
+            if isinstance(goal, AmountGoal):
+                if goal.input_mode == InputMode.PRESET:
+                    preset_buttons.clear()
+                    preset_row = [make_preset_button(v, f"{v} {goal.unit}") for v in goal.preset_options]
+                    controls.append(app.alignment("rstart", *preset_row, width=tools.adapt_dimensions(app, "w", 100)))
+                else:
+                    controls.append(ft.TextField(label=f"Target amount ({goal.unit})",
+                                                  value=str(goal.target_amount), on_change=on_target_change))
+
+            elif isinstance(goal, TimeGoal) and goal.user_defined_target:
+                if goal.input_mode == InputMode.PRESET:
+                    preset_buttons.clear()
+                    preset_row = [make_preset_button(v, f"{v} min") for v in goal.preset_options]
+                    controls.append(app.alignment("rstart", *preset_row, width=tools.adapt_dimensions(app, "w", 100)))
+                else:
+                    minutes = int(goal.target_duration.total_seconds() // 60)
+                    controls.append(ft.TextField(label="Target time (minutes)",
+                                                  value=str(minutes) if minutes else "", on_change=on_target_change))
+
+        dialog_body.controls = controls
+        dialog.actions = [
+            ft.TextButton("Cancel", on_click=lambda e: app.page.pop_dialog()),
+            ft.ElevatedButton("Save", on_click=lambda e: confirm_dialog()),
+        ]
+        dialog.title = ft.Text("Create goal" if state["mode"] == "create" else "Edit goal")
+        try:
+            dialog.update()
+        except Exception:
+            pass  # dialog not yet on page, nothing to update
+
+    def open_create_dialog(e=None):
+        state["mode"] = "create"
+        state["template_goal"] = None
+        state["period_goal"] = None
+        state["period_list"] = None
+        state["period"] = None
+        state["target_value"] = None
+        state["custom_finish"] = None
+        period_buttons.clear()
+        preset_buttons.clear()
+        rebuild_dialog_body()
+        app.open_dialog(dialog)
+
+    def open_edit_dialog(pg, lst):
+        state["mode"] = "edit"
+        state["period_goal"] = pg
+        state["period_list"] = lst
+        state["template_goal"] = pg.goal
+        state["period"] = None
+        state["target_value"] = None
+        state["custom_finish"] = None
+        preset_buttons.clear()
+        rebuild_dialog_body()
+        app.open_dialog(dialog)
+
+    def confirm_dialog():
+        if state["mode"] == "create":
+            add_goal()
+        else:
+            apply_edit()
+        app.page.pop_dialog()
+        rebuild_active_column()
 
     def add_goal():
-        goal = selected_goal["goal"]
-        period = selected_period["period"]
+        goal = state["template_goal"]
+        period = state["period"]
         if goal is None or period is None:
             return
 
         new_goal = copy.deepcopy(goal)  # pool template must not be shared across selections
 
-        if isinstance(new_goal, AmountGoal) and target_input["value"] is not None:
-            new_goal.target_amount = target_input["value"]
-        elif isinstance(new_goal, TimeGoal) and new_goal.user_defined_target and target_input["value"] is not None:
-            new_goal.target_duration = timedelta(minutes=target_input["value"])
+        if isinstance(new_goal, AmountGoal) and state["target_value"] is not None:
+            new_goal.target_amount = state["target_value"]
+        elif isinstance(new_goal, TimeGoal) and new_goal.user_defined_target and state["target_value"] is not None:
+            new_goal.target_duration = timedelta(minutes=state["target_value"])
 
         if period == "daily":
             main.player.daily_goals.append(DailyGoal(goal=new_goal))
         elif period == "weekly":
             main.player.weekly_goals.append(WeeklyGoal(goal=new_goal))
         elif period == "custom":
-            if custom_finish["value"] is None:
+            if state["custom_finish"] is None:
                 return
             main.player.custom_goals.append(CustomGoal(
-                goal=new_goal, assigned_time=datetime.now(), finish_time=custom_finish["value"]))
+                goal=new_goal, assigned_time=datetime.now(), finish_time=state["custom_finish"]))
 
-        selected_goal["goal"] = None
-        selected_period["period"] = None
-        goal_controls.clear()
-        rebuild_active_controls()
-        app.page.update()
+    def apply_edit():
+        goal = state["period_goal"].goal
 
-    def delete_goal(period_goal, goal_list):
-        goal_list.remove(period_goal)
-        rebuild_active_controls()
-        app.page.update()
+        if isinstance(goal, AmountGoal) and state["target_value"] is not None:
+            goal.target_amount = state["target_value"]
+        elif isinstance(goal, TimeGoal) and goal.user_defined_target and state["target_value"] is not None:
+            goal.target_duration = timedelta(minutes=state["target_value"])
 
-    def rebuild_active_controls():
-        active_controls.clear()
-        for pg in main.player.daily_goals + main.player.weekly_goals + main.player.custom_goals:
-            if isinstance(pg, DailyGoal):
-                lst = main.player.daily_goals
-            elif isinstance(pg, WeeklyGoal):
-                lst = main.player.weekly_goals
-            else:
-                lst = main.player.custom_goals
+        if isinstance(state["period_goal"], CustomGoal) and state["custom_finish"] is not None:
+            state["period_goal"].finish_time = state["custom_finish"]
 
-            active_controls.append(app.alignment("cstart",
-                ft.Text(pg.goal.title),
-                ft.ElevatedButton("Delete", on_click=lambda e, pg=pg, lst=lst: delete_goal(pg, lst)),
-                width=tools.adapt_dimensions(app, "w", 100)))
-
-    rebuild_active_controls()
-
-    dropdown = tools.dropdown(app, 14, label="Select a goal",
-                                options=[tools.doption(app, g.title) for g in all_goals],
-                                on_select=lambda e: select_goal(e.control.value))
+    rebuild_active_column(push_update=False)   # first build, page doesn't have this control yet
 
     app.add_element(app.alignment("cstart",
-                                dropdown,
-                                *goal_controls,
-                                *active_controls,
+                                active_column,
+                                ft.ElevatedButton("Create goal", on_click=open_create_dialog),
                                 width=tools.adapt_dimensions(app, "w", 100)))
 
 def completement_page(app):

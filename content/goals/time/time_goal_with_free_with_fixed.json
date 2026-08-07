@@ -1,0 +1,33 @@
+{
+    "title": "Tfi",
+    "description": "desc",
+    "type": "time",
+    "target": "free",
+    "input_mode": "preset",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "is_daily": true,
+    "is_weekly": true,
+    "is_custom": true,
+    "additional_options": {
+        "option1": {
+            "experience": 10,
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 0,
+            "energy": 0,
+            "stress": 0 }
+    },
+    "stats": {
+        "experience": 10,
+        "creativity": 0,
+        "intelligence": 0,
+        "social": 0,
+        "strength": 0,
+        "mood": 0,
+        "energy": 0,
+        "stress": 0
+    }
+}
