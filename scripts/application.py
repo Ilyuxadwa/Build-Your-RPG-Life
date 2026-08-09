@@ -5,7 +5,7 @@ import flet as ft
 
 import info
 import main
-from goals import ActionGoal, AmountGoal, TimeGoal, DailyGoal, WeeklyGoal, CustomGoal, InputMode
+from goals import ActionGoal, AmountGoal, TimeGoal, DailyGoal, WeeklyGoal, CustomGoal, InputMode, GoalStatus
 import utils
 import register_manager
 from tasks import Task, ActionTask, AmountTask, TimeTask
@@ -843,6 +843,9 @@ def main_ui(app):
         for goal in active:
             resets_in_text = ft.Text("",
                                     style=tools.primary_text_style(app, 35, weight=ft.FontWeight.BOLD))
+
+            if goal.goal.status == GoalStatus.IN_PROGRESS:
+                goal_control = ft.Button("Proceed to goal", style = tools.ok_button_style(app, 32), width = tools.adapt_dimensions(app, "w", 30), height = tools.adapt_dimensions(app, "h", 15))
             main.active_goal_time_refs.append((goal, resets_in_text))
 
             if isinstance(goal.goal, ActionGoal):
@@ -851,7 +854,9 @@ def main_ui(app):
                                 ft.Text(goal.goal.title, style=tools.primary_text_style(app, 40)),
                                 resets_in_text,
                                 width=tools.adapt_dimensions(app, "w", 80)),
-                            app.alignment("rstart", ft.Text(goal.goal.description, style=tools.secondary_text_style(app, 20))),
+                            app.alignment("rstart", 
+                                ft.Text(goal.goal.description, style=tools.secondary_text_style(app, 20))),
+                            app.alignment("rend", goal_control, width = tools.adapt_dimensions(app, "w", 80))
                         )
 
             elif isinstance(goal.goal, AmountGoal):
@@ -862,8 +867,11 @@ def main_ui(app):
                                 width=tools.adapt_dimensions(app, "w", 80)),
                             app.alignment("rstart", ft.Text(goal.goal.description, style=tools.secondary_text_style(app, 20))),
                             app.alignment("rspace_between",
-                                ft.Text(f"{goal.goal.current_amount}/{goal.goal.target_amount} {goal.goal.unit}", style=tools.secondary_text_style(app, 30)),
-                                tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 80), height=tools.adapt_dimensions(app, "h", 6), value=goal.goal.progress()))
+                                ft.Column(alignment=ft.MainAxisAlignment.START, horizontal_alignment=ft.CrossAxisAlignment.END, 
+                                    controls = [
+                                        tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 50), height=tools.adapt_dimensions(app, "h", 7), value=goal.goal.progress()),
+                                        ft.Text(f"{goal.goal.current_amount}/{goal.goal.target_amount} {goal.goal.unit}", style=tools.secondary_text_style(app, 20))]),
+                                goal_control)
                         )
 
             elif isinstance(goal.goal, TimeGoal):
@@ -873,12 +881,17 @@ def main_ui(app):
                                 resets_in_text,
                                 width=tools.adapt_dimensions(app, "w", 80)),
                             app.alignment("rstart", ft.Text(goal.goal.description, style=tools.secondary_text_style(app, 20))),
-                            app.alignment("rspace_between", ft.Text(f"{goal.goal.accumulated}/{goal.goal.target_duration}", style=tools.secondary_text_style(app, 30)), tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 80), height=tools.adapt_dimensions(app, "h", 6), value=goal.goal.progress())),
+                            app.alignment("rspace_between",
+                                ft.Column(alignment=ft.MainAxisAlignment.START, horizontal_alignment=ft.CrossAxisAlignment.END, 
+                                    controls = [
+                                        tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 50), height=tools.adapt_dimensions(app, "h", 7), value=goal.goal.progress()),
+                                        ft.Text(f"{goal.goal.accumulated}/{goal.goal.target_duration}", style=tools.secondary_text_style(app, 30))]),
+                                goal_control)                            
                         )
 
             goals_elements.append(ft.Container(
                                         content=goal_ui,
-                                        bgcolor=app.theme.entry,
+                                        bgcolor=app.theme.additional_color,
                                         border_radius=10,
                                         padding=tools.adapt_dimensions(app, "w", 5),
                                         width=tools.adapt_dimensions(app, "w", 90),
