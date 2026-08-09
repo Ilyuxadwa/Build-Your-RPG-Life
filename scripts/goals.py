@@ -43,16 +43,16 @@ class Goal:
 
 @dataclass
 class AmountGoal(Goal):
-    target_amount: float = 0.0
-    current_amount: float = 0.0
+    target_amount: int = 0
+    current_amount: int = 0
     unit: str = ""
     input_mode: InputMode = InputMode.FREE
-    preset_options: list[float] = field(default_factory=list)
+    preset_options: list[int] = field(default_factory=list)
 
     def progress(self) -> float:
         return min(self.current_amount / self.target_amount, 1.0) if self.target_amount else 0.0
 
-    def log(self, value: float):
+    def log(self, value: int):
         if self.input_mode == InputMode.PRESET and value not in self.preset_options:
             raise ValueError(f"{value} is not one of the preset options {self.preset_options}")
         self.current_amount += value

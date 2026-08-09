@@ -3,6 +3,7 @@
     "description": "desc",
     "type": "amount",
     "target": 100,
+    "units": "units",
     "input_mode": "preset",
     "input_options": [1, 5, 10],
     "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],

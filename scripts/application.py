@@ -1,3 +1,5 @@
+import asyncio
+
 from unified_ui import App, Settings, tools
 import flet as ft
 
@@ -345,6 +347,7 @@ def goals_config_page(app):
     def delete_goal(pg, lst):
         lst.remove(pg)
         rebuild_active_column()
+        app.page.run_task(main.save_goals, app)
 
     def make_period_button(period, label):
         btn = ft.ElevatedButton(
@@ -486,6 +489,7 @@ def goals_config_page(app):
             apply_edit()
         app.page.pop_dialog()
         rebuild_active_column()
+        app.page.run_task(main.save_goals, app)
 
     def add_goal():
         goal = state["template_goal"]
@@ -523,6 +527,7 @@ def goals_config_page(app):
 
     rebuild_active_column(push_update=False)
     app.add_element(app.alignment("cstart",
+                                app.alignment("rstart", ft.IconButton(ft.Icons.ARROW_BACK_ROUNDED, width = tools.adapt_dimensions(app, "h", 10), height = tools.adapt_dimensions(app, "h", 10), style=tools.main_button_style(app, 8), padding=5, on_click = lambda: app.navigate("main_page"))),
                                 active_column,
                                 ft.ElevatedButton("Create goal", style = tools.ok_button_style(app, 14), on_click=open_create_dialog),
                                 width=tools.adapt_dimensions(app, "w", 100)))
@@ -816,27 +821,73 @@ def main_ui(app):
         main.current_path=""
         app.navigate("tasks_navigation_page")
 
+        
+    async def active_goals_tick_loop(app):
+        while True:
+            for goal, text_ctrl in main.active_goal_time_refs:
+                if isinstance(goal, DailyGoal):
+                    text_ctrl.value = utils.format_time_left_hours(goal.finish_time)
+                else:
+                    text_ctrl.value = utils.format_time_left_days(goal.finish_time)
+                text_ctrl.update()
+            await asyncio.sleep(1)
+
     def active_goals(app):
-        active_goals = main.player.daily_goals + main.player.weekly_goals + main.player.custom_goals
-        if not active_goals:
+        active = main.player.daily_goals + main.player.weekly_goals + main.player.custom_goals
+        if not active:
             return []
 
         goals_elements = []
-        for goal in active_goals:
+        main.active_goal_time_refs.clear()
+
+        for goal in active:
+            resets_in_text = ft.Text("",
+                                    style=tools.primary_text_style(app, 35, weight=ft.FontWeight.BOLD))
+            main.active_goal_time_refs.append((goal, resets_in_text))
+
+            if isinstance(goal.goal, ActionGoal):
+                goal_ui = app.alignment("cstart",
+                            app.alignment("rspace_between",
+                                ft.Text(goal.goal.title, style=tools.primary_text_style(app, 40)),
+                                resets_in_text,
+                                width=tools.adapt_dimensions(app, "w", 80)),
+                            app.alignment("rstart", ft.Text(goal.goal.description, style=tools.secondary_text_style(app, 20))),
+                        )
+
+            elif isinstance(goal.goal, AmountGoal):
+                goal_ui = app.alignment("cstart",
+                            app.alignment("rspace_between",
+                                ft.Text(goal.goal.title, style=tools.primary_text_style(app, 40)),
+                                resets_in_text,
+                                width=tools.adapt_dimensions(app, "w", 80)),
+                            app.alignment("rstart", ft.Text(goal.goal.description, style=tools.secondary_text_style(app, 20))),
+                            app.alignment("rspace_between",
+                                ft.Text(f"{goal.goal.current_amount}/{goal.goal.target_amount} {goal.goal.unit}", style=tools.secondary_text_style(app, 30)),
+                                tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 80), height=tools.adapt_dimensions(app, "h", 6), value=goal.goal.progress()))
+                        )
+
+            elif isinstance(goal.goal, TimeGoal):
+                goal_ui = app.alignment("cstart",
+                            app.alignment("rspace_between",
+                                ft.Text(goal.goal.title, style=tools.primary_text_style(app, 40)),
+                                resets_in_text,
+                                width=tools.adapt_dimensions(app, "w", 80)),
+                            app.alignment("rstart", ft.Text(goal.goal.description, style=tools.secondary_text_style(app, 20))),
+                            app.alignment("rspace_between", ft.Text(f"{goal.goal.accumulated}/{goal.goal.target_duration}", style=tools.secondary_text_style(app, 30)), tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 80), height=tools.adapt_dimensions(app, "h", 6), value=goal.goal.progress())),
+                        )
+
             goals_elements.append(ft.Container(
-                content=app.alignment("rspace_between",
-                    ft.Text(goal.title, style=tools.primary_text_style(app, 20)),
-                    ft.Text(f"{goal.progress}/{goal.target}", style=tools.primary_text_style(app, 20)),
-                    tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 30), height=tools.adapt_dimensions(app, "h", 4), value=goal.progress / goal.target),
-                ),
-                bgcolor=app.theme.additional_color,
-                border_radius=10,
-                padding=tools.adapt_dimensions(app, "w", 5),
-                width=tools.adapt_dimensions(app, "w", 90),
-                height=tools.adapt_dimensions(app, "h", 10),
-            ))
+                                        content=goal_ui,
+                                        bgcolor=app.theme.entry,
+                                        border_radius=10,
+                                        padding=tools.adapt_dimensions(app, "w", 5),
+                                        width=tools.adapt_dimensions(app, "w", 90),
+                                        height=tools.adapt_dimensions(app, "h", 40),
+                                    ))
 
         return goals_elements
+
+    app.page.run_task(active_goals_tick_loop, app)
 
     level_stat = app.alignment("rstart",
         ft.Button(

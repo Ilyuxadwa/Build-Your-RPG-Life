@@ -140,6 +140,7 @@ def parse_goals(role, status):
             title=raw_data["title"],
             description=raw_data["description"],
             target_amount=raw_data["target"],
+            unit=raw_data.get("units", ""),
             input_mode=parse_input_mode(raw_data["input_mode"]),
             preset_options=raw_data.get("input_options", []),
             stats=raw_data.get("stats", {}),
@@ -511,6 +512,29 @@ def to_seconds(time_str: str):
     h, m, s = map(int, time_str.split(":"))
     return h * 3600 + m * 60 + s
 
+def format_time_left_days(finish_time):
+    delta = finish_time - datetime.now()
+    if delta.total_seconds() <= 0:
+        return "Time left: 0:00:00:00"
+
+    total_seconds = int(delta.total_seconds())
+    days, remainder = divmod(total_seconds, 86400)
+    hours, remainder = divmod(remainder, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    return f"Time left: {days}:{hours:02d}:{minutes:02d}:{seconds:02d}"
+
+def format_time_left_hours(finish_time):
+    delta = finish_time - datetime.now()
+    if delta.total_seconds() <= 0:
+        return "Time left: 0:00:00:00"
+
+    total_seconds = int(delta.total_seconds())
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    return f"Time left: {hours:02d}:{minutes:02d}:{seconds:02d}"
+
 def add_time(current_time, max):
     t = datetime.strptime(current_time, "%H:%M:%S") + timedelta(seconds=10)
     maximum = datetime.strptime(max, "%H:%M:%S")
@@ -528,6 +552,7 @@ def remove_time(current_time, min):
     else:
         result = t.strftime("%H:%M:%S")
     return result
+
 def get_required_exp(level):
     with open("config/levels.json", "r") as f:
         levels = json.load(f)

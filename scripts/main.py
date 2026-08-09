@@ -8,6 +8,7 @@ import register_manager
 
 current_path = ""
 last_completed = {}
+active_goal_time_refs = []
 
 tasks = {}
 tasks_cooldown = {}
@@ -73,6 +74,8 @@ async def finish_registration(app):
     await app.save("registered", True)
     await app.save("registered_version", info.VERSION)
     await start(app)
+
+    
 
 async def save_stats(app):
     global player
