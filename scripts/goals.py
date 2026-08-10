@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, time
 from enum import Enum
 from typing import Optional
+import utils
 
 
 class GoalStatus(Enum):
@@ -52,12 +53,9 @@ class AmountGoal(Goal):
     def progress(self) -> float:
         return min(self.current_amount / self.target_amount, 1.0) if self.target_amount else 0.0
 
-    def log(self, value: int):
-        if self.input_mode == InputMode.PRESET and value not in self.preset_options:
-            raise ValueError(f"{value} is not one of the preset options {self.preset_options}")
-        self.current_amount += value
+    def add_progress(self, value: str):
+        self.current_amount += int(value)
         self.refresh_status()
-
 
 @dataclass
 class ActionGoal(Goal):
@@ -66,7 +64,7 @@ class ActionGoal(Goal):
     def progress(self) -> float:
         return 1.0 if self.done else 0.0
 
-    def mark_done(self):
+    def complete(self):
         self.done = True
         self.refresh_status()
 
@@ -77,7 +75,7 @@ class TimeGoal(Goal):
     accumulated: timedelta = field(default_factory=timedelta)
     input_mode: InputMode = InputMode.FREE
     preset_options: list[timedelta] = field(default_factory=list)
-    user_defined_target: bool = False   # True when template said "free"
+    user_defined_target: bool = False
     _timer_start: Optional[datetime] = field(default=None, init=False, repr=False)
 
     def progress(self) -> float:
@@ -88,10 +86,10 @@ class TimeGoal(Goal):
             raise ValueError("This goal's target is fixed by its template, not user-settable")
         self.target_duration = duration
 
-    def log(self, duration: timedelta):
-        if self.input_mode == InputMode.PRESET and duration not in self.preset_options:
-            raise ValueError(f"{duration} is not one of the preset options {self.preset_options}")
-        self.accumulated += duration
+    def add_progress(self, duration: str):
+        print(self.accumulated, " + ", duration)
+        self.accumulated += utils.parse_time_string(duration)
+        print(self.accumulated)
         self.refresh_status()
 
     def start_timer(self):

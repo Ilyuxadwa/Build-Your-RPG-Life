@@ -535,6 +535,10 @@ def format_time_left_hours(finish_time):
 
     return f"Time left: {hours:02d}:{minutes:02d}:{seconds:02d}"
 
+def parse_time_string(duration: str) -> timedelta:
+    h, m, s = (int(x) for x in duration.split(":"))
+    return timedelta(hours=h, minutes=m, seconds=s)
+
 def add_time(current_time, max):
     t = datetime.strptime(current_time, "%H:%M:%S") + timedelta(seconds=10)
     maximum = datetime.strptime(max, "%H:%M:%S")

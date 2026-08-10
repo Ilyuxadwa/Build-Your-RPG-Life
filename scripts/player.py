@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from user import User
-from goals import DailyGoal, WeeklyGoal, CustomGoal
+from goals import DailyGoal, WeeklyGoal, CustomGoal, ActionGoal, AmountGoal, TimeGoal, GoalStatus
 from tasks import Task, ActionTask, AmountTask, TimeTask
 from achievements import Achievement
 import utils
@@ -142,18 +142,18 @@ class Player:
         
         return final_stats
 
-    #todo: make it better
-    def complete_goal(self, goal):
-        if isinstance(goal, DailyGoal):
-            goal.complete()
-            self.daily_goals.remove(goal)
-        elif isinstance(goal, WeeklyGoal):
-            goal.complete()
-            self.weekly_goals.remove(goal)
-        elif isinstance(goal, CustomGoal):
-            goal.complete()
-            self.custom_goals.remove(goal)
-        #return state, stats, next_date
+    def complete_goal(self, goal, param: str = ""):
+        if isinstance(goal.goal, ActionGoal):
+            goal.goal.complete()
+        elif isinstance(goal.goal, AmountGoal) or isinstance(goal.goal, TimeGoal):
+            goal.goal.add_progress(param)
+        if goal.goal.is_complete():
+            self.complete_new_stats(goal.goal.stats)
+            return goal.goal.stats
+        else:
+            return False
+            
+        
 
     def complete_new_stats(self, stats):
         self.add_experience(stats["experience"])

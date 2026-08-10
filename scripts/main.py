@@ -9,6 +9,7 @@ import register_manager
 current_path = ""
 last_completed = {}
 active_goal_time_refs = []
+open_goal = None
 
 tasks = {}
 tasks_cooldown = {}
