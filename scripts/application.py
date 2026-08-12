@@ -418,17 +418,56 @@ def goals_config_page(app):
                         [(g, main.player.weekly_goals) for g in main.player.weekly_goals] + \
                         [(g, main.player.custom_goals) for g in main.player.custom_goals]:
 
-            info = ft.Text(f"{pg.goal.title} — {pg.goal.progress() * 100:.0f}%")
-            delete_btn = ft.ElevatedButton("Delete", style = tools.cancel_button_style(app, 14), on_click=lambda e, pg=pg, lst=lst: delete_goal(pg, lst))
+            delete_btn = ft.ElevatedButton("Delete", style = tools.cancel_button_style(app, 22), on_click=lambda e, pg=pg, lst=lst: delete_goal(pg, lst))
 
-            row_controls = [info]
+            edit_btn = ft.Container(width = 0, height = 0)
+
+            if isinstance(pg, DailyGoal): goal_period = "Daily"
+            elif isinstance(pg, WeeklyGoal): goal_period = "Weekly"
+            else: goal_period = "Ends on " + pg.finish_time.strftime("%m-%d %H:%M:%S")
+
             if not isinstance(pg.goal, ActionGoal):
-                edit_btn = ft.ElevatedButton("Edit", style = tools.additional_button_style(app, 14), on_click=lambda e, pg=pg, lst=lst: open_edit_dialog(pg, lst))
-                row_controls.append(edit_btn)
-            row_controls.append(delete_btn)
+                
+                if isinstance(pg.goal, AmountGoal): number = pg.goal.target_amount
+                else: number = str(pg.goal.target_duration)
 
-            rows.append(app.alignment("cstart", *row_controls,
-                                       width=tools.adapt_dimensions(app, "w", 100)))
+                edit_btn = ft.ElevatedButton("Edit", style = tools.additional_button_style(app, 22), on_click=lambda e, pg=pg, lst=lst: open_edit_dialog(pg, lst))
+                goal_item = app.alignment("cspace_between", app.alignment("rcenter",
+                                                ft.Text(goal_period, style = tools.secondary_text_style(app, 18)),
+                                                ft.Text(pg.goal.title, style = tools.primary_text_style(app, 36)),
+                                                ft.Text(number, style = tools.secondary_text_style(app, 18)),
+                                                width = tools.adapt_dimensions(app, "w", 80)
+                                            ), app.alignment("rstart",
+                                                ft.Text(pg.goal.description, style = tools.secondary_text_style(app, 24)),
+                                                width = tools.adapt_dimensions(app, "w", 80)
+                                            ), app.alignment("rspace_evenly",
+                                                edit_btn, delete_btn,
+                                                width = tools.adapt_dimensions(app, "w", 80)
+                                            ),
+                                            width = tools.adapt_dimensions(app, "w", 80),
+                                            height = tools.adapt_dimensions(app, "h", 40))
+
+            else:
+                goal_item = app.alignment("cspace_between", app.alignment("rcenter",
+                                                ft.Text(goal_period, style = tools.secondary_text_style(app, 18)),
+                                                ft.Text(pg.goal.title, style = tools.primary_text_style(app, 36)),
+                                                width = tools.adapt_dimensions(app, "w", 80)
+                                            ), app.alignment("rstart",
+                                                ft.Text(pg.goal.description, style = tools.secondary_text_style(app, 24)),
+                                                width = tools.adapt_dimensions(app, "w", 80)
+                                            ), app.alignment("rspace_evenly",
+                                                delete_btn,
+                                                width = tools.adapt_dimensions(app, "w", 80)
+                                            ),
+                                            width = tools.adapt_dimensions(app, "w", 80),
+                                            height = tools.adapt_dimensions(app, "h", 40))                
+
+            rows.append(ft.Container(content = goal_item,
+                            bgcolor = app.theme.additional_color,
+                            border_radius = 10,
+                            width = tools.adapt_dimensions(app, "w", 90),
+                            height = tools.adapt_dimensions(app, "h", 40), 
+                            padding = tools.adapt_dimensions(app, "w", 5)))
 
         active_column.controls = rows
         if push_update:

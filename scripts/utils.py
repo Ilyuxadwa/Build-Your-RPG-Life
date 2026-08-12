@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import copy
 from packaging.version import Version
 from datetime import datetime, date, timedelta
 from flet import Icons
@@ -265,7 +266,7 @@ def _find_in_pool(title, action_goals, amount_goals, time_goals):
     return None
 
 
-def _apply_progress(goal, progress):
+def apply_progress(goal, progress):
     if not progress:
         return
     if isinstance(goal, ActionGoal):
@@ -277,7 +278,7 @@ def _apply_progress(goal, progress):
     goal.status = GoalStatus(progress.get("status", "in_progress"))
 
 
-def _reset_progress(goal):
+def reset_progress(goal):
     if isinstance(goal, ActionGoal):
         goal.done = False
     elif isinstance(goal, AmountGoal):
@@ -295,18 +296,20 @@ def load_goals_progress(active: dict, daily: dict, weekly: dict, custom: dict,
     custom_goals = []
 
     for title, info in active.items():
-        goal = _find_in_pool(title, action_goals, amount_goals, time_goals)
-        if goal is None:
+        template = _find_in_pool(title, action_goals, amount_goals, time_goals)
+        if template is None:
             continue
+
+        goal = copy.deepcopy(template)  # isolate from the shared pool
 
         period = info["period"]
 
         if period == "daily":
-            _apply_progress(goal, daily.get(title))
+            apply_progress(goal, daily.get(title))
             finish_time = datetime.fromisoformat(info["finish_time"])
 
             if datetime.now() > finish_time:
-                _reset_progress(goal)
+                reset_progress(goal)
                 daily_goals.append(DailyGoal(goal=goal))
             else:
                 wrapped = DailyGoal(goal=goal)
@@ -315,11 +318,11 @@ def load_goals_progress(active: dict, daily: dict, weekly: dict, custom: dict,
                 daily_goals.append(wrapped)
 
         elif period == "weekly":
-            _apply_progress(goal, weekly.get(title))
+            apply_progress(goal, weekly.get(title))
             finish_time = datetime.fromisoformat(info["finish_time"])
 
             if datetime.now() > finish_time:
-                _reset_progress(goal)
+                reset_progress(goal)
                 weekly_goals.append(WeeklyGoal(goal=goal))
             else:
                 wrapped = WeeklyGoal(goal=goal)
@@ -328,7 +331,7 @@ def load_goals_progress(active: dict, daily: dict, weekly: dict, custom: dict,
                 weekly_goals.append(wrapped)
 
         elif period == "custom":
-            _apply_progress(goal, custom.get(title))
+            apply_progress(goal, custom.get(title))
             custom_goals.append(CustomGoal(
                 goal=goal,
                 assigned_time=datetime.fromisoformat(info["assigned_time"]),
@@ -336,6 +339,8 @@ def load_goals_progress(active: dict, daily: dict, weekly: dict, custom: dict,
             ))
 
     return daily_goals, weekly_goals, custom_goals
+
+
 
 def get_initial_stats():
     stats = {}
