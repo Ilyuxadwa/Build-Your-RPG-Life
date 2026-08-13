@@ -339,6 +339,10 @@ def load_goals_progress(active: dict, daily: dict, weekly: dict, custom: dict,
     apply_progress(water_wrapped.goal, daily.get(water_wrapped.goal.title))
     daily_goals.append(water_wrapped)
 
+    sleep_wrapped = make_sleep_goal(user)
+    apply_progress(sleep_wrapped.goal, daily.get(sleep_wrapped.goal.title))
+    daily_goals.append(sleep_wrapped)
+
     return daily_goals, weekly_goals, custom_goals
 
 def make_water_goal(user):
@@ -351,6 +355,59 @@ def make_water_goal(user):
         available_periods={"daily": True, "weekly": False, "custom": False},
     )
     return DailyGoal(goal=goal)
+
+def make_sleep_goal(user) -> DailyGoal:
+    sleep_info = user.sleep_info()
+
+    goal = TimeGoal(
+        title="Sleeping",
+        description="Sleep is a key for wellness",
+        target_duration=timedelta(minutes=sleep_info["target_minutes"]),
+        is_system=True,
+        user_defined_target=False,
+        available_periods={"daily": True, "weekly": False, "custom": False},
+    )
+    return DailyGoal(goal=goal)
+
+def refresh_system_goal_targets(player, user):
+    for pg in player.daily_goals:
+        if pg.goal.is_system and pg.goal.title == "Drinking water":
+            pg.goal.target_amount = user.initial_water_info()
+        elif pg.goal.is_system and pg.goal.title == "Sleeping":
+            pg.goal.target_duration = timedelta(minutes=user.sleep_info()["target_minutes"])
+
+def reset_goal_progress(goal):
+    if isinstance(goal, ActionGoal):
+        goal.done = False
+    elif isinstance(goal, AmountGoal):
+        goal.current_amount = 0.0
+    elif isinstance(goal, TimeGoal):
+        goal.accumulated = timedelta()
+    goal.status = GoalStatus.IN_PROGRESS
+
+
+def check_and_reset_goals(player, user):
+    changed = False
+
+    for i, pg in enumerate(player.daily_goals):
+        if datetime.now() > pg.finish_time:
+            reset_goal_progress(pg.goal)
+
+            if pg.goal.is_system and pg.goal.title == "Drinking water":
+                pg.goal.target_amount = user.initial_water_info()
+            elif pg.goal.is_system and pg.goal.title == "Sleeping":
+                pg.goal.target_duration = timedelta(minutes=user.sleep_info()["target_minutes"])
+
+            player.daily_goals[i] = DailyGoal(goal=pg.goal)
+            changed = True
+
+    for i, pg in enumerate(player.weekly_goals):
+        if datetime.now() > pg.finish_time:
+            reset_goal_progress(pg.goal)
+            player.weekly_goals[i] = WeeklyGoal(goal=pg.goal)
+            changed = True
+
+    return changed
 
 
 

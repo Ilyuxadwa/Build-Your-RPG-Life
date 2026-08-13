@@ -58,6 +58,12 @@ async def start(app):
             stats = utils.get_initial_stats()
 
         player = Player(user, daily_goals, weekly_goals, custom_goals, gained_achievements)
+
+        changed = utils.check_and_reset_goals(player, user)
+        if changed:
+            await save_goals(app)
+        utils.refresh_system_goal_targets(player, user)
+        
         player.start(stats)
 
         app.navigate("main_page")

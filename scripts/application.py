@@ -335,12 +335,13 @@ def goal_page(app):
         else:
             result = main.player.complete_goal(goal, entry.value) 
 
+        app.page.run_task(main.save_goals, app)
+        
         if not result:
             app.navigate("main_page")
         else:
             main.last_completed = result
             app.page.run_task(main.save_stats, app)
-            app.page.run_task(main.save_goals, app)
             app.navigate("completement_page")
 
     if cat == 1:
@@ -422,7 +423,7 @@ def goals_config_page(app):
 
             if pg.goal.is_system:
                 continue
-            
+
             delete_btn = ft.ElevatedButton("Delete", style=tools.cancel_button_style(app, 22), on_click=lambda e, pg=pg, lst=lst: delete_goal(pg, lst))
 
             edit_btn = ft.Container(width=0, height=0)
