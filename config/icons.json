@@ -35,5 +35,9 @@
     "mood-stat": "THEATER_COMEDY_ROUNDED",
     "stress-stat": "CRISIS_ALERT_ROUNDED",
 
-    "welcome-1": "WAVING_HAND_ROUNDED"
+    "welcome-1": "EMOJI_PEOPLE_ROUNDED",
+    "welcome-2": "WAVING_HAND_ROUNDED",
+    "welcome-3": "HANDSHAKE_ROUNDED",
+    "welcome-4": "FRONT_HAND_ROUNDED",
+    "welcome-5": "ANDROID_ROUNDED"
 }

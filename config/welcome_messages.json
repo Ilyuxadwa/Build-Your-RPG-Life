@@ -1,3 +1,12 @@
 {
-    "Hi there, {name}!": "1"
+    "Hi there, {name}!": "1",
+    "Nice to meet you, {name}!": "3",
+    "Welcome back, {name}!": "2",
+    "Hello, {name}": "4",
+    "Beep boop, {name}...": "5",
+    "Nice to see you again, {name}!": "3",
+    "What's up, {name}?": "4",
+    "Resume your jouney, {name}!": "1",
+    "Hi again, {name}!": "2",
+    "I'm here to help you, {name}.": "5"
 }
