@@ -395,6 +395,7 @@ def goal_page(app):
 def goals_config_page(app):
     action_goals, amount_goals, time_goals = main.action_goals, main.amount_goals, main.time_goals
     all_pool_goals = action_goals + amount_goals + time_goals
+    goal_lookup = {g.title: g for g in all_pool_goals}  # keyed by title so the dropdown's closed field shows it correctly
 
     state = {
         "mode": None,
@@ -403,14 +404,15 @@ def goals_config_page(app):
         "period_list": None,
         "period": None,
         "target_value": None,
+        "target_entry": None,
         "custom_finish": None,
     }
     period_buttons = {}
-    preset_buttons = {}
+    dropdown_ctrl = {"control": None}
 
     active_column = ft.Column()
     dialog_body = ft.Column()
-    dialog = ft.AlertDialog(title=ft.Text(""), bgcolor = app.theme.background, content=dialog_body, actions=[])
+    dialog = ft.AlertDialog(title=ft.Text(""), bgcolor=app.theme.background, content=dialog_body, actions=[])
 
     def rebuild_active_column(push_update=True):
         rows = []
@@ -418,56 +420,56 @@ def goals_config_page(app):
                         [(g, main.player.weekly_goals) for g in main.player.weekly_goals] + \
                         [(g, main.player.custom_goals) for g in main.player.custom_goals]:
 
-            delete_btn = ft.ElevatedButton("Delete", style = tools.cancel_button_style(app, 22), on_click=lambda e, pg=pg, lst=lst: delete_goal(pg, lst))
+            delete_btn = ft.ElevatedButton("Delete", style=tools.cancel_button_style(app, 22), on_click=lambda e, pg=pg, lst=lst: delete_goal(pg, lst))
 
-            edit_btn = ft.Container(width = 0, height = 0)
+            edit_btn = ft.Container(width=0, height=0)
 
             if isinstance(pg, DailyGoal): goal_period = "Daily"
             elif isinstance(pg, WeeklyGoal): goal_period = "Weekly"
             else: goal_period = "Ends on " + pg.finish_time.strftime("%m-%d %H:%M:%S")
 
             if not isinstance(pg.goal, ActionGoal):
-                
+
                 if isinstance(pg.goal, AmountGoal): number = pg.goal.target_amount
                 else: number = str(pg.goal.target_duration)
 
-                edit_btn = ft.ElevatedButton("Edit", style = tools.additional_button_style(app, 22), on_click=lambda e, pg=pg, lst=lst: open_edit_dialog(pg, lst))
+                edit_btn = ft.ElevatedButton("Edit", style=tools.additional_button_style(app, 22), on_click=lambda e, pg=pg, lst=lst: open_edit_dialog(pg, lst))
                 goal_item = app.alignment("cspace_between", app.alignment("rcenter",
-                                                ft.Text(goal_period, style = tools.secondary_text_style(app, 18)),
-                                                ft.Text(pg.goal.title, style = tools.primary_text_style(app, 36)),
-                                                ft.Text(number, style = tools.secondary_text_style(app, 18)),
-                                                width = tools.adapt_dimensions(app, "w", 80)
+                                                ft.Text(goal_period, style=tools.secondary_text_style(app, 18)),
+                                                ft.Text(pg.goal.title, style=tools.primary_text_style(app, 36)),
+                                                ft.Text(number, style=tools.secondary_text_style(app, 18)),
+                                                width=tools.adapt_dimensions(app, "w", 80)
                                             ), app.alignment("rstart",
-                                                ft.Text(pg.goal.description, style = tools.secondary_text_style(app, 24)),
-                                                width = tools.adapt_dimensions(app, "w", 80)
+                                                ft.Text(pg.goal.description, style=tools.secondary_text_style(app, 24)),
+                                                width=tools.adapt_dimensions(app, "w", 80)
                                             ), app.alignment("rspace_evenly",
                                                 edit_btn, delete_btn,
-                                                width = tools.adapt_dimensions(app, "w", 80)
+                                                width=tools.adapt_dimensions(app, "w", 80)
                                             ),
-                                            width = tools.adapt_dimensions(app, "w", 80),
-                                            height = tools.adapt_dimensions(app, "h", 40))
+                                            width=tools.adapt_dimensions(app, "w", 80),
+                                            height=tools.adapt_dimensions(app, "h", 40))
 
             else:
                 goal_item = app.alignment("cspace_between", app.alignment("rcenter",
-                                                ft.Text(goal_period, style = tools.secondary_text_style(app, 18)),
-                                                ft.Text(pg.goal.title, style = tools.primary_text_style(app, 36)),
-                                                width = tools.adapt_dimensions(app, "w", 80)
+                                                ft.Text(goal_period, style=tools.secondary_text_style(app, 18)),
+                                                ft.Text(pg.goal.title, style=tools.primary_text_style(app, 36)),
+                                                width=tools.adapt_dimensions(app, "w", 80)
                                             ), app.alignment("rstart",
-                                                ft.Text(pg.goal.description, style = tools.secondary_text_style(app, 24)),
-                                                width = tools.adapt_dimensions(app, "w", 80)
+                                                ft.Text(pg.goal.description, style=tools.secondary_text_style(app, 24)),
+                                                width=tools.adapt_dimensions(app, "w", 80)
                                             ), app.alignment("rspace_evenly",
                                                 delete_btn,
-                                                width = tools.adapt_dimensions(app, "w", 80)
+                                                width=tools.adapt_dimensions(app, "w", 80)
                                             ),
-                                            width = tools.adapt_dimensions(app, "w", 80),
-                                            height = tools.adapt_dimensions(app, "h", 40))                
+                                            width=tools.adapt_dimensions(app, "w", 80),
+                                            height=tools.adapt_dimensions(app, "h", 40))
 
-            rows.append(ft.Container(content = goal_item,
-                            bgcolor = app.theme.additional_color,
-                            border_radius = 10,
-                            width = tools.adapt_dimensions(app, "w", 90),
-                            height = tools.adapt_dimensions(app, "h", 40), 
-                            padding = tools.adapt_dimensions(app, "w", 5)))
+            rows.append(ft.Container(content=goal_item,
+                            bgcolor=app.theme.additional_color,
+                            border_radius=10,
+                            width=tools.adapt_dimensions(app, "w", 90),
+                            height=tools.adapt_dimensions(app, "h", 40),
+                            padding=tools.adapt_dimensions(app, "w", 5)))
 
         active_column.controls = rows
         if push_update:
@@ -491,41 +493,31 @@ def goals_config_page(app):
         state["period"] = period
         rebuild_dialog_body()
 
-    def make_preset_button(value, label):
-        btn = ft.ElevatedButton(
-            label,
-            on_click=lambda e: select_preset(value),
-            style=tools.main_button_style(app, 14) if state["target_value"] == value else tools.additional_button_style(app, 14),
-        )
-        preset_buttons[value] = btn
-        return btn
-
-    def select_preset(value):
-        state["target_value"] = value
-        for v, btn in preset_buttons.items():
-            btn.style = tools.main_button_style(app, 14) if v == value else tools.additional_button_style(app, 14)
-        dialog_body.update()
-
-    def on_custom_date_change(e):
-        picked = e.control.value.astimezone()
-        state["custom_finish"] = datetime.combine(picked.date(), time.max)
-
     def on_target_change(e):
         try:
             state["target_value"] = float(e.control.value)
         except ValueError:
             state["target_value"] = None
 
-    def select_template_goal(title):
-        for g in all_pool_goals:
-            if g.title == title:
-                state["template_goal"] = g
-                break
+    def on_custom_date_change(e):
+        picked = e.control.value.astimezone()
+        state["custom_finish"] = datetime.combine(picked.date(), time.max)
+
+    def dec_target_time(e):
+        state["target_entry"].value = utils.remove_time(state["target_entry"].value, "00:00:00")
+        state["target_entry"].update()
+
+    def inc_target_time(e):
+        state["target_entry"].value = utils.add_time(state["target_entry"].value, "00:15:00")
+        state["target_entry"].update()
+
+    def select_template_goal(key):
+        state["template_goal"] = goal_lookup.get(key)
         state["period"] = None
         state["target_value"] = None
+        state["target_entry"] = None
         state["custom_finish"] = None
         period_buttons.clear()
-        preset_buttons.clear()
         rebuild_dialog_body()
 
     def rebuild_dialog_body():
@@ -533,10 +525,12 @@ def goals_config_page(app):
         goal = state["template_goal"]
 
         if state["mode"] == "create":
-            dropdown = tools.dropdown(app, 14, label="Select a goal",
-                                        options=[tools.doption(app, g.title) for g in all_pool_goals],
-                                        on_select=lambda e: select_template_goal(e.control.value))
-            controls.append(dropdown)
+            if dropdown_ctrl["control"] is None:
+                dropdown_ctrl["control"] = tools.dropdown(
+                    app, 14, label="Select a goal",
+                    options=[tools.doption(app, title, key=title) for title in goal_lookup],
+                    on_select=lambda e: select_template_goal(e.control.value))
+            controls.append(dropdown_ctrl["control"])
 
         if goal is not None:
             if state["mode"] == "create":
@@ -554,31 +548,27 @@ def goals_config_page(app):
             if period == "custom":
                 date_picker = ft.DatePicker(on_change=on_custom_date_change)
                 app.page.overlay.append(date_picker)
-                controls.append(ft.ElevatedButton("Pick finish date", style = tools.main_button_style(app, 14), on_click=lambda e: app.open_dialog(date_picker)))
+                controls.append(ft.ElevatedButton("Pick finish date", style=tools.main_button_style(app, 14), on_click=lambda e: app.open_dialog(date_picker)))
 
             if isinstance(goal, AmountGoal):
-                if goal.input_mode == InputMode.PRESET:
-                    preset_buttons.clear()
-                    preset_row = [make_preset_button(v, f"{v} {goal.unit}") for v in goal.preset_options]
-                    controls.append(app.alignment("rstart", *preset_row, width=tools.adapt_dimensions(app, "w", 100)))
-                else:
-                    controls.append(ft.TextField(label=f"Target amount ({goal.unit})",
-                                                  value=str(goal.target_amount), on_change=on_target_change))
+                controls.append(ft.TextField(label=f"Target amount ({goal.unit})",
+                                              value=str(goal.target_amount), on_change=on_target_change))
 
             elif isinstance(goal, TimeGoal) and goal.user_defined_target:
-                if goal.input_mode == InputMode.PRESET:
-                    preset_buttons.clear()
-                    preset_row = [make_preset_button(v, f"{v} min") for v in goal.preset_options]
-                    controls.append(app.alignment("rstart", *preset_row, width=tools.adapt_dimensions(app, "w", 100)))
-                else:
-                    minutes = int(goal.target_duration.total_seconds() // 60)
-                    controls.append(ft.TextField(label="Target time (minutes)",
-                                                  value=str(minutes) if minutes else "", on_change=on_target_change))
+                if state["target_entry"] is None:
+                    initial = str(goal.target_duration) if goal.target_duration else "00:00:00"
+                    state["target_entry"] = ft.TextField(value=initial, width=tools.adapt_dimensions(app, "w", 20))
+
+                controls.append(app.alignment("rcenter",
+                    ft.IconButton(icon=utils.icon("controls_decrease"), style=tools.cancel_button_style(app, 28), on_click=dec_target_time),
+                    state["target_entry"],
+                    ft.IconButton(icon=utils.icon("controls_increase"), style=tools.ok_button_style(app, 28), on_click=inc_target_time),
+                ))
 
         dialog_body.controls = controls
         dialog.actions = [
-            ft.ElevatedButton("Cancel", style = tools.cancel_button_style(app, 14), on_click=lambda e: app.page.pop_dialog()),
-            ft.ElevatedButton("Save", style = tools.ok_button_style(app, 14), on_click=lambda e: confirm_dialog()),
+            ft.ElevatedButton("Cancel", style=tools.cancel_button_style(app, 14), on_click=lambda e: app.page.pop_dialog()),
+            ft.ElevatedButton("Save", style=tools.ok_button_style(app, 14), on_click=lambda e: confirm_dialog()),
         ]
         dialog.title = ft.Text("Create goal" if state["mode"] == "create" else "Edit goal")
         try:
@@ -593,9 +583,10 @@ def goals_config_page(app):
         state["period_list"] = None
         state["period"] = None
         state["target_value"] = None
+        state["target_entry"] = None
         state["custom_finish"] = None
         period_buttons.clear()
-        preset_buttons.clear()
+        dropdown_ctrl["control"] = None
         rebuild_dialog_body()
         app.open_dialog(dialog)
 
@@ -606,8 +597,8 @@ def goals_config_page(app):
         state["template_goal"] = pg.goal
         state["period"] = None
         state["target_value"] = None
+        state["target_entry"] = None
         state["custom_finish"] = None
-        preset_buttons.clear()
         rebuild_dialog_body()
         app.open_dialog(dialog)
 
@@ -630,8 +621,8 @@ def goals_config_page(app):
 
         if isinstance(new_goal, AmountGoal) and state["target_value"] is not None:
             new_goal.target_amount = state["target_value"]
-        elif isinstance(new_goal, TimeGoal) and new_goal.user_defined_target and state["target_value"] is not None:
-            new_goal.target_duration = timedelta(minutes=state["target_value"])
+        elif isinstance(new_goal, TimeGoal) and new_goal.user_defined_target and state["target_entry"] is not None:
+            new_goal.target_duration = utils.parse_time_string(state["target_entry"].value)
 
         if period == "daily":
             main.player.daily_goals.append(DailyGoal(goal=new_goal))
@@ -648,17 +639,17 @@ def goals_config_page(app):
 
         if isinstance(goal, AmountGoal) and state["target_value"] is not None:
             goal.target_amount = state["target_value"]
-        elif isinstance(goal, TimeGoal) and goal.user_defined_target and state["target_value"] is not None:
-            goal.target_duration = timedelta(minutes=state["target_value"])
+        elif isinstance(goal, TimeGoal) and goal.user_defined_target and state["target_entry"] is not None:
+            goal.target_duration = utils.parse_time_string(state["target_entry"].value)
 
         if isinstance(state["period_goal"], CustomGoal) and state["custom_finish"] is not None:
             state["period_goal"].finish_time = state["custom_finish"]
 
     rebuild_active_column(push_update=False)
     app.add_element(app.alignment("cstart",
-                                app.alignment("rstart", ft.IconButton(ft.Icons.ARROW_BACK_ROUNDED, width = tools.adapt_dimensions(app, "h", 10), height = tools.adapt_dimensions(app, "h", 10), style=tools.main_button_style(app, 8), padding=5, on_click = lambda: app.navigate("main_page"))),
+                                app.alignment("rstart", ft.IconButton(ft.Icons.ARROW_BACK_ROUNDED, width=tools.adapt_dimensions(app, "h", 10), height=tools.adapt_dimensions(app, "h", 10), style=tools.main_button_style(app, 8), padding=5, on_click=lambda: app.navigate("main_page"))),
                                 active_column,
-                                ft.ElevatedButton("Create goal", style = tools.ok_button_style(app, 14), on_click=open_create_dialog),
+                                ft.ElevatedButton("Create goal", style=tools.ok_button_style(app, 14), on_click=open_create_dialog),
                                 width=tools.adapt_dimensions(app, "w", 100)))
 
 def completement_page(app):
