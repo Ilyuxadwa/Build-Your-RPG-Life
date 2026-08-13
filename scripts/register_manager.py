@@ -27,8 +27,8 @@ def get_first_part():
 
 def set_second_part(height_input, weight_input, gender_input):
     global height, weight, gender
-    height = height_input
-    weight = weight_input
+    height = float(height_input)
+    weight = float(weight_input)
     gender = gender_input
 
 def get_second_part():

@@ -27,6 +27,7 @@ class Goal:
     additional_options: dict = field(default_factory=dict)
     recommended_for: list = field(default_factory=list)
     available_periods: dict = field(default_factory=dict)
+    is_system: bool = False
 
     def progress(self) -> float:
         raise NotImplementedError

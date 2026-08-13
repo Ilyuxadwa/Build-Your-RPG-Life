@@ -420,6 +420,9 @@ def goals_config_page(app):
                         [(g, main.player.weekly_goals) for g in main.player.weekly_goals] + \
                         [(g, main.player.custom_goals) for g in main.player.custom_goals]:
 
+            if pg.goal.is_system:
+                continue
+            
             delete_btn = ft.ElevatedButton("Delete", style=tools.cancel_button_style(app, 22), on_click=lambda e, pg=pg, lst=lst: delete_goal(pg, lst))
 
             edit_btn = ft.Container(width=0, height=0)

@@ -289,8 +289,8 @@ def reset_progress(goal):
 
 
 def load_goals_progress(active: dict, daily: dict, weekly: dict, custom: dict,
-                          action_goals: list[ActionGoal], amount_goals: list[AmountGoal],
-                          time_goals: list[TimeGoal]):
+                          action_goals: list, amount_goals: list, time_goals: list,
+                          user):
     daily_goals = []
     weekly_goals = []
     custom_goals = []
@@ -298,16 +298,14 @@ def load_goals_progress(active: dict, daily: dict, weekly: dict, custom: dict,
     for title, info in active.items():
         template = _find_in_pool(title, action_goals, amount_goals, time_goals)
         if template is None:
-            continue
+            continue  # system goals are handled separately below, never come from the pool
 
-        goal = copy.deepcopy(template)  # isolate from the shared pool
-
+        goal = copy.deepcopy(template)
         period = info["period"]
 
         if period == "daily":
             apply_progress(goal, daily.get(title))
             finish_time = datetime.fromisoformat(info["finish_time"])
-
             if datetime.now() > finish_time:
                 reset_progress(goal)
                 daily_goals.append(DailyGoal(goal=goal))
@@ -320,7 +318,6 @@ def load_goals_progress(active: dict, daily: dict, weekly: dict, custom: dict,
         elif period == "weekly":
             apply_progress(goal, weekly.get(title))
             finish_time = datetime.fromisoformat(info["finish_time"])
-
             if datetime.now() > finish_time:
                 reset_progress(goal)
                 weekly_goals.append(WeeklyGoal(goal=goal))
@@ -338,7 +335,22 @@ def load_goals_progress(active: dict, daily: dict, weekly: dict, custom: dict,
                 finish_time=datetime.fromisoformat(info["finish_time"]),
             ))
 
+    water_wrapped = make_water_goal(user)
+    apply_progress(water_wrapped.goal, daily.get(water_wrapped.goal.title))
+    daily_goals.append(water_wrapped)
+
     return daily_goals, weekly_goals, custom_goals
+
+def make_water_goal(user):
+    goal = AmountGoal(
+        title="Drinking water",
+        description="Water - is the basic component of your life.",
+        target_amount=user.initial_water_info(),
+        unit="ml",
+        is_system=True,
+        available_periods={"daily": True, "weekly": False, "custom": False},
+    )
+    return DailyGoal(goal=goal)
 
 
 
@@ -462,10 +474,6 @@ def get_affinities(status, role, prefs, skills):
         "energy": multiplier_statuses_energy,
         "stress": multiplier_statuses_stress
     }
-
-
-
-
 
 
 
