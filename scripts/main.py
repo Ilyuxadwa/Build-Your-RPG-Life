@@ -19,6 +19,8 @@ amount_goals = []
 time_goals = []
 
 achievements = {}
+achievement_progress = {}
+
 water_history = {}
 sleep_history = {}
 
@@ -33,7 +35,7 @@ def start_parser():
     achievements = utils.parse_achievements()
 
 async def start(app):
-    global player, water_history, sleep_history
+    global player, water_history, sleep_history, achievement_progress
     global action_goals, amount_goals, time_goals
 
     registered = await app.load("registered")
@@ -47,8 +49,14 @@ async def start(app):
         raw_custom_goals = utils.get_dict(await app.load("custom_goals"))
         raw_active_goals = utils.get_dict(await app.load("active_goals"))
 
-        gained_achievements = await app.load("gained_achievements")
-        
+        raw_achievements_progress = utils.get_dict(await app.load("achievements_progress"))
+        if raw_achievements_progress:
+            achievement_progress = raw_achievements_progress.get("progress", {})
+            gained_achievements = raw_achievements_progress.get("completed", [])
+        else:
+            achievement_progress = {}
+            gained_achievements = []
+
         user = User(user_data["name"], date.fromisoformat(user_data["birthday"]), user_data["role"], user_data["status"], user_data["weight"], user_data["height"], user_data["gender"], user_data["lifestyle_activeness"], user_data["preferences"], user_data["skills"])
 
         action_goals, amount_goals, time_goals = utils.parse_goals(user.role, user.status)
@@ -67,7 +75,6 @@ async def start(app):
 
         raw_sleep_history = utils.get_dict(await app.load("sleep_history"))
         sleep_history = raw_sleep_history if raw_sleep_history else {}
-        print(water_history)
 
         
         changed = utils.check_and_reset_goals(player, user)
@@ -127,3 +134,31 @@ async def save_goals(app):
     await app.save("active_goals", utils.save_dict(active_goals))
     await app.save("water_history", utils.save_dict(water_history))
     await app.save("sleep_history", utils.save_dict(sleep_history))
+
+
+
+async def check_and_save_achievement(app, task_ref):
+    global player, achievement_progress, achievements
+    changed = False
+    for ach_id, ach in achievements.items():
+        if ach.reference_task != task_ref:
+            continue
+        if ach_id in player.achievements:
+            continue
+
+        achievement_progress[ach_id] = achievement_progress.get(ach_id, 0) + 1
+        changed = True
+
+        if achievement_progress[ach_id] >= ach.number:
+            player.achievements.append(ach_id)
+
+    if changed:
+        await save_achievements(app)
+
+async def save_achievements(app):
+    global player, achievement_progress
+    data = {
+        "progress": achievement_progress,
+        "completed": player.achievements,
+    }
+    await app.save("achievements_progress", utils.save_dict(data))

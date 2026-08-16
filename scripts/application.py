@@ -777,6 +777,9 @@ def task_page(app):
         else:
             main.last_completed = result
             app.page.run_task(main.save_stats, app)
+
+            if cat==1:
+                app.page.run_task(main.check_and_save_achievement, app, main.current_path)
             app.navigate("completement_page")
 
 
