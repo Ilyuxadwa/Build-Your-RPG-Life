@@ -19,6 +19,8 @@ amount_goals = []
 time_goals = []
 
 achievements = {}
+water_history = {}
+sleep_history = {}
 
 player = None
 
@@ -31,7 +33,7 @@ def start_parser():
     achievements = utils.parse_achievements()
 
 async def start(app):
-    global player
+    global player, water_history, sleep_history
     global action_goals, amount_goals, time_goals
 
     registered = await app.load("registered")
@@ -59,6 +61,15 @@ async def start(app):
 
         player = Player(user, daily_goals, weekly_goals, custom_goals, gained_achievements)
 
+
+        raw_water_history = utils.get_dict(await app.load("water_history"))
+        water_history = raw_water_history if raw_water_history else {}
+
+        raw_sleep_history = utils.get_dict(await app.load("sleep_history"))
+        sleep_history = raw_sleep_history if raw_sleep_history else {}
+        print(water_history)
+
+        
         changed = utils.check_and_reset_goals(player, user)
         if changed:
             await save_goals(app)
@@ -102,10 +113,17 @@ async def save_stats(app):
     ))
 
 async def save_goals(app):
-    global player
+    global player, water_history, sleep_history
+
     d_goals, w_goals, c_goals = utils.save_goals_progress(player.daily_goals, player.weekly_goals, player.custom_goals)
     active_goals = utils.save_active_goals_progress(player.daily_goals, player.weekly_goals, player.custom_goals)
+
+    water_history = utils.update_water_history(water_history, player)
+    sleep_history = utils.update_sleep_history(sleep_history, player)
+
     await app.save("daily_goals", utils.save_dict(d_goals))
     await app.save("weekly_goals", utils.save_dict(w_goals))
     await app.save("custom_goals", utils.save_dict(c_goals))
     await app.save("active_goals", utils.save_dict(active_goals))
+    await app.save("water_history", utils.save_dict(water_history))
+    await app.save("sleep_history", utils.save_dict(sleep_history))

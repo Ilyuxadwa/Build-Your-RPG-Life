@@ -28,6 +28,7 @@ class Goal:
     recommended_for: list = field(default_factory=list)
     available_periods: dict = field(default_factory=dict)
     is_system: bool = False
+    already_completed: bool = False
 
     def progress(self) -> float:
         raise NotImplementedError

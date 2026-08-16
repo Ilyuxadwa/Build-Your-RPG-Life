@@ -253,6 +253,29 @@ def save_active_goals_progress(daily: list, weekly: list, custom: list):
 
     return active_dict
 
+def update_water_history(history: dict, player):
+    today = date.today().isoformat()
+
+    water_goal = next((pg.goal for pg in player.daily_goals
+                        if pg.goal.is_system and pg.goal.title == "Drinking water"), None)
+
+    if water_goal is not None and water_goal.current_amount > 0:
+        history[today] = water_goal.current_amount
+
+    return history
+
+
+def update_sleep_history(history: dict, player):
+    today = date.today().isoformat()
+
+    sleep_goal = next((pg.goal for pg in player.daily_goals
+                        if pg.goal.is_system and pg.goal.title == "Sleeping"), None)
+
+    if sleep_goal is not None and sleep_goal.accumulated.total_seconds() > 0:
+        history[today] = sleep_goal.accumulated.total_seconds() / 60
+
+    return history
+
 def _find_in_pool(title, action_goals, amount_goals, time_goals):
     for g in action_goals:
         if g.title == title:
@@ -353,8 +376,19 @@ def make_water_goal(user):
         unit="ml",
         is_system=True,
         available_periods={"daily": True, "weekly": False, "custom": False},
+        stats={
+            "experience": 30,
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 10,
+            "energy": 10,
+            "stress": -5,
+        },
     )
     return DailyGoal(goal=goal)
+
 
 def make_sleep_goal(user) -> DailyGoal:
     sleep_info = user.sleep_info()
@@ -366,6 +400,16 @@ def make_sleep_goal(user) -> DailyGoal:
         is_system=True,
         user_defined_target=False,
         available_periods={"daily": True, "weekly": False, "custom": False},
+        stats={
+            "experience": 35,
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 15,
+            "energy": 50,
+            "stress": -20,
+        },
     )
     return DailyGoal(goal=goal)
 

@@ -147,8 +147,10 @@ class Player:
             goal.goal.complete()
         elif isinstance(goal.goal, AmountGoal) or isinstance(goal.goal, TimeGoal):
             goal.goal.add_progress(param)
-        if goal.goal.is_complete():
+            
+        if goal.goal.is_complete() and not goal.goal.already_completed:
             self.complete_new_stats(goal.goal.stats)
+            goal.goal.already_completed = True
             return goal.goal.stats
         else:
             return False

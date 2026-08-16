@@ -971,10 +971,10 @@ def main_ui(app):
             resets_in_text = ft.Text("",
                                     style=tools.primary_text_style(app, 35, weight=ft.FontWeight.BOLD))
 
-            if goal.goal.status == GoalStatus.IN_PROGRESS:
+            if goal.goal.status == GoalStatus.IN_PROGRESS or goal.goal.is_system:
                 goal_control = ft.Button("Proceed to goal", style = tools.ok_button_style(app, 32), width = tools.adapt_dimensions(app, "w", 30), height = tools.adapt_dimensions(app, "h", 15), on_click = lambda e, g=goal: open_goal(g))
 
-            elif goal.goal.status == GoalStatus.COMPLETED:
+            elif goal.goal.status == GoalStatus.COMPLETED and not goal.goal.is_system:
                 goal_control = ft.Text("Completed", color = app.theme.ok_button)
 
             main.active_goal_time_refs.append((goal, resets_in_text))
