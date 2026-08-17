@@ -203,13 +203,19 @@ def parse_input_mode(raw_value: str) -> InputMode:
 
 def goal_progress_entry(goal):
     if isinstance(goal, ActionGoal):
-        return {"type": "action", "completed": goal.done, "status": goal.status.value}
+        return {"type": "action", "completed": goal.done, "status": goal.status.value,
+                "already_completed": goal.already_completed,
+                "date": date.today().isoformat()}
     elif isinstance(goal, AmountGoal):
         return {"type": "amount", "current": goal.current_amount,
-                "completed": goal.is_complete(), "status": goal.status.value}
+                "completed": goal.is_complete(), "status": goal.status.value,
+                "already_completed": goal.already_completed,
+                "date": date.today().isoformat()}
     elif isinstance(goal, TimeGoal):
         return {"type": "time", "current": goal.accumulated.total_seconds(),
-                "completed": goal.is_complete(), "status": goal.status.value}
+                "completed": goal.is_complete(), "status": goal.status.value,
+                "already_completed": goal.already_completed,
+                "date": date.today().isoformat()}
 
 
 def save_goals_progress(daily: list, weekly: list, custom: list):
@@ -299,6 +305,14 @@ def apply_progress(goal, progress):
     elif isinstance(goal, TimeGoal):
         goal.accumulated = timedelta(seconds=progress.get("current", 0))
     goal.status = GoalStatus(progress.get("status", "in_progress"))
+    goal.already_completed = progress.get("already_completed", False)
+
+def apply_progress_if_today(goal, progress):
+    if not progress:
+        return
+    if progress.get("date") != date.today().isoformat():
+        return
+    apply_progress(goal, progress)
 
 
 def reset_progress(goal):
@@ -309,6 +323,7 @@ def reset_progress(goal):
     elif isinstance(goal, TimeGoal):
         goal.accumulated = timedelta()
     goal.status = GoalStatus.IN_PROGRESS
+    goal.already_completed = False
 
 
 def load_goals_progress(active: dict, daily: dict, weekly: dict, custom: dict,
@@ -359,11 +374,11 @@ def load_goals_progress(active: dict, daily: dict, weekly: dict, custom: dict,
             ))
 
     water_wrapped = make_water_goal(user)
-    apply_progress(water_wrapped.goal, daily.get(water_wrapped.goal.title))
+    apply_progress_if_today(water_wrapped.goal, daily.get(water_wrapped.goal.title))
     daily_goals.append(water_wrapped)
 
     sleep_wrapped = make_sleep_goal(user)
-    apply_progress(sleep_wrapped.goal, daily.get(sleep_wrapped.goal.title))
+    apply_progress_if_today(sleep_wrapped.goal, daily.get(sleep_wrapped.goal.title))
     daily_goals.append(sleep_wrapped)
 
     return daily_goals, weekly_goals, custom_goals
