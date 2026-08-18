@@ -5,6 +5,7 @@
     "target": 100,
     "units": "units",
     "input_mode": "free",
+    "step": 10,
     "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
     "recommended_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
     "is_daily": true,

@@ -4,6 +4,7 @@
     "type": "time",
     "target": "free",
     "input_mode": "preset",
+    "step": 10,
     "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
     "recommended_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
     "is_daily": true,

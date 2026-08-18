@@ -307,17 +307,17 @@ def goal_page(app):
         main.open_goal = None
         app.navigate("main_page")
 
-    def increase(entry, type):
+    def increase(entry, type, step):
         if type == "amount":
-            entry.value = int(entry.value) + 1
+            entry.value = int(entry.value) + step
         elif type == "time":
-            entry.value = utils.add_time(entry.value, "12:00:00")
+            entry.value = utils.add_time(entry.value, "12:00:00", step)
 
-    def decrease(entry, type):
+    def decrease(entry, type, step):
         if type == "amount" and int(entry.value)>0:
-            entry.value = int(entry.value) - 1
+            entry.value = int(entry.value) - step
         elif type == "time":
-            entry.value = utils.remove_time(entry.value, "00:00:00")
+            entry.value = utils.remove_time(entry.value, "00:00:00", step)
             
     goal = main.open_goal
     if isinstance(goal.goal, ActionGoal):
@@ -355,9 +355,9 @@ def goal_page(app):
     elif cat == 2:
         entry = tools.entry(app, 24, value = 0, keyboard_type = ft.KeyboardType.NUMBER, width = tools.adapt_dimensions(app, "w", 20), height = tools.adapt_dimensions(app, "w", 8), suffix = goal.goal.unit)
         goal_comletement = app.alignment("cstart", app.alignment("rcenter",
-                            ft.IconButton(icon = utils.icon("controls_decrease"), style = tools.cancel_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: decrease(entry, "amount")),
+                            ft.IconButton(icon = utils.icon("controls_decrease"), style = tools.cancel_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: decrease(entry, "amount", goal.goal.step)),
                             entry,
-                            ft.IconButton(icon = utils.icon("controls_increase"), style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: increase(entry, "amount")),
+                            ft.IconButton(icon = utils.icon("controls_increase"), style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: increase(entry, "amount", goal.goal.step)),
                                 expand = True),
                                 app.alignment("rcenter", 
                                     ft.Button(content = "Complete", 
@@ -369,9 +369,9 @@ def goal_page(app):
     if cat == 3:
         entry = tools.entry(app, 24, value = "00:00:00", width = tools.adapt_dimensions(app, "w", 20), height = tools.adapt_dimensions(app, "w", 8))
         goal_comletement = app.alignment("cstart", app.alignment("rcenter",
-                            ft.IconButton(icon = utils.icon("controls_decrease"), style = tools.cancel_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: decrease(entry, "time")),
+                            ft.IconButton(icon = utils.icon("controls_decrease"), style = tools.cancel_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: decrease(entry, "time", goal.goal.step)),
                             entry,
-                            ft.IconButton(icon = utils.icon("controls_increase"), style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: increase(entry, "time")),
+                            ft.IconButton(icon = utils.icon("controls_increase"), style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: increase(entry, "time", goal.goal.step)),
                                 expand = True),
                                 app.alignment("rcenter", 
                                     ft.Button(content = "Complete", 
@@ -396,7 +396,7 @@ def goal_page(app):
 def goals_config_page(app):
     action_goals, amount_goals, time_goals = main.action_goals, main.amount_goals, main.time_goals
     all_pool_goals = action_goals + amount_goals + time_goals
-    goal_lookup = {g.title: g for g in all_pool_goals}  # keyed by title so the dropdown's closed field shows it correctly
+    goal_lookup = {g.title: g for g in all_pool_goals}
 
     state = {
         "mode": None,
@@ -719,17 +719,17 @@ def task_page(app):
             selected_options.append(key)
             option_buttons[key].style = tools.main_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10))
 
-    def increase(entry, type, max):
+    def increase(entry, type, max, step):
         if type == "amount" and int(entry.value)<max:
-            entry.value = int(entry.value) + 1
+            entry.value = int(entry.value) + step
         elif type == "time":
-            entry.value = utils.add_time(entry.value, max)
+            entry.value = utils.add_time(entry.value, max, step)
 
-    def decrease(entry, type, min):
+    def decrease(entry, type, min, step):
         if type == "amount" and int(entry.value)>min:
-            entry.value = int(entry.value) - 1
+            entry.value = int(entry.value) - step
         elif type == "time":
-                    entry.value = utils.remove_time(entry.value, min)
+                    entry.value = utils.remove_time(entry.value, min, step)
             
 
     task = utils.get_node(main.current_path, main.tasks)
@@ -795,9 +795,9 @@ def task_page(app):
         if input_mode == "free":
             entry = tools.entry(app, 24, value = task.min, keyboard_type = ft.KeyboardType.NUMBER, width = tools.adapt_dimensions(app, "w", 20), height = tools.adapt_dimensions(app, "w", 8), suffix = task.units.split("/")[1])
             task_comletement = app.alignment("cstart", app.alignment("rcenter",
-                                    ft.IconButton(icon = utils.icon("controls_decrease"), style = tools.cancel_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: decrease(entry, "amount", task.min)),
+                                    ft.IconButton(icon = utils.icon("controls_decrease"), style = tools.cancel_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: decrease(entry, "amount", task.min, task.step)),
                                     entry,
-                                    ft.IconButton(icon = utils.icon("controls_increase"), style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: increase(entry, "amount", task.max)),
+                                    ft.IconButton(icon = utils.icon("controls_increase"), style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: increase(entry, "amount", task.max, task.step)),
                                 expand = True),
                                     app.alignment("rcenter", 
                                         ft.Button(content = "Complete", 
@@ -831,9 +831,9 @@ def task_page(app):
         if input_mode == "free":
             entry = tools.entry(app, 24, value = task.min, width = tools.adapt_dimensions(app, "w", 20), height = tools.adapt_dimensions(app, "w", 8))
             task_comletement = app.alignment("cstart", app.alignment("rcenter",
-                                    ft.IconButton(icon = utils.icon("controls_decrease"), style = tools.cancel_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: decrease(entry, "time", task.min)),
+                                    ft.IconButton(icon = utils.icon("controls_decrease"), style = tools.cancel_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: decrease(entry, "time", task.min, task.step)),
                                     entry,
-                                    ft.IconButton(icon = utils.icon("controls_increase"), style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: increase(entry, "time", task.max)),
+                                    ft.IconButton(icon = utils.icon("controls_increase"), style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)), width = tools.adapt_dimensions(app, "w", 8), height = tools.adapt_dimensions(app, "w", 8), on_click = lambda: increase(entry, "time", task.max, task.step)),
                                 expand = True),
                                     app.alignment("rcenter", 
                                         ft.Button(content = "Complete", 

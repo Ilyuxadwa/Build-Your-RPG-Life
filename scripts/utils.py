@@ -45,7 +45,8 @@ def parse_task_file(path):
             amount_input_mode=data["amount_input_mode"],
             min=data["min"],
             max=data["max"],
-            amount_inputs_multipliers=data["amount_inputs_multipliers"],
+            step=data.get("step", 1),
+            amount_inputs_multipliers=data["amount_inputs_multipliers"]
         )
     elif task_type == "time":
         task = TimeTask(
@@ -53,7 +54,8 @@ def parse_task_file(path):
             time_input=data["time_input"],
             min=data["min"],
             max=data["max"],
-            time_inputs_multipliers=data["time_inputs_multipliers"],
+            step=data.get("step", 10),
+            time_inputs_multipliers=data["time_inputs_multipliers"]
         )
     else:
         raise ValueError(f"Unknown task type: {task_type}")
@@ -143,6 +145,7 @@ def parse_goals(role, status):
             target_amount=raw_data["target"],
             unit=raw_data.get("units", ""),
             input_mode=parse_input_mode(raw_data["input_mode"]),
+            step=raw_data.get("step", 1),
             preset_options=raw_data.get("input_options", []),
             stats=raw_data.get("stats", {}),
             additional_options=raw_data.get("additional_options", {}),
@@ -176,6 +179,7 @@ def parse_goals(role, status):
             target_duration=target_duration,
             user_defined_target=user_defined_target,
             input_mode=parse_input_mode(raw_data["input_mode"]),
+            step=raw_data.get("step", 10),
             preset_options=raw_data.get("input_options", []),
             stats=raw_data.get("stats", {}),
             additional_options=raw_data.get("additional_options", {}),
@@ -389,6 +393,7 @@ def make_water_goal(user):
         description="Water - is the basic component of your life.",
         target_amount=user.initial_water_info(),
         unit="ml",
+        step=50,
         is_system=True,
         available_periods={"daily": True, "weekly": False, "custom": False},
         stats={
@@ -413,6 +418,7 @@ def make_sleep_goal(user) -> DailyGoal:
         description="Sleep is a key for wellness",
         target_duration=timedelta(minutes=sleep_info["target_minutes"]),
         is_system=True,
+        step=900,
         user_defined_target=False,
         available_periods={"daily": True, "weekly": False, "custom": False},
         stats={
@@ -668,8 +674,8 @@ def parse_time_string(duration: str) -> timedelta:
     h, m, s = (int(x) for x in duration.split(":"))
     return timedelta(hours=h, minutes=m, seconds=s)
 
-def add_time(current_time, max):
-    t = datetime.strptime(current_time, "%H:%M:%S") + timedelta(seconds=10)
+def add_time(current_time, max, step):
+    t = datetime.strptime(current_time, "%H:%M:%S") + timedelta(seconds=step)
     maximum = datetime.strptime(max, "%H:%M:%S")
     if t > maximum:
         result = current_time
@@ -677,8 +683,8 @@ def add_time(current_time, max):
         result = t.strftime("%H:%M:%S")
     return result
 
-def remove_time(current_time, min):
-    t = datetime.strptime(current_time, "%H:%M:%S") - timedelta(seconds=10)
+def remove_time(current_time, min, step):
+    t = datetime.strptime(current_time, "%H:%M:%S") - timedelta(seconds=step)
     minimum = datetime.strptime(min, "%H:%M:%S")
     if t < minimum:
         result = current_time

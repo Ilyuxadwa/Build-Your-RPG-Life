@@ -23,6 +23,7 @@ class AmountTask(Task):
     min: int
     max: int
     amount_inputs_multipliers: dict
+    step: float = 1
 
 @dataclass
 class TimeTask(Task):
@@ -30,3 +31,4 @@ class TimeTask(Task):
     min: str
     max: str
     time_inputs_multipliers: dict
+    step: int = 10

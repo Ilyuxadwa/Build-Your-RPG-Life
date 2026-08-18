@@ -50,6 +50,7 @@ class AmountGoal(Goal):
     current_amount: int = 0
     unit: str = ""
     input_mode: InputMode = InputMode.FREE
+    step: float = 1.0
     preset_options: list[int] = field(default_factory=list)
 
     def progress(self) -> float:
@@ -76,6 +77,7 @@ class TimeGoal(Goal):
     target_duration: timedelta = field(default_factory=timedelta)
     accumulated: timedelta = field(default_factory=timedelta)
     input_mode: InputMode = InputMode.FREE
+    step: int = 10
     preset_options: list[timedelta] = field(default_factory=list)
     user_defined_target: bool = False
     _timer_start: Optional[datetime] = field(default=None, init=False, repr=False)
