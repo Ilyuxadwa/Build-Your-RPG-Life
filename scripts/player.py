@@ -161,13 +161,14 @@ class Player:
 
     def complete_new_stats(self, stats):
         self.add_experience(stats["experience"])
-        self.creativity += stats["creativity"]
-        self.intelligence += stats["intelligence"]
-        self.social += stats["social"]
-        self.strength += stats["strength"]
-        self.mood += stats["mood"]
-        self.energy += stats["energy"]
-        self.stress += stats["stress"]
+        self.creativity = utils.clamp(self.creativity + stats["creativity"])
+        self.intelligence = utils.clamp(self.intelligence + stats["intelligence"])
+        self.social = utils.clamp(self.social + stats["social"])
+        self.strength = utils.clamp(self.strength + stats["strength"])
+        self.mood = utils.clamp(self.mood + stats["mood"])
+        self.energy = utils.clamp(self.energy + stats["energy"])
+        self.stress = utils.clamp(self.stress + stats["stress"])
+
 
     def add_experience(self, exp):
         if utils.get_required_exp(self.level+1)<=self.experience+exp:
@@ -199,3 +200,6 @@ class Player:
 
         for multiplier in self.multipliers.keys():
             self.multipliers[multiplier] = 1 + (((by_prefs[multiplier] + by_skills[multiplier]) * 0.01) * ((by_roles[multiplier] + by_statuses[multiplier]) * 0.1))
+
+    def update_health(self):
+        pass
