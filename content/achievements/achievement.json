@@ -3,5 +3,5 @@
     "task": "Do {number} times",
     "number": 5,
     "message": "Good Job!",
-    "ref_task": "task_group/task1"
+    "ref_task": "tests/Do an action"
 }

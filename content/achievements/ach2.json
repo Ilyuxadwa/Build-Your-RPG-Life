@@ -1,0 +1,7 @@
+{
+    "id": "task_2",
+    "task": "Do x {number} more than 10 times",
+    "number": 3,
+    "message": "Nice!",
+    "ref_task": "tests/Do an action"
+}

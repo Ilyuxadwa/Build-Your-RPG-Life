@@ -711,7 +711,7 @@ def task_page(app):
                 option_buttons[key].style = tools.additional_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10))
             else:
                 selected_options.append(key)
-                option_buttons[key].style = tools.main_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10)),
+                option_buttons[key].style = tools.main_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10))
         else:
             for prev_key in selected_options:
                 option_buttons[prev_key].style = tools.additional_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10))

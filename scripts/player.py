@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from user import User
 from goals import DailyGoal, WeeklyGoal, CustomGoal, ActionGoal, AmountGoal, TimeGoal, GoalStatus
-from tasks import Task, ActionTask, AmountTask, TimeTask
-from achievements import Achievement
+from tasks import ActionTask, AmountTask, TimeTask
 import utils
 
 @dataclass
@@ -40,6 +39,8 @@ class Player:
                     "energy": 1,
                     "stress": 1
                 }
+
+
 
     def action_task(self, task, additional_option = []):
         final_stats = {
@@ -142,6 +143,7 @@ class Player:
         
         return final_stats
 
+
     def complete_goal(self, goal, param: str = ""):
         if isinstance(goal.goal, ActionGoal):
             goal.goal.complete()
@@ -172,10 +174,9 @@ class Player:
             self.level += 1
             self.experience = self.experience + exp - utils.get_required_exp(self.level)
         else:
-            self.experience += exp        
+            self.experience += exp     
 
-    def update_health(self):
-        pass
+               
 
     def start(self, saved_values):
         self.level = saved_values["level"]
