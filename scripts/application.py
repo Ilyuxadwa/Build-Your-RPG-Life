@@ -1051,8 +1051,8 @@ def main_ui(app):
     
     health_stat = app.alignment("rstart",
         ft.Icon(utils.icon("health-stat"), color=app.theme.ok_button, size=tools.adapt_dimensions(app, "w", 6)),
-        tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 25), height=tools.adapt_dimensions(app, "h", 5), value = main.player.experience / utils.get_required_exp(main.player.level + 1)),
-        ft.Text(str(round(main.player.health)), style = tools.primary_text_style(app, 28)))
+        tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 25), height=tools.adapt_dimensions(app, "h", 5), value = main.player.health/100),
+        ft.Text(str(main.player.health), style = tools.primary_text_style(app, 28)))
     
     player_card = ft.Container(content = app.alignment("cspace_evenly", 
                                             app.alignment("rcenter", level_stat, health_stat, spacing = tools.adapt_dimensions(app, "w", 15)), 

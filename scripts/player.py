@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import date, timedelta
 from user import User
 from goals import DailyGoal, WeeklyGoal, CustomGoal, ActionGoal, AmountGoal, TimeGoal, GoalStatus
 from tasks import ActionTask, AmountTask, TimeTask
@@ -168,6 +169,7 @@ class Player:
         self.mood = utils.clamp(self.mood + stats["mood"])
         self.energy = utils.clamp(self.energy + stats["energy"])
         self.stress = utils.clamp(self.stress + stats["stress"])
+        self.update_health()
 
 
     def add_experience(self, exp):
@@ -202,4 +204,94 @@ class Player:
             self.multipliers[multiplier] = 1 + (((by_prefs[multiplier] + by_skills[multiplier]) * 0.01) * ((by_roles[multiplier] + by_statuses[multiplier]) * 0.1))
 
     def update_health(self):
-        pass
+        weight_info = self.user.weight_info()
+        water_target_ml = self.user.initial_water_info()
+        sleep_info = self.user.sleep_info()
+
+        today = date.today()
+        last_7_days = [today - timedelta(days=i) for i in range(7)]
+
+        min_sleep_minutes = sleep_info["min_hours"] * 60
+        max_sleep_minutes = sleep_info["max_hours"] * 60
+
+        sleep_scores = []
+        for day in last_7_days:
+            day_key = day.isoformat()
+            if day_key not in self.user.sleep_history:
+                continue
+            sleep_minutes = self.user.sleep_history[day_key]
+
+            if sleep_minutes < min_sleep_minutes:
+                score = (sleep_minutes / min_sleep_minutes) * 100
+            elif sleep_minutes > max_sleep_minutes:
+                over_minutes = sleep_minutes - max_sleep_minutes
+                score = 100 - (over_minutes / 60) * 10
+                if score < 0:
+                    score = 0
+            else:
+                score = 100
+
+            sleep_scores.append(score)
+
+        if sleep_scores:
+            avg_sleep_score = sum(sleep_scores) / len(sleep_scores)
+        else:
+            avg_sleep_score = 50
+
+        water_scores = []
+        for day in last_7_days:
+            day_key = day.isoformat()
+            if day_key not in self.user.water_history:
+                continue
+            water_ml = self.user.water_history[day_key]
+
+            if water_ml < water_target_ml:
+                score = (water_ml / water_target_ml) * 100
+            elif water_ml <= water_target_ml * 1.5:
+                score = 100
+            else:
+                over_ml = water_ml - (water_target_ml * 1.5)
+                score = 100 - (over_ml / water_target_ml) * 100
+                if score < 0:
+                    score = 0
+
+            water_scores.append(score)
+
+        if water_scores:
+            avg_water_score = sum(water_scores) / len(water_scores)
+        else:
+            avg_water_score = 50
+
+        bmi_category = weight_info["health_category"]
+        if bmi_category == "normal":
+            bmi_score = 100
+        elif bmi_category == "underweight":
+            bmi_score = 60
+        elif bmi_category == "overweight":
+            bmi_score = 60
+        elif bmi_category == "obese":
+            bmi_score = 30
+        else:
+            bmi_score = 50
+
+        stress_score = 100 - self.stress
+        mood_score = self.mood
+        energy_score = self.energy
+        strength_score = self.strength
+
+        health = (
+            avg_sleep_score * 0.20
+            + avg_water_score * 0.20
+            + bmi_score * 0.20
+            + stress_score * 0.10
+            + mood_score * 0.10
+            + energy_score * 0.10
+            + strength_score * 0.10
+        )
+
+        if health < 0:
+            health = 0
+        elif health > 100:
+            health = 100
+
+        self.health = int(health)

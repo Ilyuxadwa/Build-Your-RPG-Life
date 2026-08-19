@@ -57,7 +57,7 @@ async def start(app):
             achievement_progress = {}
             gained_achievements = []
 
-        user = User(user_data["name"], date.fromisoformat(user_data["birthday"]), user_data["role"], user_data["status"], user_data["weight"], user_data["height"], user_data["gender"], user_data["lifestyle_activeness"], user_data["preferences"], user_data["skills"])
+        user = User(user_data["name"], date.fromisoformat(user_data["birthday"]), user_data["role"], user_data["status"], user_data["weight"], user_data["height"], user_data["gender"], user_data["lifestyle_activeness"], user_data["preferences"], user_data["skills"], water_history, sleep_history)
 
         action_goals, amount_goals, time_goals = utils.parse_goals(user.role, user.status)
 

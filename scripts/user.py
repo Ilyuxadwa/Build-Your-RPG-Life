@@ -16,6 +16,9 @@ class User:
     preferences: list
     skills: list
 
+    water_history: dict
+    sleep_history: dict
+    
     def get_age(self):
         today = date.today()
         has_not_had_birthday_yet = (today.month, today.day) < (self.birthday.month, self.birthday.day)
