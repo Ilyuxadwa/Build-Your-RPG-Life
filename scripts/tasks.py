@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+
+
 @dataclass
 class Task:
     title: str
@@ -11,6 +13,10 @@ class Task:
     additional_options_type: str
     additional_options_select: str
     additional_options: dict
+
+
+
+# ---------- Types wrappers ----------
 
 @dataclass
 class ActionTask(Task):

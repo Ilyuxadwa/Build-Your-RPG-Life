@@ -55,6 +55,7 @@ def bmi(weight: float, height: int, age: int, gender: str) -> dict:
         "difference": weight_difference
     }
 
+
 def water(weight: float, age: int, gender: str) -> dict:
     base_ml_per_kg = 35.0 if gender == "male" else 30.0
     
@@ -72,6 +73,7 @@ def water(weight: float, age: int, gender: str) -> dict:
     final_water_ml = int(round(water_ml / 50.0) * 50)
 
     return final_water_ml
+
 
 def sleep(age: int) -> dict:
     if age <= 13:

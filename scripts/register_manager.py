@@ -1,5 +1,9 @@
 from datetime import date
 
+
+
+# ---------- Fields ----------
+
 name = ""
 birthday = None
 role = ""
@@ -15,6 +19,10 @@ skills = []
 
 register_date = None
 
+
+
+# ---------- Setters and getters ----------
+
 def set_first_part(name_input, birthday_input, role_input, status_input):
     global name, birthday, role, status
     name = name_input
@@ -22,8 +30,11 @@ def set_first_part(name_input, birthday_input, role_input, status_input):
     role = role_input
     status = status_input
 
+
 def get_first_part():
     return name, birthday, role, status
+
+
 
 def set_second_part(height_input, weight_input, gender_input):
     global height, weight, gender
@@ -31,8 +42,11 @@ def set_second_part(height_input, weight_input, gender_input):
     weight = float(weight_input)
     gender = gender_input
 
+
 def get_second_part():
     return height, weight, gender
+
+
 
 def set_thirds_part(activeness_input, preferences_input, skills_input):
     global activeness, preferences, skills
@@ -40,8 +54,11 @@ def set_thirds_part(activeness_input, preferences_input, skills_input):
     preferences = preferences_input
     skills = skills_input
 
+
 def get_thirds_part():
     return activeness, preferences, skills
+
+
 
 def finish():
     global name, birthday, role, status, height, weight, gender, preferences, skills
