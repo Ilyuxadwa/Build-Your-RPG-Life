@@ -3,8 +3,12 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, time
 from enum import Enum
 from typing import Optional
+
 import utils
 
+
+
+# ---------- Basic logic ----------
 
 class GoalStatus(Enum):
     IN_PROGRESS = "in_progress"
@@ -43,6 +47,9 @@ class Goal:
         if self.status != GoalStatus.CANCELED:
             self.status = GoalStatus.COMPLETED if self.is_complete() else GoalStatus.IN_PROGRESS
 
+
+
+# ---------- Types wrappers ----------
 
 @dataclass
 class AmountGoal(Goal):
@@ -91,9 +98,7 @@ class TimeGoal(Goal):
         self.target_duration = duration
 
     def add_progress(self, duration: str):
-        print(self.accumulated, " + ", duration)
         self.accumulated += utils.parse_time_string(duration)
-        print(self.accumulated)
         self.refresh_status()
 
     def start_timer(self):
@@ -107,6 +112,7 @@ class TimeGoal(Goal):
         self.accumulated += datetime.now() - self._timer_start
         self._timer_start = None
         self.refresh_status()
+
 
 
 # ---------- Period wrappers ----------

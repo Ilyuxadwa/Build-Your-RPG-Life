@@ -1,10 +1,14 @@
 from datetime import date
+
 import utils
 import info
-import healthy_calculations
 from player import Player
 from user import User
 import register_manager
+
+
+
+# ---------- App context ----------
 
 current_path = ""
 last_completed = {}
@@ -28,11 +32,14 @@ player = None
 
 
 
+# ---------- Start everything ----------
+
 def start_parser():
     global tasks
     global achievements
     tasks = utils.parse_tasks()
     achievements = utils.parse_achievements()
+
 
 async def start(app):
     global player, water_history, sleep_history, achievement_progress
@@ -69,14 +76,12 @@ async def start(app):
 
         player = Player(user, daily_goals, weekly_goals, custom_goals, gained_achievements)
 
-
         raw_water_history = utils.get_dict(await app.load("water_history"))
         water_history = raw_water_history if raw_water_history else {}
 
         raw_sleep_history = utils.get_dict(await app.load("sleep_history"))
         sleep_history = raw_sleep_history if raw_sleep_history else {}
 
-        
         changed = utils.check_and_reset_goals(player, user)
         if changed:
             await save_goals(app)
@@ -93,6 +98,7 @@ async def start(app):
         await app.save("registered", False)
         app.navigate("register_1")
 
+
 async def finish_registration(app):
     user_data = register_manager.finish()
     await app.save("reg_data", utils.save_dict(user_data))
@@ -101,6 +107,8 @@ async def finish_registration(app):
     await start(app)
 
     
+
+# ---------- Savers ----------
 
 async def save_stats(app):
     global player
@@ -118,6 +126,7 @@ async def save_stats(app):
             "stress": player.stress
         }
     ))
+
 
 async def save_goals(app):
     global player, water_history, sleep_history
@@ -154,6 +163,7 @@ async def check_and_save_achievement(app, task_ref):
 
     if changed:
         await save_achievements(app)
+
 
 async def save_achievements(app):
     global player, achievement_progress

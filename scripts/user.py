@@ -1,10 +1,15 @@
 from dataclasses import dataclass
-from datetime import datetime, date
+from datetime import date
 
 import healthy_calculations
 
+
+
 @dataclass
 class User:
+
+    # ---------- User info ----------
+
     name: str
     birthday: date
     role: str
@@ -16,9 +21,15 @@ class User:
     preferences: list
     skills: list
 
+
+    # ---------- Health-related records ----------
+
     water_history: dict
     sleep_history: dict
-    
+
+
+    # ---------- Info getters ----------
+
     def get_age(self):
         today = date.today()
         has_not_had_birthday_yet = (today.month, today.day) < (self.birthday.month, self.birthday.day)

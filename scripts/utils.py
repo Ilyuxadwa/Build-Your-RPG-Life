@@ -1,27 +1,33 @@
+from packaging.version import Version
+from datetime import datetime, date, timedelta
+from flet import Icons
 import json
 import os
 import random
 import copy
-from packaging.version import Version
-from datetime import datetime, date, timedelta
-from flet import Icons
+
 from goals import ActionGoal, AmountGoal, TimeGoal, DailyGoal, WeeklyGoal, CustomGoal, InputMode, GoalStatus
 from tasks import ActionTask, AmountTask, TimeTask
 from achievements import Achievement
 
 
-
-with open("config/icons.json", "r", encoding="utf-8") as f:
-    icon_map = json.load(f)
-
-with open("config/welcome_messages.json", "r", encoding="utf-8") as f:
-    welcome_messages = json.load(f)
+STAT_KEYS = ["creativity", "intelligence", "social", "strength", "mood", "energy", "stress"]
 
 
+def load_json(path, encoding=None):
+    with open(path, "r", encoding=encoding) as f:
+        return json.load(f)
+
+
+icon_map = load_json("config/icons.json", encoding="utf-8")
+welcome_messages = load_json("config/welcome_messages.json", encoding="utf-8")
+
+
+
+# ---------- Parsers ----------
 
 def parse_task_file(path):
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    data = load_json(path, encoding="utf-8")
 
     common = {
         "title": data["title"],
@@ -62,6 +68,7 @@ def parse_task_file(path):
 
     return data["id"], task
 
+
 def parse_tasks(path="content/tasks/"):
     parsed = {}
     for name in os.listdir(path):
@@ -73,6 +80,7 @@ def parse_tasks(path="content/tasks/"):
             parsed[task_id] = task
     return parsed
 
+
 def get_node(path, tasks):
     node = tasks
     for part in path.split("/"):
@@ -80,9 +88,9 @@ def get_node(path, tasks):
     return node
 
 
+
 def parse_achievement_file(path):
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    data = load_json(path, encoding="utf-8")
 
     achievement = Achievement(
         message=data["message"],
@@ -93,6 +101,7 @@ def parse_achievement_file(path):
 
     return data["id"], achievement
 
+
 def parse_achievements(path="content/achievements/"):
     parsed = {}
     for name in os.listdir(path):
@@ -101,6 +110,19 @@ def parse_achievements(path="content/achievements/"):
             achievement_id, achievement = parse_achievement_file(full_path)
             parsed[achievement_id] = achievement
     return parsed
+
+
+
+def is_available_for(raw_data, role, status):
+    return role in raw_data["available_for"] and status in raw_data["available_for"]
+
+
+def available_periods_dict(raw_data):
+    return {
+        "daily": raw_data.get("is_daily", False),
+        "weekly": raw_data.get("is_weekly", False),
+        "custom": raw_data.get("is_custom", False),
+    }
 
 
 def parse_goals(role, status):
@@ -113,10 +135,9 @@ def parse_goals(role, status):
     time_goals = []
 
     for goal in actions:
-        with open("content/goals/action/" + goal, encoding="utf-8") as f:
-            raw_data = json.load(f)
+        raw_data = load_json("content/goals/action/" + goal, encoding="utf-8")
 
-        if role not in raw_data["available_for"] or status not in raw_data["available_for"]:
+        if not is_available_for(raw_data, role, status):
             continue
 
         action_goals.append(ActionGoal(
@@ -125,18 +146,13 @@ def parse_goals(role, status):
             stats=raw_data.get("stats", {}),
             additional_options=raw_data.get("additional_options", {}),
             recommended_for=raw_data.get("recommended_for", []),
-            available_periods={
-                "daily": raw_data.get("is_daily", False),
-                "weekly": raw_data.get("is_weekly", False),
-                "custom": raw_data.get("is_custom", False),
-            },
+            available_periods=available_periods_dict(raw_data),
         ))
 
     for goal in amounts:
-        with open("content/goals/amount/" + goal, encoding="utf-8") as f:
-            raw_data = json.load(f)
+        raw_data = load_json("content/goals/amount/" + goal, encoding="utf-8")
 
-        if role not in raw_data["available_for"] or status not in raw_data["available_for"]:
+        if not is_available_for(raw_data, role, status):
             continue
 
         amount_goals.append(AmountGoal(
@@ -150,18 +166,13 @@ def parse_goals(role, status):
             stats=raw_data.get("stats", {}),
             additional_options=raw_data.get("additional_options", {}),
             recommended_for=raw_data.get("recommended_for", []),
-            available_periods={
-                "daily": raw_data.get("is_daily", False),
-                "weekly": raw_data.get("is_weekly", False),
-                "custom": raw_data.get("is_custom", False),
-            },
+            available_periods=available_periods_dict(raw_data),
         ))
 
     for goal in times:
-        with open("content/goals/time/" + goal, encoding="utf-8") as f:
-            raw_data = json.load(f)
+        raw_data = load_json("content/goals/time/" + goal, encoding="utf-8")
 
-        if role not in raw_data["available_for"] or status not in raw_data["available_for"]:
+        if not is_available_for(raw_data, role, status):
             continue
 
         target = raw_data["target"]
@@ -184,14 +195,11 @@ def parse_goals(role, status):
             stats=raw_data.get("stats", {}),
             additional_options=raw_data.get("additional_options", {}),
             recommended_for=raw_data.get("recommended_for", []),
-            available_periods={
-                "daily": raw_data.get("is_daily", False),
-                "weekly": raw_data.get("is_weekly", False),
-                "custom": raw_data.get("is_custom", False),
-            },
+            available_periods=available_periods_dict(raw_data),
         ))
 
     return action_goals, amount_goals, time_goals
+
 
 def parse_input_mode(raw_value: str) -> InputMode:
     normalized = raw_value.strip().lower()
@@ -205,69 +213,58 @@ def parse_input_mode(raw_value: str) -> InputMode:
 
     raise ValueError(f"Unknown input_mode value: {raw_value!r}")
 
+
 def goal_progress_entry(goal):
+    common = {
+        "status": goal.status.value,
+        "already_completed": goal.already_completed,
+        "date": date.today().isoformat(),
+    }
+
     if isinstance(goal, ActionGoal):
-        return {"type": "action", "completed": goal.done, "status": goal.status.value,
-                "already_completed": goal.already_completed,
-                "date": date.today().isoformat()}
+        return {"type": "action", "completed": goal.done, **common}
     elif isinstance(goal, AmountGoal):
         return {"type": "amount", "current": goal.current_amount,
-                "completed": goal.is_complete(), "status": goal.status.value,
-                "already_completed": goal.already_completed,
-                "date": date.today().isoformat()}
+                "completed": goal.is_complete(), **common}
     elif isinstance(goal, TimeGoal):
         return {"type": "time", "current": goal.accumulated.total_seconds(),
-                "completed": goal.is_complete(), "status": goal.status.value,
-                "already_completed": goal.already_completed,
-                "date": date.today().isoformat()}
+                "completed": goal.is_complete(), **common}
+
+
+def goals_progress_dict(period_goals):
+    return {period_goal.goal.title: goal_progress_entry(period_goal.goal) for period_goal in period_goals}
 
 
 def save_goals_progress(daily: list, weekly: list, custom: list):
-    daily_dict = {}
-    for period_goal in daily:
-        daily_dict[period_goal.goal.title] = goal_progress_entry(period_goal.goal)
+    return goals_progress_dict(daily), goals_progress_dict(weekly), goals_progress_dict(custom)
 
-    weekly_dict = {}
-    for period_goal in weekly:
-        weekly_dict[period_goal.goal.title] = goal_progress_entry(period_goal.goal)
 
-    custom_dict = {}
-    for period_goal in custom:
-        custom_dict[period_goal.goal.title] = goal_progress_entry(period_goal.goal)
+def active_goal_entry(period_goal, period_label):
+    return {
+        "period": period_label,
+        "assigned_time": period_goal.assigned_time.isoformat(),
+        "finish_time": period_goal.finish_time.isoformat(),
+    }
 
-    return daily_dict, weekly_dict, custom_dict
 
 def save_active_goals_progress(daily: list, weekly: list, custom: list):
     active_dict = {}
 
-    for period_goal in daily:
-        active_dict[period_goal.goal.title] = {
-            "period": "daily",
-            "assigned_time": period_goal.assigned_time.isoformat(),
-            "finish_time": period_goal.finish_time.isoformat(),
-        }
-
-    for period_goal in weekly:
-        active_dict[period_goal.goal.title] = {
-            "period": "weekly",
-            "assigned_time": period_goal.assigned_time.isoformat(),
-            "finish_time": period_goal.finish_time.isoformat(),
-        }
-
-    for period_goal in custom:
-        active_dict[period_goal.goal.title] = {
-            "period": "custom",
-            "assigned_time": period_goal.assigned_time.isoformat(),
-            "finish_time": period_goal.finish_time.isoformat(),
-        }
+    for period_goals, period_label in ((daily, "daily"), (weekly, "weekly"), (custom, "custom")):
+        for period_goal in period_goals:
+            active_dict[period_goal.goal.title] = active_goal_entry(period_goal, period_label)
 
     return active_dict
+
+
+def find_system_goal(player, title):
+    return next((pg.goal for pg in player.daily_goals if pg.goal.is_system and pg.goal.title == title), None)
+
 
 def update_water_history(history: dict, player):
     today = date.today().isoformat()
 
-    water_goal = next((pg.goal for pg in player.daily_goals
-                        if pg.goal.is_system and pg.goal.title == "Drinking water"), None)
+    water_goal = find_system_goal(player, "Drinking water")
 
     if water_goal is not None and water_goal.current_amount > 0:
         history[today] = water_goal.current_amount
@@ -278,15 +275,15 @@ def update_water_history(history: dict, player):
 def update_sleep_history(history: dict, player):
     today = date.today().isoformat()
 
-    sleep_goal = next((pg.goal for pg in player.daily_goals
-                        if pg.goal.is_system and pg.goal.title == "Sleeping"), None)
+    sleep_goal = find_system_goal(player, "Sleeping")
 
     if sleep_goal is not None and sleep_goal.accumulated.total_seconds() > 0:
         history[today] = sleep_goal.accumulated.total_seconds() / 60
 
     return history
 
-def _find_in_pool(title, action_goals, amount_goals, time_goals):
+
+def find_in_pool(title, action_goals, amount_goals, time_goals):
     for g in action_goals:
         if g.title == title:
             return g
@@ -311,6 +308,7 @@ def apply_progress(goal, progress):
     goal.status = GoalStatus(progress.get("status", "in_progress"))
     goal.already_completed = progress.get("already_completed", False)
 
+
 def apply_progress_if_today(goal, progress):
     if not progress:
         return
@@ -319,7 +317,7 @@ def apply_progress_if_today(goal, progress):
     apply_progress(goal, progress)
 
 
-def reset_progress(goal):
+def reset_progress_fields(goal):
     if isinstance(goal, ActionGoal):
         goal.done = False
     elif isinstance(goal, AmountGoal):
@@ -327,6 +325,10 @@ def reset_progress(goal):
     elif isinstance(goal, TimeGoal):
         goal.accumulated = timedelta()
     goal.status = GoalStatus.IN_PROGRESS
+
+
+def reset_progress(goal):
+    reset_progress_fields(goal)
     goal.already_completed = False
 
 
@@ -338,7 +340,7 @@ def load_goals_progress(active: dict, daily: dict, weekly: dict, custom: dict,
     custom_goals = []
 
     for title, info in active.items():
-        template = _find_in_pool(title, action_goals, amount_goals, time_goals)
+        template = find_in_pool(title, action_goals, amount_goals, time_goals)
         if template is None:
             continue  # system goals are handled separately below, never come from the pool
 
@@ -387,6 +389,7 @@ def load_goals_progress(active: dict, daily: dict, weekly: dict, custom: dict,
 
     return daily_goals, weekly_goals, custom_goals
 
+
 def make_water_goal(user):
     goal = AmountGoal(
         title="Drinking water",
@@ -434,21 +437,21 @@ def make_sleep_goal(user) -> DailyGoal:
     )
     return DailyGoal(goal=goal)
 
+
+def refresh_system_goal_target(goal, user):
+    if goal.is_system and goal.title == "Drinking water":
+        goal.target_amount = user.initial_water_info()
+    elif goal.is_system and goal.title == "Sleeping":
+        goal.target_duration = timedelta(minutes=user.sleep_info()["target_minutes"])
+
+
 def refresh_system_goal_targets(player, user):
     for pg in player.daily_goals:
-        if pg.goal.is_system and pg.goal.title == "Drinking water":
-            pg.goal.target_amount = user.initial_water_info()
-        elif pg.goal.is_system and pg.goal.title == "Sleeping":
-            pg.goal.target_duration = timedelta(minutes=user.sleep_info()["target_minutes"])
+        refresh_system_goal_target(pg.goal, user)
+
 
 def reset_goal_progress(goal):
-    if isinstance(goal, ActionGoal):
-        goal.done = False
-    elif isinstance(goal, AmountGoal):
-        goal.current_amount = 0.0
-    elif isinstance(goal, TimeGoal):
-        goal.accumulated = timedelta()
-    goal.status = GoalStatus.IN_PROGRESS
+    reset_progress_fields(goal)
 
 
 def check_and_reset_goals(player, user):
@@ -457,11 +460,7 @@ def check_and_reset_goals(player, user):
     for i, pg in enumerate(player.daily_goals):
         if datetime.now() > pg.finish_time:
             reset_goal_progress(pg.goal)
-
-            if pg.goal.is_system and pg.goal.title == "Drinking water":
-                pg.goal.target_amount = user.initial_water_info()
-            elif pg.goal.is_system and pg.goal.title == "Sleeping":
-                pg.goal.target_duration = timedelta(minutes=user.sleep_info()["target_minutes"])
+            refresh_system_goal_target(pg.goal, user)
 
             player.daily_goals[i] = DailyGoal(goal=pg.goal)
             changed = True
@@ -476,137 +475,44 @@ def check_and_reset_goals(player, user):
 
 
 
+# ---------- Config things ----------
+
 def get_initial_stats():
-    stats = {}
-    with open("config/initial.json", "r") as f:
-        stats = json.load(f)
-    return stats
+    return load_json("config/initial.json")
 
 def get_roles():
-    roles = {}
-    with open("config/roles.json", "r") as f:
-        roles = json.load(f)
-    return roles
+    return load_json("config/roles.json")
 
 def get_statuses():
-    statuses = {}
-    with open("config/statuses.json", "r") as f:
-        statuses = json.load(f)
-    return statuses
+    return load_json("config/statuses.json")
 
 def get_available_skills():
-    skills = []
-    with open("config/skills.json", "r") as f:
-        skills = json.load(f)
-    return skills
+    return load_json("config/skills.json")
 
 def get_available_preferences():
-    prefs = []
-    with open("config/preferences.json", "r") as f:
-        prefs = json.load(f)
-    return prefs
+    return load_json("config/preferences.json")
 
 def get_affinities(status, role, prefs, skills):
-
     global_prefs = get_available_preferences()
     global_skills = get_available_skills()
     global_statuses = get_statuses()
     global_roles = get_roles()
 
-    affinity_prefs_creativity = 0
-    affinity_prefs_intelligence = 0
-    affinity_prefs_social = 0
-    affinity_prefs_strength = 0
-    affinity_prefs_mood = 0
-    affinity_prefs_energy = 0
-    affinity_prefs_stress = 0
-
-    affinity_skills_creativity = 0
-    affinity_skills_intelligence = 0
-    affinity_skills_social = 0
-    affinity_skills_strength = 0
-    affinity_skills_mood = 0
-    affinity_skills_energy = 0
-    affinity_skills_stress = 0
-
-    multiplier_roles_creativity = global_roles[role]["creativity"]
-    multiplier_roles_intelligence = global_roles[role]["intelligence"]
-    multiplier_roles_social = global_roles[role]["social"]
-    multiplier_roles_strength = global_roles[role]["strength"]
-    multiplier_roles_mood = global_roles[role]["mood"]
-    multiplier_roles_energy = global_roles[role]["energy"]
-    multiplier_roles_stress = global_roles[role]["stress"]
-
-    multiplier_statuses_creativity = global_statuses[status]["creativity"]
-    multiplier_statuses_intelligence = global_statuses[status]["intelligence"]
-    multiplier_statuses_social = global_statuses[status]["social"]
-    multiplier_statuses_strength = global_statuses[status]["strength"]
-    multiplier_statuses_mood = global_statuses[status]["mood"]
-    multiplier_statuses_energy = global_statuses[status]["energy"]
-    multiplier_statuses_stress = global_statuses[status]["stress"]    
-
+    prefs_affinity = {stat: 0 for stat in STAT_KEYS}
     for pref in prefs:
-        affinity_prefs_creativity += global_prefs[pref]["affinity"]["creativity"]
-        affinity_prefs_intelligence += global_prefs[pref]["affinity"]["intelligence"]
-        affinity_prefs_social += global_prefs[pref]["affinity"]["social"]
-        affinity_prefs_strength += global_prefs[pref]["affinity"]["strength"]
-        affinity_prefs_mood += global_prefs[pref]["affinity"]["mood"]
-        affinity_prefs_energy += global_prefs[pref]["affinity"]["energy"]
-        affinity_prefs_stress += global_prefs[pref]["affinity"]["stress"]
+        for stat in STAT_KEYS:
+            prefs_affinity[stat] += global_prefs[pref]["affinity"][stat]
 
+    skills_affinity = {stat: 0 for stat in STAT_KEYS}
     for skill in skills:
-        affinity_skills_creativity += global_skills[skill]["affinity"]["creativity"]
-        affinity_skills_intelligence += global_skills[skill]["affinity"]["intelligence"]
-        affinity_skills_social += global_skills[skill]["affinity"]["social"]
-        affinity_skills_strength += global_skills[skill]["affinity"]["strength"]
-        affinity_skills_mood += global_skills[skill]["affinity"]["mood"]
-        affinity_skills_energy += global_skills[skill]["affinity"]["energy"]
-        affinity_skills_stress += global_skills[skill]["affinity"]["stress"]    
+        for stat in STAT_KEYS:
+            skills_affinity[stat] += global_skills[skill]["affinity"][stat]
 
-    return {
-        "creativity": affinity_prefs_creativity,
-        "intelligence": affinity_prefs_intelligence,
-        "social": affinity_prefs_social,
-        "strength": affinity_prefs_strength,
-        "mood": affinity_prefs_mood,
-        "energy": affinity_prefs_energy,
-        "stress": affinity_prefs_stress
-    }, {
-        "creativity": affinity_skills_creativity,
-        "intelligence": affinity_skills_intelligence,
-        "social": affinity_skills_social,
-        "strength": affinity_skills_strength,
-        "mood": affinity_skills_mood,
-        "energy": affinity_skills_energy,
-        "stress": affinity_skills_stress
-    }, {
-        "creativity": multiplier_roles_creativity,
-        "intelligence": multiplier_roles_intelligence,
-        "social": multiplier_roles_social,
-        "strength": multiplier_roles_strength,
-        "mood": multiplier_roles_mood,
-        "energy": multiplier_roles_energy,
-        "stress": multiplier_roles_stress
-    }, {
-        "creativity": multiplier_statuses_creativity,
-        "intelligence": multiplier_statuses_intelligence,
-        "social": multiplier_statuses_social,
-        "strength": multiplier_statuses_strength,
-        "mood": multiplier_statuses_mood,
-        "energy": multiplier_statuses_energy,
-        "stress": multiplier_statuses_stress
-    }
+    roles_multiplier = {stat: global_roles[role][stat] for stat in STAT_KEYS}
+    statuses_multiplier = {stat: global_statuses[status][stat] for stat in STAT_KEYS}
 
+    return prefs_affinity, skills_affinity, roles_multiplier, statuses_multiplier
 
-
-def save_dict(value):
-    return json.dumps(value)
-
-def get_dict(raw):
-    default={}
-    if raw:
-        return json.loads(raw)
-    return default
 
 def icon(name: str):
     icon_key = icon_map.get(name)
@@ -617,6 +523,7 @@ def icon(name: str):
         raise AttributeError(f"ft.Icons has no attribute '{icon_key}'")
     return icon_value
 
+
 def welcome_message(user):
     if user.birthday == date.today():
         return icon("welcome-birthday"), f"Happy birthday, {user.name}!"
@@ -626,16 +533,32 @@ def welcome_message(user):
 
 
 
+# ---------- Main logic ----------
+
+def save_dict(value):
+    return json.dumps(value)
+
+
+def get_dict(raw):
+    default={}
+    if raw:
+        return json.loads(raw)
+    return default
+
+
 def check_registration(version):
     if version is None:
         return True
     version = Version(version)
-    with open("config/register_fields.json", "r") as f:
-        data = json.load(f)
+    data = load_json("config/register_fields.json")
     for ver in data.keys():
         if version < Version(ver):
             return True
     return False
+
+
+
+# ---------- Checkers and transformers ----------
 
 def get_latest():
     return date(date.today().year-12, date.today().month, date.today().day)
@@ -647,12 +570,15 @@ def to_seconds(time_str: str):
     h, m, s = map(int, time_str.split(":"))
     return h * 3600 + m * 60 + s
 
+def seconds_until(finish_time):
+    return (finish_time - datetime.now()).total_seconds()
+
 def format_time_left_days(finish_time):
-    delta = finish_time - datetime.now()
-    if delta.total_seconds() <= 0:
+    seconds = seconds_until(finish_time)
+    if seconds <= 0:
         return "Time left: 0:00:00:00"
 
-    total_seconds = int(delta.total_seconds())
+    total_seconds = int(seconds)
     days, remainder = divmod(total_seconds, 86400)
     hours, remainder = divmod(remainder, 3600)
     minutes, seconds = divmod(remainder, 60)
@@ -660,11 +586,11 @@ def format_time_left_days(finish_time):
     return f"Time left: {days}:{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 def format_time_left_hours(finish_time):
-    delta = finish_time - datetime.now()
-    if delta.total_seconds() <= 0:
+    seconds = seconds_until(finish_time)
+    if seconds <= 0:
         return "Time left: 0:00:00:00"
 
-    total_seconds = int(delta.total_seconds())
+    total_seconds = int(seconds)
     hours, remainder = divmod(total_seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
 
@@ -674,18 +600,18 @@ def parse_time_string(duration: str) -> timedelta:
     h, m, s = (int(x) for x in duration.split(":"))
     return timedelta(hours=h, minutes=m, seconds=s)
 
-def add_time(current_time, max, step):
+def add_time(current_time, max_time, step):
     t = datetime.strptime(current_time, "%H:%M:%S") + timedelta(seconds=step)
-    maximum = datetime.strptime(max, "%H:%M:%S")
+    maximum = datetime.strptime(max_time, "%H:%M:%S")
     if t > maximum:
         result = current_time
     else:
         result = t.strftime("%H:%M:%S")
     return result
 
-def remove_time(current_time, min, step):
+def remove_time(current_time, min_time, step):
     t = datetime.strptime(current_time, "%H:%M:%S") - timedelta(seconds=step)
-    minimum = datetime.strptime(min, "%H:%M:%S")
+    minimum = datetime.strptime(min_time, "%H:%M:%S")
     if t < minimum:
         result = current_time
     else:
@@ -693,8 +619,7 @@ def remove_time(current_time, min, step):
     return result
 
 def get_required_exp(level):
-    with open("config/levels.json", "r") as f:
-        levels = json.load(f)
+    levels = load_json("config/levels.json")
     return levels[str(level)]
 
 def clamp(value, min_value=0, max_value=100):

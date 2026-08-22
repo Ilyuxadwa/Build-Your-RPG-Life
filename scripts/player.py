@@ -1,12 +1,17 @@
-from dataclasses import dataclass
 from datetime import date, timedelta
+from dataclasses import dataclass
+
+import utils
 from user import User
 from goals import DailyGoal, WeeklyGoal, CustomGoal, ActionGoal, AmountGoal, TimeGoal, GoalStatus
 from tasks import ActionTask, AmountTask, TimeTask
-import utils
+
+
 
 @dataclass
 class Player:
+
+    # ---------- Essential parts ----------
 
     user: User
     
@@ -16,32 +21,54 @@ class Player:
 
     achievements: list[str]
 
-    # Stats
-    experience = 0 # Gain/lose by actions
-    level = 1 # When experience = required amount -> +1, experience = 0
 
-    health = 100 # Calculated by a lot of factors
+    # ---------- Statistics ----------
 
-    creativity = 0 # Gain/lose by actions
-    intelligence = 0 # Gain/lose by actions
-    social = 0 # Gain/lose by actions
-    strength = 0 # Gain/lose by actions
+    experience = 0 # Changed by actions
+    level = 1 # +1 when experience = required amount, experience = current + added - required
 
-    energy = 50 # Gain/lose by actions
-    mood = 50 # Gain/lose by actions
-    stress = 0 # Gain/lose by actions
+    health = 100 # Changed by a lot of factors
 
-    multipliers={
-                    "creativity": 1,
-                    "intelligence": 1,
-                    "social": 1,
-                    "strength": 1,
-                    "mood": 1,
-                    "energy": 1,
-                    "stress": 1
-                }
+    creativity = 0 # Changed by actions
+    intelligence = 0 # Changed by actions
+    social = 0 # Changed by actions
+    strength = 0 # Changed by actions
+
+    energy = 50 # Changed by actions
+    mood = 50 # Changed by actions
+    stress = 0 # Changed by actions
+
+    multipliers = { # Calculated on start
+                "creativity": 1,
+                "intelligence": 1,
+                "social": 1,
+                "strength": 1,
+                "mood": 1,
+                "energy": 1,
+                "stress": 1
+            }
 
 
+    
+    def start(self, saved_values):
+            self.level = saved_values["level"]
+            self.experience = saved_values["exp"]
+    
+            self.creativity = saved_values["creativity"]
+            self.intelligence = saved_values["intelligence"]
+            self.social = saved_values["social"]
+            self.strength = saved_values["strength"]
+    
+            self.mood = saved_values["mood"]
+            self.energy = saved_values["energy"]
+            self.stress = saved_values["stress"]
+    
+            self.calculate_multipliers()
+            self.update_health()
+
+
+
+    # ---------- Actions completements ----------
 
     def action_task(self, task, additional_option = []):
         final_stats = {
@@ -68,6 +95,7 @@ class Player:
 
         self.complete_new_stats(final_stats)
         return final_stats
+
 
     def amount_task(self, task, amount, additional_option = []):
         final_stats = {
@@ -105,6 +133,7 @@ class Player:
         self.complete_new_stats(final_stats)
 
         return final_stats
+
 
     def time_task(self, task, time: str, additional_option = []):
         final_stats = {
@@ -158,7 +187,9 @@ class Player:
         else:
             return False
             
+
         
+    # ---------- Calculations ----------
 
     def complete_new_stats(self, stats):
         self.add_experience(stats["experience"])
@@ -179,29 +210,13 @@ class Player:
         else:
             self.experience += exp     
 
-               
-
-    def start(self, saved_values):
-        self.level = saved_values["level"]
-        self.experience = saved_values["exp"]
-        self.update_health()
-
-        self.creativity = saved_values["creativity"]
-        self.intelligence = saved_values["intelligence"]
-        self.social = saved_values["social"]
-        self.strength = saved_values["strength"]
-
-        self.mood = saved_values["mood"]
-        self.energy = saved_values["energy"]
-        self.stress = saved_values["stress"]
-
-        self.calculate_multipliers()
 
     def calculate_multipliers(self):
         by_prefs, by_skills, by_roles, by_statuses = utils.get_affinities(self.user.status, self.user.role, self.user.preferences, self.user.skills)
 
         for multiplier in self.multipliers.keys():
             self.multipliers[multiplier] = 1 + (((by_prefs[multiplier] + by_skills[multiplier]) * 0.01) * ((by_roles[multiplier] + by_statuses[multiplier]) * 0.1))
+
 
     def update_health(self):
         weight_info = self.user.weight_info()
