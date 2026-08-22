@@ -1,9 +1,9 @@
-from datetime import datetime, timedelta, date, time
+from datetime import datetime, time
 import flet as ft
 import asyncio
 import copy
 
-from unified_ui import App, Settings, tools
+from unified_ui import App, tools
 
 import info
 import main
@@ -79,16 +79,19 @@ def stepper_row(app, entry, on_decrease, on_increase):
 
 
 def option_button_rows(app, keys, on_tap, option_buttons):
+    def make_button(key):
+        return ft.Button(
+            content=ft.Text(key.capitalize(), style=tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD)),
+            style=tools.additional_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10)),
+            width=tools.adapt_dimensions(app, "w", 30),
+            height=tools.adapt_dimensions(app, "w", 30),
+            on_click=lambda e, k=key: on_tap(k))
+
     rows = []
-    for row_keys in chunk_buttons(keys, 3):
+    for row in chunk_buttons(keys, 3):
         row_buttons = []
-        for key in row_keys:
-            btn = ft.Button(
-                content=ft.Text(key.capitalize(), style=tools.secondary_text_style(app, 50, weight=ft.FontWeight.BOLD)),
-                style=tools.additional_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10)),
-                width=tools.adapt_dimensions(app, "w", 30),
-                height=tools.adapt_dimensions(app, "w", 30),
-                on_click=lambda k=key: on_tap(k))
+        for key in row:
+            btn = make_button(key)
             option_buttons[key] = btn
             row_buttons.append(btn)
         rows.append(app.alignment("rcenter", *row_buttons, spacing=tools.adapt_dimensions(app, "w", 4)))
@@ -96,16 +99,19 @@ def option_button_rows(app, keys, on_tap, option_buttons):
 
 
 def preset_input_rows(app, keys, unit_for_key, on_select, option_buttons):
+    def make_input(key):
+        return ft.Button(
+            f"{key.capitalize()} {unit_for_key(key)}",
+            style=tools.ok_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10)),
+            width=tools.adapt_dimensions(app, "w", 20),
+            height=tools.adapt_dimensions(app, "w", 20),
+            on_click=lambda: on_select(key))
+
     rows = []
-    for row_keys in chunk_buttons(keys, 3):
+    for row in chunk_buttons(keys, 3):
         row_buttons = []
-        for key in row_keys:
-            btn = ft.Button(
-                f"{key.capitalize()} {unit_for_key(key)}",
-                style=tools.ok_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10)),
-                width=tools.adapt_dimensions(app, "w", 20),
-                height=tools.adapt_dimensions(app, "w", 20),
-                on_click=lambda k=key: on_select(k))
+        for key in row:
+            btn = make_input(key)
             option_buttons[key] = btn
             row_buttons.append(btn)
         rows.append(app.alignment("rcenter", *row_buttons, spacing=tools.adapt_dimensions(app, "w", 4)))
@@ -119,7 +125,7 @@ def achievements_dialog(app):
     def reached_card(achievement: Achievement):
         return ft.Container(content = app.alignment("cstart", 
                                 ft.Text(achievement.message, style = tools.primary_text_style(app, 24)),
-                                ft.Text(achievement.task.replace("{number}", str(achievement.number)), style = tools.primary_text_style(app, 18))),
+                                ft.Text(achievement.task.replace("{number}", str(achievement.number)), style = tools.primary_text_style(app, 18))), 
                             bgcolor = app.theme.entry, border_radius = 10, padding = 10, width = tools.adapt_dimensions(app, "w", 50))
 
     def unreached_card(achievement: Achievement):
@@ -138,12 +144,7 @@ def achievements_dialog(app):
         else:
             list_of_achievements.append(unreached_card(achievements[achievement]))
 
-    return ft.AlertDialog(title = ft.Text("Achievements", 
-                            style = tools.primary_text_style(app, 38)), 
-                            content = app.alignment("cstart", *list_of_achievements, spacing = tools.adapt_dimensions(app, "w", 4), expand = True),
-                            bgcolor = app.theme.background, 
-                            actions = [ft.ElevatedButton("Okay", style = tools.ok_button_style(app, 14), on_click=lambda: app.page.pop_dialog())],
-                            actions_alignment = ft.MainAxisAlignment.END, modal = True)
+    return ft.AlertDialog(title = ft.Text("Achievements", style = tools.primary_text_style(app, 38)), content = app.alignment("cstart", *list_of_achievements, spacing = tools.adapt_dimensions(app, "w", 4), expand = True), bgcolor = app.theme.background, actions = [ft.ElevatedButton("Okay", style = tools.ok_button_style(app, 14), on_click=lambda e: app.page.pop_dialog())], actions_alignment = ft.MainAxisAlignment.END, modal = True)
 
 
 
@@ -163,10 +164,10 @@ def completement_page(app):
         elif completed[result]<0:
             results.append(ft.Text(f"{result}: {completed[result]}", color = app.theme.cancel_button, size = 18))
     end_btn = ft.Button(content = "Done", 
-                                            style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)),
-                                            width = tools.adapt_dimensions(app, "w", 60),
-                                            height = tools.adapt_dimensions(app, "w", 8),
-                                            on_click = lambda: app.navigate("main_page"))
+                                style = tools.ok_button_style(app, 28, shape=ft.RoundedRectangleBorder(radius=10)),
+                                width = tools.adapt_dimensions(app, "w", 60),
+                                height = tools.adapt_dimensions(app, "w", 8),
+                                on_click = lambda: app.navigate("main_page"))
     
     app.add_element(app.alignment("rcenter", ft.Text("Task completed", style = tools.primary_text_style(app, 32)), width = tools.adapt_dimensions(app, "w", 100)))
     app.add_element(app.alignment("cstart", *results, width = tools.adapt_dimensions(app, "w", 100), height = tools.adapt_dimensions(app, "h", 65), spacing = tools.adapt_dimensions(app, "w", 4)))
@@ -209,7 +210,7 @@ def main_ui(app):
                                     style=tools.primary_text_style(app, 35, weight=ft.FontWeight.BOLD))
 
             if goal.goal.status == GoalStatus.IN_PROGRESS or goal.goal.is_system:
-                goal_control = ft.Button("Proceed to goal", style = tools.ok_button_style(app, 32), width = tools.adapt_dimensions(app, "w", 30), height = tools.adapt_dimensions(app, "h", 15), on_click = lambda g=goal: open_goal(g))
+                goal_control = ft.Button("Proceed to goal", style = tools.ok_button_style(app, 32), width = tools.adapt_dimensions(app, "w", 30), height = tools.adapt_dimensions(app, "h", 15), on_click = lambda e, g=goal: open_goal(g))
 
             elif goal.goal.status == GoalStatus.COMPLETED and not goal.goal.is_system:
                 goal_control = ft.Text("Completed", color = app.theme.ok_button)
@@ -252,8 +253,7 @@ def main_ui(app):
                                     controls = [
                                         tools.progress_bar(app, width=tools.adapt_dimensions(app, "w", 50), height=tools.adapt_dimensions(app, "h", 7), value=goal.goal.progress()),
                                         ft.Text(f"{goal.goal.accumulated}/{goal.goal.target_duration}", style=tools.secondary_text_style(app, 30))]),
-                                goal_control)                            
-                        )
+                                goal_control))
 
             goals_elements.append(ft.Container(
                                         content=goal_ui,
@@ -292,15 +292,17 @@ def main_ui(app):
                                                 stats_element("intelligence", main.player.intelligence), 
                                                 stats_element("social", main.player.social), 
                                                 stats_element("strength", main.player.strength),
-                                                width = tools.adapt_dimensions(app, "w", 85)),
-                                                
+                                                width = tools.adapt_dimensions(app, "w", 85)),                                         
                                             app.alignment("rspace_between", 
                                                 stats_element("energy", main.player.energy), 
                                                 stats_element("mood", main.player.mood), 
                                                 stats_element("stress", main.player.stress),
                                                 width = tools.adapt_dimensions(app, "w", 85)),
                                             height = tools.adapt_dimensions(app, "h", 25)), 
-                                        bgcolor=app.theme.additional_color, border_radius = 10, width = tools.adapt_dimensions(app, "w", 92), height = tools.adapt_dimensions(app, "h", 40))
+                                        bgcolor=app.theme.additional_color, 
+                                        border_radius = 10, 
+                                        width = tools.adapt_dimensions(app, "w", 92), 
+                                        height = tools.adapt_dimensions(app, "h", 40))
     
     welcome_icon, welcome_msg = utils.welcome_message(main.player.user)
     app.add_element(app.alignment("cstart", 
@@ -325,7 +327,9 @@ def main_ui(app):
                                     width=tools.adapt_dimensions(app, "w", 92),
                                     height=tools.adapt_dimensions(app, "w", 25),
                                     on_click = lambda: app.navigate("goals_configuration_page")),                                
-                                width = tools.adapt_dimensions(app, "w", 100), spacing = tools.adapt_dimensions(app, "w", 4), expand = True))
+                                width = tools.adapt_dimensions(app, "w", 100), 
+                                spacing = tools.adapt_dimensions(app, "w", 4), 
+                                expand = True))
 
 
 # ++++++++++ Register builders +++++++++
@@ -333,8 +337,8 @@ def main_ui(app):
 def register_page_1_ui(app):
     nickname = tools.entry(app, 14, label="Nickname", hint_text="How can we call you?", on_change=lambda: check())
     nickname_message = ft.Text("", style = tools.secondary_text_style(app, 12))
-
-    date_picker = ft.DatePicker(last_date = utils.get_latest(), first_date = utils.get_earliest(), on_change=lambda e: check())
+    
+    date_picker = ft.DatePicker(last_date = utils.get_latest(), first_date = utils.get_earliest(), on_change=lambda: check())
     date_message = ft.Text(f"Please select your birthday", style = tools.secondary_text_style(app, 12))
 
     role = tools.dropdown(app, 12, label="Role", options=[tools.doption(app, option) for option in utils.get_roles().keys()], on_select=lambda: check())
@@ -353,7 +357,7 @@ def register_page_1_ui(app):
     app.add_element(app.alignment("cspace_between",
                         app.alignment("rcenter", ft.Text("Hi! To begin using this app\nwe need to meet you!", style = tools.primary_text_style(app, 24), text_align = ft.TextAlign.CENTER)),
                         app.alignment("rcenter", app.alignment("ccenter", nickname, nickname_message)),
-                        app.alignment("rcenter", app.alignment("ccenter", ft.ElevatedButton("Select your birthday", icon = utils.icon("birthday"), style = tools.main_button_style(app, 14), on_click=lambda: app.page.show_dialog(date_picker)), date_message)),
+                        app.alignment("rcenter", app.alignment("ccenter", ft.ElevatedButton("Select your birthday", icon = utils.icon("birthday"), style = tools.main_button_style(app, 14), on_click=lambda : app.page.show_dialog(date_picker)), date_message)),
                         app.alignment("rcenter", app.alignment("ccenter", role, role_message)),
                         app.alignment("rcenter", app.alignment("ccenter", status, status_message)),
                         app.alignment("rcenter", next_step),
@@ -477,14 +481,10 @@ def register_page_3_ui(app):
         controls=[
             ft.ElevatedButton(
                 name, style = tools.additional_button_style(app, 12),
-                on_click=lambda e, name=name: preferences_click(e, name),
-            )
-            for name in preferences.keys()
-        ],
+                on_click=lambda e, name=name: preferences_click(e, name)) for name in preferences.keys()],
         wrap=True,
         spacing=10,
-        run_spacing=10,
-    )
+        run_spacing=10)
 
     preferences_column = ft.Column(
         controls=[preferences_row],
@@ -507,13 +507,10 @@ def register_page_3_ui(app):
         controls=[
             ft.ElevatedButton(
                 name, style = tools.additional_button_style(app, 12),
-                on_click=lambda e, name=name: skill_click(e, name),
-            )
-            for name in skills.keys()],
+                on_click=lambda e, name=name: skill_click(e, name)) for name in skills.keys()],
         wrap=True,
         spacing=10,
-        run_spacing=10,
-    )
+        run_spacing=10)
 
     skills_column = ft.Column(
         controls=[skills_row],
@@ -634,7 +631,8 @@ def goal_page(app):
             complete_button(app, complete))
 
     app.add_element(app.alignment("cstart",
-                    *detail_header(app, page_back, goal.goal.title, goal.goal.description), goal_comletement))
+                    *detail_header(app, page_back, goal.goal.title, goal.goal.description),
+                    goal_comletement))
 
 
 def goals_config_page(app):
@@ -650,8 +648,9 @@ def goals_config_page(app):
         "period": None,
         "target_value": None,
         "target_entry": None,
-        "custom_finish": None,
+        "custom_finish": None
     }
+
     period_buttons = {}
     dropdown_ctrl = {"control": None}
 
@@ -666,7 +665,7 @@ def goals_config_page(app):
                 if pg.goal.is_system:
                     continue
 
-                delete_btn = ft.ElevatedButton("Delete", style=tools.cancel_button_style(app, 22), on_click=lambda pg=pg, lst=lst: delete_goal(pg, lst))
+                delete_btn = ft.ElevatedButton("Delete", style=tools.cancel_button_style(app, 22), on_click=lambda e, pg=pg, lst=lst: delete_goal(pg, lst))
 
                 if isinstance(pg, DailyGoal): goal_period = "Daily"
                 elif isinstance(pg, WeeklyGoal): goal_period = "Weekly"
@@ -677,16 +676,15 @@ def goals_config_page(app):
                     if isinstance(pg.goal, AmountGoal): number = pg.goal.target_amount
                     else: number = str(pg.goal.target_duration)
 
-                    edit_btn = ft.ElevatedButton("Edit", style=tools.additional_button_style(app, 22), on_click=lambda pg=pg, lst=lst: open_edit_dialog(pg, lst))
-                    goal_item = app.alignment("cspace_between", 
-                                                app.alignment("rcenter",
+                    edit_btn = ft.ElevatedButton("Edit", style=tools.additional_button_style(app, 22), on_click=lambda e, pg=pg, lst=lst: open_edit_dialog(pg, lst))
+                    goal_item = app.alignment("cspace_between", app.alignment("rcenter",
                                                     ft.Text(goal_period, style=tools.secondary_text_style(app, 18)),
                                                     ft.Text(pg.goal.title, style=tools.primary_text_style(app, 36)),
                                                     ft.Text(number, style=tools.secondary_text_style(app, 18)),
-                                                    width=tools.adapt_dimensions(app, "w", 80)), 
+                                                    width=tools.adapt_dimensions(app, "w", 80)),
                                                 app.alignment("rstart",
                                                     ft.Text(pg.goal.description, style=tools.secondary_text_style(app, 24)),
-                                                    width=tools.adapt_dimensions(app, "w", 80)), 
+                                                    width=tools.adapt_dimensions(app, "w", 80)),
                                                 app.alignment("rspace_evenly",
                                                     edit_btn, delete_btn,
                                                     width=tools.adapt_dimensions(app, "w", 80)),
@@ -697,14 +695,13 @@ def goals_config_page(app):
                     goal_item = app.alignment("cspace_between", app.alignment("rcenter",
                                                     ft.Text(goal_period, style=tools.secondary_text_style(app, 18)),
                                                     ft.Text(pg.goal.title, style=tools.primary_text_style(app, 36)),
-                                                    width=tools.adapt_dimensions(app, "w", 80)), 
-                                                app.alignment("rstart",
-                                                    ft.Text(pg.goal.description, style=tools.secondary_text_style(app, 24)), 
+                                                    width=tools.adapt_dimensions(app, "w", 80)),
+                                                 app.alignment("rstart",
+                                                    ft.Text(pg.goal.description, style=tools.secondary_text_style(app, 24)),
                                                     width=tools.adapt_dimensions(app, "w", 80)),
                                                 app.alignment("rspace_evenly",
                                                     delete_btn,
-                                                    width=tools.adapt_dimensions(app, "w", 80)
-                                                ),
+                                                    width=tools.adapt_dimensions(app, "w", 80)),
                                                 width=tools.adapt_dimensions(app, "w", 80),
                                                 height=tools.adapt_dimensions(app, "h", 40))
 
@@ -727,9 +724,8 @@ def goals_config_page(app):
     def make_period_button(period, label):
         btn = ft.ElevatedButton(
             label,
-            on_click=lambda: select_period(period),
-            style=tools.main_button_style(app, 14) if state["period"] == period else tools.additional_button_style(app, 14),
-        )
+            on_click=lambda e: select_period(period),
+            style=tools.main_button_style(app, 14) if state["period"] == period else tools.additional_button_style(app, 14))
         period_buttons[period] = btn
         return btn
 
@@ -747,11 +743,11 @@ def goals_config_page(app):
         picked = e.control.value.astimezone()
         state["custom_finish"] = datetime.combine(picked.date(), time.max)
 
-    def dec_target_time():
+    def dec_target_time(e):
         state["target_entry"].value = utils.remove_time(state["target_entry"].value, "00:00:00")
         state["target_entry"].update()
 
-    def inc_target_time():
+    def inc_target_time(e):
         state["target_entry"].value = utils.add_time(state["target_entry"].value, "00:15:00")
         state["target_entry"].update()
 
@@ -792,7 +788,7 @@ def goals_config_page(app):
             if period == "custom":
                 date_picker = ft.DatePicker(on_change=on_custom_date_change)
                 app.page.overlay.append(date_picker)
-                controls.append(ft.ElevatedButton("Pick finish date", style=tools.main_button_style(app, 14), on_click=lambda: app.open_dialog(date_picker)))
+                controls.append(ft.ElevatedButton("Pick finish date", style=tools.main_button_style(app, 14), on_click=lambda e: app.open_dialog(date_picker)))
 
             if isinstance(goal, AmountGoal):
                 controls.append(ft.TextField(label=f"Target amount ({goal.unit})",
@@ -804,22 +800,23 @@ def goals_config_page(app):
                     state["target_entry"] = ft.TextField(value=initial, width=tools.adapt_dimensions(app, "w", 20))
 
                 controls.append(app.alignment("rcenter",
-                    ft.IconButton(icon=utils.icon("controls_decrease"), style=tools.cancel_button_style(app, 28), on_click=lambda e: dec_target_time()),
+                    ft.IconButton(icon=utils.icon("controls_decrease"), style=tools.cancel_button_style(app, 28), on_click=dec_target_time),
                     state["target_entry"],
-                    ft.IconButton(icon=utils.icon("controls_increase"), style=tools.ok_button_style(app, 28), on_click=lambda e: inc_target_time()),
+                    ft.IconButton(icon=utils.icon("controls_increase"), style=tools.ok_button_style(app, 28), on_click=inc_target_time),
                 ))
 
         dialog_body.controls = controls
         dialog.actions = [
-            ft.ElevatedButton("Cancel", style=tools.cancel_button_style(app, 14), on_click=lambda: app.page.pop_dialog()),
-            ft.ElevatedButton("Save", style=tools.ok_button_style(app, 14), on_click=lambda: confirm_dialog())]
+            ft.ElevatedButton("Cancel", style=tools.cancel_button_style(app, 14), on_click=lambda e: app.page.pop_dialog()),
+            ft.ElevatedButton("Save", style=tools.ok_button_style(app, 14), on_click=lambda e: confirm_dialog())]
         dialog.title = ft.Text("Create goal" if state["mode"] == "create" else "Edit goal")
+
         try:
             dialog.update()
         except Exception:
             pass
 
-    def open_create_dialog():
+    def open_create_dialog(e=None):
         state["mode"] = "create"
         state["template_goal"] = None
         state["period_goal"] = None
@@ -892,7 +889,7 @@ def goals_config_page(app):
     app.add_element(app.alignment("cstart",
                                 back_button(app, lambda: app.navigate("main_page")),
                                 active_column,
-                                ft.ElevatedButton("Create goal", style=tools.ok_button_style(app, 14), on_click=lambda e: open_create_dialog()),
+                                ft.ElevatedButton("Create goal", style=tools.ok_button_style(app, 14), on_click=open_create_dialog),
                                 width=tools.adapt_dimensions(app, "w", 100)))
 
 
@@ -978,11 +975,13 @@ def task_page(app):
                     lambda: increase_value(entry, "amount", task.step, maximum=task.max)),
                 complete_button(app, complete))
 
-        elif input_mode == "preset":
+        if input_mode == "preset":
             unit_for_key = lambda key: task.units.split("/")[0] if key == "1" else task.units.split("/")[1]
             rows = preset_input_rows(app, list(task.amount_inputs_multipliers.keys()), unit_for_key, complete, option_buttons)
             task_comletement = app.alignment("cstart", *rows,
-                width=tools.adapt_dimensions(app, "w", 100), spacing=tools.adapt_dimensions(app, "w", 4), expand=True)
+                width=tools.adapt_dimensions(app, "w", 100),
+                spacing=tools.adapt_dimensions(app, "w", 4), 
+                expand=True)
 
     elif cat == 3:
         if input_mode == "free":
@@ -993,7 +992,7 @@ def task_page(app):
                     lambda: increase_value(entry, "time", task.step, maximum=task.max)),
                 complete_button(app, complete))
 
-        elif input_mode == "preset":
+        if input_mode == "preset":
             unit_for_key = lambda key: ""
             rows = preset_input_rows(app, list(task.time_inputs_multipliers.keys()), unit_for_key, complete, option_buttons)
             task_comletement = app.alignment("cstart", *rows,
@@ -1051,7 +1050,7 @@ def tasks_navigation_ui(app):
             style=tools.additional_button_style(app, 32, shape=ft.RoundedRectangleBorder(radius=10)),
             width=tools.adapt_dimensions(app, "w", width),
             height=tools.adapt_dimensions(app, "w", 46),
-            on_click=lambda k=key: on_tap(k))
+            on_click=lambda e, k=key: on_tap(k))
 
     buttons = []
     for row in rows:
@@ -1069,8 +1068,8 @@ def tasks_navigation_ui(app):
                         *buttons,
                      width=tools.adapt_dimensions(app, "w", 100),
                      spacing=tools.adapt_dimensions(app, "w", 4), expand=True))
-
     
+
 
 # ---------- App starting ----------
 
@@ -1100,8 +1099,7 @@ def build():
         dialog_window = achievements_dialog, 
         tooltip = "Achievements", 
         icon_color=lambda theme: theme.cancel_button,
-        pages=["main_page"]  
-    )
+        pages=["main_page"])
 
     app.set_async_next(main.start)
     app.run(info.APP_NAME)
