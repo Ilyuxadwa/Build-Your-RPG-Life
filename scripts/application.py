@@ -144,7 +144,7 @@ def achievements_dialog(app):
         else:
             list_of_achievements.append(unreached_card(achievements[achievement]))
 
-    return ft.AlertDialog(title = ft.Text("Achievements", style = tools.primary_text_style(app, 38)), content = app.alignment("cstart", *list_of_achievements, spacing = tools.adapt_dimensions(app, "w", 4), expand = True), bgcolor = app.theme.background, actions = [ft.ElevatedButton("Okay", style = tools.ok_button_style(app, 14), on_click=lambda e: app.page.pop_dialog())], actions_alignment = ft.MainAxisAlignment.END, modal = True)
+    return ft.AlertDialog(title = ft.Text("Achievements", style = tools.primary_text_style(app, 38)), content = app.alignment("cstart", *list_of_achievements, spacing = tools.adapt_dimensions(app, "w", 4), expand = True), bgcolor = app.theme.background, actions = [ft.Button("Okay", style = tools.ok_button_style(app, 14), on_click=lambda e: app.page.pop_dialog())], actions_alignment = ft.MainAxisAlignment.END, modal = True)
 
 
 
@@ -346,7 +346,7 @@ def register_page_1_ui(app):
     status = tools.dropdown(app, 12, label="Status", options=[tools.doption(app, option) for option in utils.get_statuses().keys()], on_select=lambda: check())
     status_message = ft.Text("", style = tools.secondary_text_style(app, 12))
 
-    next_step = ft.ElevatedButton("Continue", icon = utils.icon("continue_1"), width = tools.adapt_dimensions(app, "w", 40), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
+    next_step = ft.Button("Continue", icon = utils.icon("continue_1"), width = tools.adapt_dimensions(app, "w", 40), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
 
     nickname.value = register_manager.get_first_part()[0]
     if register_manager.get_first_part()[1]:
@@ -357,7 +357,7 @@ def register_page_1_ui(app):
     app.add_element(app.alignment("cspace_between",
                         app.alignment("rcenter", ft.Text("Hi! To begin using this app\nwe need to meet you!", style = tools.primary_text_style(app, 24), text_align = ft.TextAlign.CENTER)),
                         app.alignment("rcenter", app.alignment("ccenter", nickname, nickname_message)),
-                        app.alignment("rcenter", app.alignment("ccenter", ft.ElevatedButton("Select your birthday", icon = utils.icon("birthday"), style = tools.main_button_style(app, 14), on_click=lambda : app.page.show_dialog(date_picker)), date_message)),
+                        app.alignment("rcenter", app.alignment("ccenter", ft.Button("Select your birthday", icon = utils.icon("birthday"), style = tools.main_button_style(app, 14), on_click=lambda : app.open_dialog(date_picker)), date_message)),
                         app.alignment("rcenter", app.alignment("ccenter", role, role_message)),
                         app.alignment("rcenter", app.alignment("ccenter", status, status_message)),
                         app.alignment("rcenter", next_step),
@@ -402,7 +402,7 @@ def register_page_2_ui(app):
     weight_message = ft.Text("", style = tools.secondary_text_style(app, 12))
     gender = tools.radio_group(app, tools.radio(app, 12, label="Male", value="male", width=tools.adapt_dimensions(app, "w", 10)), tools.radio(app, 12, label="Female", value="female", width=tools.adapt_dimensions(app, "w", 10)), on_change=lambda: check())
     gender_message = ft.Text("", style = tools.secondary_text_style(app, 12))
-    next_step = ft.ElevatedButton("Continue", icon = utils.icon("continue_2"), width = tools.adapt_dimensions(app, "w", 40), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
+    next_step = ft.Button("Continue", icon = utils.icon("continue_2"), width = tools.adapt_dimensions(app, "w", 40), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
     
     if register_manager.get_second_part()[0] != 0 and register_manager.get_second_part()[1] != 0.0 and register_manager.get_second_part()[2] != "":
         height.value = register_manager.get_second_part()[0]
@@ -479,7 +479,7 @@ def register_page_3_ui(app):
 
     preferences_row = ft.Row(
         controls=[
-            ft.ElevatedButton(
+            ft.Button(
                 name, style = tools.additional_button_style(app, 12),
                 on_click=lambda e, name=name: preferences_click(e, name)) for name in preferences.keys()],
         wrap=True,
@@ -505,7 +505,7 @@ def register_page_3_ui(app):
 
     skills_row = ft.Row(
         controls=[
-            ft.ElevatedButton(
+            ft.Button(
                 name, style = tools.additional_button_style(app, 12),
                 on_click=lambda e, name=name: skill_click(e, name)) for name in skills.keys()],
         wrap=True,
@@ -528,7 +528,7 @@ def register_page_3_ui(app):
     terms_and_conditions_checkbox = tools.checkbox(app, 12, label="I agree to the terms and conditions", on_change=lambda: check())
     data_agreement_checkbox = tools.checkbox(app, 12, label="I allow to use my data", on_change=lambda: check())
 
-    next_step = ft.ElevatedButton("Finish", icon=utils.icon("finish"), width = tools.adapt_dimensions(app, "w", 40), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
+    next_step = ft.Button("Finish", icon=utils.icon("finish"), width = tools.adapt_dimensions(app, "w", 40), style = tools.additional_button_style(app, 14), disabled=True, on_click=lambda: next_page())
     
     app.add_element(app.alignment("cspace_between",
                         app.alignment("rcenter", ft.Text("The last, but not least...\n We also need to know more about your skills, preferences and so on...!", style = tools.primary_text_style(app, 24), text_align = ft.TextAlign.CENTER)),
@@ -665,7 +665,7 @@ def goals_config_page(app):
                 if pg.goal.is_system:
                     continue
 
-                delete_btn = ft.ElevatedButton("Delete", style=tools.cancel_button_style(app, 22), on_click=lambda e, pg=pg, lst=lst: delete_goal(pg, lst))
+                delete_btn = ft.Button("Delete", style=tools.cancel_button_style(app, 22), on_click=lambda e, pg=pg, lst=lst: delete_goal(pg, lst))
 
                 if isinstance(pg, DailyGoal): goal_period = "Daily"
                 elif isinstance(pg, WeeklyGoal): goal_period = "Weekly"
@@ -676,7 +676,7 @@ def goals_config_page(app):
                     if isinstance(pg.goal, AmountGoal): number = pg.goal.target_amount
                     else: number = str(pg.goal.target_duration)
 
-                    edit_btn = ft.ElevatedButton("Edit", style=tools.additional_button_style(app, 22), on_click=lambda e, pg=pg, lst=lst: open_edit_dialog(pg, lst))
+                    edit_btn = ft.Button("Edit", style=tools.additional_button_style(app, 22), on_click=lambda e, pg=pg, lst=lst: open_edit_dialog(pg, lst))
                     goal_item = app.alignment("cspace_between", app.alignment("rcenter",
                                                     ft.Text(goal_period, style=tools.secondary_text_style(app, 18)),
                                                     ft.Text(pg.goal.title, style=tools.primary_text_style(app, 36)),
@@ -722,7 +722,7 @@ def goals_config_page(app):
         app.page.run_task(main.save_goals, app)
 
     def make_period_button(period, label):
-        btn = ft.ElevatedButton(
+        btn = ft.Button(
             label,
             on_click=lambda e: select_period(period),
             style=tools.main_button_style(app, 14) if state["period"] == period else tools.additional_button_style(app, 14))
@@ -788,7 +788,7 @@ def goals_config_page(app):
             if period == "custom":
                 date_picker = ft.DatePicker(on_change=on_custom_date_change)
                 app.page.overlay.append(date_picker)
-                controls.append(ft.ElevatedButton("Pick finish date", style=tools.main_button_style(app, 14), on_click=lambda e: app.open_dialog(date_picker)))
+                controls.append(ft.Button("Pick finish date", style=tools.main_button_style(app, 14), on_click=lambda e: app.open_dialog(date_picker)))
 
             if isinstance(goal, AmountGoal):
                 controls.append(ft.TextField(label=f"Target amount ({goal.unit})",
@@ -807,8 +807,8 @@ def goals_config_page(app):
 
         dialog_body.controls = controls
         dialog.actions = [
-            ft.ElevatedButton("Cancel", style=tools.cancel_button_style(app, 14), on_click=lambda e: app.page.pop_dialog()),
-            ft.ElevatedButton("Save", style=tools.ok_button_style(app, 14), on_click=lambda e: confirm_dialog())]
+            ft.Button("Cancel", style=tools.cancel_button_style(app, 14), on_click=lambda e: app.page.pop_dialog()),
+            ft.Button("Save", style=tools.ok_button_style(app, 14), on_click=lambda e: confirm_dialog())]
         dialog.title = ft.Text("Create goal" if state["mode"] == "create" else "Edit goal")
 
         try:
@@ -889,7 +889,7 @@ def goals_config_page(app):
     app.add_element(app.alignment("cstart",
                                 back_button(app, lambda: app.navigate("main_page")),
                                 active_column,
-                                ft.ElevatedButton("Create goal", style=tools.ok_button_style(app, 14), on_click=open_create_dialog),
+                                ft.Button("Create goal", style=tools.ok_button_style(app, 14), on_click=open_create_dialog),
                                 width=tools.adapt_dimensions(app, "w", 100)))
 
 
