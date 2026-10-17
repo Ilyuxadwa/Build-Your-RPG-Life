@@ -1,0 +1,32 @@
+{
+    "id": "learn_words",
+    "title": "Learn Words",
+    "description": "Learn new words in language unfamiliar to you.",
+    "type": "amount",
+    "units": "Word/Words",
+    "cooldown_type": "time",
+    "cooldown": "00:01:00",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Schoolchild", "Student", "Unemployed", "Alone"],
+    "additional_options_type": "required/optional",
+    "additional_options_select": "single",
+    "amount_input_mode": "free",
+    "min": 1,
+    "max": 50,
+    "amount_inputs_multipliers":
+    {
+        "1": {
+            "experience": 2,
+            "creativity": 0,
+            "intelligence": 0.05,
+            "social": 0,
+            "strength": 0,
+            "mood": 0,
+            "energy": -1,
+            "stress": 0
+        }
+    },
+    "additional_options": {
+        "option1": {}
+    }
+}

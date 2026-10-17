@@ -1,0 +1,23 @@
+{
+    "id": "abroad",
+    "title": "Travel Abroad",
+    "description": "Visit a foreign country.",
+    "type": "action",
+    "cooldown_type": "time",
+    "cooldown": "00:12:00",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Student", "Worker", "Alone", "With partner", "Married"],
+    "additional_options_type": "optional",
+    "additional_options_select": "single",
+    "additional_options": {},
+    "stats": {
+        "experience": 150,
+        "creativity": 0,
+        "intelligence": 2,
+        "social": 1,
+        "strength": 0,
+        "mood": 3,
+        "energy": -10,
+        "stress": 0
+    }
+}

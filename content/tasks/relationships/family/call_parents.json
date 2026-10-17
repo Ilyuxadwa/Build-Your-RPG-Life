@@ -1,0 +1,23 @@
+{
+    "id": "call_parents",
+    "title": "Call Parents",
+    "description": "Call your parents and have a conversation.",
+    "type": "action",
+    "cooldown_type": "time",
+    "cooldown": "00:00:00",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "additional_options_type": "required/optional",
+    "additional_options_select": "single/multiple",
+    "additional_options": {},
+    "stats": {
+        "experience": 15,
+        "creativity": 0,
+        "intelligence": 0,
+        "social": 0.1,
+        "strength": 0,
+        "mood": 2,
+        "energy": 0,
+        "stress": -2
+    }
+}

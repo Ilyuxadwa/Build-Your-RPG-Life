@@ -1,0 +1,54 @@
+{
+    "id": "draw_picture",
+    "title": "Draw a Picture",
+    "description": "Create a simple drawing.",
+    "type": "action",
+    "cooldown_type": "time",
+    "cooldown": "00:00:00",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "additional_options_type": "required",
+    "additional_options_select": "single",
+    "additional_options": {
+        "easy": {
+            "experience": 10,
+            "creativity": 0.05,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 5,
+            "energy": -3,
+            "stress": -2 
+        },
+        "medium": {
+            "experience": 15,
+            "creativity": 0.15,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 5,
+            "energy": -5,
+            "stress": -5
+        },
+        "hard": {
+            "experience": 25,
+            "creativity": 0.25,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 5,
+            "energy": -10,
+            "stress": -7 
+        }
+    },
+    "stats": {
+        "experience": 0,
+        "creativity": 0,
+        "intelligence": 0,
+        "social": 0,
+        "strength": 0,
+        "mood": 0,
+        "energy": 0,
+        "stress": 0
+    }
+}

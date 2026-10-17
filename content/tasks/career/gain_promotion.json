@@ -1,0 +1,24 @@
+{
+    "id": "promotion",
+    "title": "Gain Promotion",
+    "description": "Work towards getting promoted at your job.",
+    "type": "action",
+    "cooldown_type": "fixed",
+    "cooldown": "7d",
+    "available_for": ["Worker"],
+    "recommended_for": ["Worker"],
+    "additional_options_type": "optional",
+    "additional_options_select": "single",
+    "additional_options": {},
+
+    "stats": {
+        "experience": 100,
+        "creativity": 0,
+        "intelligence": 0.5,
+        "social": 1.5,
+        "strength": 0,
+        "mood": 15,
+        "energy": 0,
+        "stress": 5
+    }
+}

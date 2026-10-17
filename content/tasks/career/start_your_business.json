@@ -1,0 +1,24 @@
+{
+    "id": "open_business",
+    "title": "Start Your Own Business",
+    "description": "Start your own business.",
+    "type": "action",
+    "cooldown_type": "fixed",
+    "cooldown": "31d",
+    "available_for": ["Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Worker", "Unemployed"],
+    "additional_options_type": "optional",
+    "additional_options_select": "single",
+    "additional_options": {},
+
+    "stats": {
+        "experience": 300,
+        "creativity": 5,
+        "intelligence": 5,
+        "social": 10,
+        "strength": 0,
+        "mood": 25,
+        "energy": 0,
+        "stress": 40
+    }
+}

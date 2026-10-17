@@ -1,0 +1,23 @@
+{
+    "id": "ask_stranger_help",
+    "title": "Ask Stranger for Help",
+    "description": "Ask a stranger for help. (For example, directions, information, etc.)",
+    "type": "action",
+    "cooldown_type": "time",
+    "cooldown": "00:00:00",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "additional_options_type": "required/optional",
+    "additional_options_select": "single/multiple",
+    "additional_options": {},
+    "stats": {
+        "experience": 20,
+        "creativity": 0.05,
+        "intelligence": 0,
+        "social": 0.5,
+        "strength": 0,
+        "mood": 0,
+        "energy": 0,
+        "stress": 2
+    }
+}

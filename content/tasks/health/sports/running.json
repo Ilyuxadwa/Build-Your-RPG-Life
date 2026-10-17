@@ -1,0 +1,30 @@
+{
+    "id": "running",
+    "title": "Running",
+    "description": "Run some distance to improve your health and fitness.",
+    "type": "amount",
+    "units": "m/m",
+    "cooldown_type": "time",
+    "cooldown": "00:00:00",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "additional_options_type": "optional",
+    "additional_options_select": "single",
+    "amount_input_mode": "free",
+    "min": 100,
+    "max": 20000,
+    "amount_inputs_multipliers":
+    {
+        "100": {
+            "experience": 5,
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0.05,
+            "mood": 0.05,
+            "energy": -1,
+            "stress": -0.01
+        }
+    },
+    "additional_options": {}
+}

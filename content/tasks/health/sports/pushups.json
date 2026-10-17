@@ -1,0 +1,30 @@
+{
+    "id": "pushups",
+    "title": "Push-ups",
+    "description": "Do push-ups to improve your upper body strength.",
+    "type": "amount",
+    "units": "reps",
+    "cooldown_type": "time",
+    "cooldown": "00:00:00",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "additional_options_type": "optional",
+    "additional_options_select": "single",
+    "amount_input_mode": "free",
+    "min": 1,
+    "max": 200,
+    "amount_inputs_multipliers":
+    {
+        "1": {
+            "experience": 2,
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0.03,
+            "mood": 0.01,
+            "energy": -0.25,
+            "stress": 0
+        }
+    },
+    "additional_options": {}
+}

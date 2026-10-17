@@ -1,0 +1,54 @@
+{
+    "id": "make_wooden_model",
+    "title": "Make Wooden Model",
+    "description": "Create a simple wooden model.",
+    "type": "action",
+    "cooldown_type": "time",
+    "cooldown": "00:00:00",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "additional_options_type": "required",
+    "additional_options_select": "single",
+    "additional_options": {
+        "easy": {
+            "experience": 20,
+            "creativity": 0.1,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 5,
+            "energy": -5,
+            "stress": -2 
+        },
+        "medium": {
+            "experience": 35,
+            "creativity": 0.3,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 5,
+            "energy": -10,
+            "stress": -5
+        },
+        "hard": {
+            "experience": 50,
+            "creativity": 0.5,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 5,
+            "energy": -15,
+            "stress": -10 
+        }
+    },
+    "stats": {
+        "experience": 0,
+        "creativity": 0,
+        "intelligence": 0,
+        "social": 0,
+        "strength": 0,
+        "mood": 0,
+        "energy": 0,
+        "stress": 0
+    }
+}

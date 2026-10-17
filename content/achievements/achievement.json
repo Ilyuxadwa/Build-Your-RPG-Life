@@ -1,7 +1,0 @@
-{
-    "id": "task_1",
-    "task": "Do {number} times",
-    "number": 5,
-    "message": "Good Job!",
-    "ref_task": "tests/Do an action"
-}

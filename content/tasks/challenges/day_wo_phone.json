@@ -1,0 +1,33 @@
+{
+    "id": "day_without_phone",
+    "title": "Day Without Phone",
+    "description": "Spend a day without using your phone.",
+    "type": "action",
+    "cooldown_type": "fixed",
+    "cooldown": "1d",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "additional_options_type": "optional",
+    "additional_options_select": "single",
+    "additional_options": {
+        "No other devices": {
+            "experience": 50,
+            "creativity": 0,
+            "intelligence": 1,
+            "social": 5,
+            "strength": 1,
+            "mood": 1,
+            "energy": 5,
+            "stress": -2 }
+    },
+    "stats": {
+        "experience": 150,
+        "creativity": 0,
+        "intelligence": 3,
+        "social": 5,
+        "strength": 2,
+        "mood": 4,
+        "energy": 15,
+        "stress": -5
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "id": "ceo",
+    "title": "Become a CEO",
+    "description": "Work towards becoming a CEO of your company.",
+    "type": "action",
+    "cooldown_type": "fixed",
+    "cooldown": "7d",
+    "available_for": ["Worker"],
+    "recommended_for": ["Worker"],
+    "additional_options_type": "optional",
+    "additional_options_select": "single",
+    "additional_options": {},
+
+    "stats": {
+        "experience": 200,
+        "creativity": 0,
+        "intelligence": 2,
+        "social": 5,
+        "strength": 0,
+        "mood": 25,
+        "energy": 0,
+        "stress": 10
+    }
+}

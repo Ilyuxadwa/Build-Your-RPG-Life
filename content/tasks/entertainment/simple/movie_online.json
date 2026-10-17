@@ -1,0 +1,68 @@
+{
+    "id": "watch_movie_online",
+    "title": "Watch Movie Online",
+    "description": "Spend some time watching a movie at home.",
+    "type": "action",
+    "cooldown_type": "time",
+    "cooldown": "01:30:00",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "additional_options_type": "optional",
+    "additional_options_select": "single",
+    "additional_options": {
+        "comedy": {
+            "experience": 0,
+            "creativity": 0.05,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 5,
+            "energy": 2,
+            "stress": 0 
+        },
+
+        "drama": {
+            "experience": 0,
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": -5,
+            "energy": 0,
+            "stress": 0 
+        },
+
+        "horror": {
+            "experience": 0,
+            "creativity": 0,
+            "intelligence": 0,
+            "social": 0,
+            "strength": 0,
+            "mood": 0,
+            "energy": 0,
+            "stress": 5 
+        },
+
+        "detective": {
+            "experience": 5,
+            "creativity": 0.1,
+            "intelligence": 0.5,
+            "social": 0,
+            "strength": 0,
+            "mood": 5,
+            "energy": -2,
+            "stress": 0 
+        }
+        
+    },
+    "stats": {
+        "experience": 5,
+        "creativity": 1,
+        "intelligence": 0.1,
+        "social": 0,
+        "strength": 0,
+        "mood": 3,
+        "energy": -2,
+        "stress": -2
+    }
+}

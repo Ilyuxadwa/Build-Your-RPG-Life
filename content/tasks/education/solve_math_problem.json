@@ -1,0 +1,45 @@
+{
+    "id": "solve_math_problem",
+    "title": "Solve Math Problem",
+    "description": "Solve a math problem to improve your math skills.",
+    "type": "action",
+    "cooldown_type": "time",
+    "cooldown": "00:00:15",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Schoolchild", "Student"],
+    "additional_options_type": "required",
+    "additional_options_select": "single",
+    "additional_options": {
+        "Algebra": {
+            "experience": 10,
+            "creativity": 0,
+            "intelligence": 0.2,
+            "social": 0,
+            "strength": 0,
+            "mood": 0,
+            "energy": 0,
+            "stress": 0 
+        },
+
+        "Geometry": {
+            "experience": 10,
+            "creativity": 0.2,
+            "intelligence": 0.25,
+            "social": 0,
+            "strength": 0,
+            "mood": 0,
+            "energy": 0,
+            "stress": 0
+        }
+    },
+    "stats": {
+        "experience": 10,
+        "creativity": 0,
+        "intelligence": 0.3,
+        "social": 0,
+        "strength": 0,
+        "mood": 0,
+        "energy": -2,
+        "stress": 0
+    }
+}

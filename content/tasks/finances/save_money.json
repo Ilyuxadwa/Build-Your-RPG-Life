@@ -1,0 +1,30 @@
+{
+    "id": "save_money",
+    "title": "Save Money",
+    "description": "Save money for your dream thing.",
+    "type": "amount",
+    "units": "$/$",
+    "cooldown_type": "time",
+    "cooldown": "00:00:00",
+    "available_for": ["Schoolchild", "Student", "Worker", "Unemployed", "Alone", "With partner", "Married"],
+    "recommended_for": ["Worker", "Alone", "With partner", "Married"],
+    "additional_options_type": "optional",
+    "additional_options_select": "single",
+    "amount_input_mode": "free",
+    "min": 1,
+    "max": 10000,
+    "amount_inputs_multipliers":
+    {
+        "10": {
+            "experience": 2,
+            "creativity": 0,
+            "intelligence": 0.02,
+            "social": 0,
+            "strength": 0,
+            "mood": 1,
+            "energy": 0,
+            "stress": -0.2
+        }
+    },
+    "additional_options": {}
+}

@@ -1,0 +1,24 @@
+{
+    "id": "work",
+    "title": "Go to Work",
+    "description": "Head to your workplace for the day.",
+    "type": "action",
+    "cooldown_type": "fixed",
+    "cooldown": "1d",
+    "available_for": ["Student", "Worker"],
+    "recommended_for": ["Worker"],
+    "additional_options_type": "optional",
+    "additional_options_select": "single",
+    "additional_options": {},
+
+    "stats": {
+        "experience": 20,
+        "creativity": 0,
+        "intelligence": 0,
+        "social": 0.05,
+        "strength": 0,
+        "mood": -5,
+        "energy": -15,
+        "stress": 3
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "id": "go_to_school",
+    "title": "Go to School",
+    "description": "Attend school to improve your education.",
+    "type": "action",
+    "cooldown_type": "fixed",
+    "cooldown": "1d",
+    "available_for": ["Schoolchild", "Student"],
+    "recommended_for": ["Schoolchild", "Student"],
+    "additional_options_type": "optional",
+    "additional_options_select": "single",
+    "additional_options": {},
+    "stats": {
+        "experience": 15,
+        "creativity": 0,
+        "intelligence": 0.5,
+        "social": 0,
+        "strength": 0,
+        "mood": -5,
+        "energy": -10,
+        "stress": 5
+    }
+}
